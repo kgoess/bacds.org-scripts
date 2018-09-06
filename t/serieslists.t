@@ -50,19 +50,21 @@ $ENV{QUERY_STRING} = 'styles=ENGLISH,ECDWORKSHOP&venues=STC,CCB,STALB&day=Wed';
 stdout_like {
     do 'bin/serieslists.pl';
 } qr{
-2018-09-12-ENGLISH.*
-Caller:..Sharon.Green.*
-Band:..Toss.The.Possum.\(Laura.Zisette.\[UT\],.Rob.Zisette.\[VA\]\).with.Audrey.Knuth,.Christopher.Jacoby,.\$14/12/7.*
-2018-09-26-ENGLISH.*
-Caller:..Bruce.Hamilton.*
-Band:..Open.band.led.by.Audrey.Knuth,.Judy.Linsenberg,.Patti.Cobb.*
-2018-10-10-ENGLISH.*
-Caller:..tba.*
-Band:..schedule.not.yet.published.*
-2018-10-24-ENGLISH.*
-2018-11-14-ENGLISH.*
-2018-11-28-ENGLISH.*
-2018-12-12-ENGLISH.*
+    <!--.TYPE.=.ENGLISH/WORKSHOP.-->.*
+    <div.class="workshop">.*
+    <a.name="2018-09-12-ENGLISH/WORKSHOP"></a>.*
+    Caller:..Sharon.Green.*
+    Band:..Toss.The.Possum.\(Laura.Zisette.\[UT\],.Rob.Zisette.\[VA\]\).with.Audrey.Knuth,.Christopher.Jacoby,.\$14/12/7.*
+    2018-09-26-ENGLISH.*
+    Caller:..Bruce.Hamilton.*
+    Band:..Open.band.led.by.Audrey.Knuth,.Judy.Linsenberg,.Patti.Cobb.*
+    2018-10-10-ENGLISH.*
+    Caller:..tba.*
+    Band:..schedule.not.yet.published.*
+    2018-10-24-ENGLISH.*
+    2018-11-14-ENGLISH.*
+    2018-11-28-ENGLISH.*
+    2018-12-12-ENGLISH.*
 }msx, 'workshops look ok';
 
 
