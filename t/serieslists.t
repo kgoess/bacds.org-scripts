@@ -7,8 +7,8 @@ use warnings;
 use Test::More tests => 2;
 use Test::Output qw/stdout_like/;
 
+$ENV{TEST_CSV_DIR} = 't/data/';
 
-$ENV{REQUEST_METHOD} = '';
 $ENV{QUERY_STRING} = 'styles=CONTRA,HAMBO&venues=HVC&day=Sun';
 stdout_like {
     do 'bin/serieslists.pl';
@@ -35,7 +35,7 @@ stdout_like {
 2018-09-09-ENGLISH.*
 Sunday,.September.9.*
 Caller:..Alexandra.Deis-Lauby.\[NYC\].*
-Band:..Phoenix.Rising.\(William.Allen,.Mary.Tabor,.Robin.Lockner\)..&mdash;season.opening.party!.Workshop.2:10,.Dance.2:30&ndash;5:00.*
+Band:..Phoenix.Rising.\(William.Allen,.Mary.Tabor,.Robin.Lockner\)..&mdash;season.opening.party!.Workshop.2:10,.Dance.2:30.*
 2018-10-14-ENGLISH.*
 Sunday,.October.14.*
 Caller:..tba.*
