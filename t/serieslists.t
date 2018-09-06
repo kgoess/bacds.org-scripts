@@ -4,10 +4,11 @@
 use 5.14.0;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More tests => 3;
 use Test::Output qw/stdout_like/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
+$ENV{TEST_NOW} = '1536267581';
 
 $ENV{QUERY_STRING} = 'styles=CONTRA,HAMBO&venues=HVC&day=Sun';
 stdout_like {
@@ -43,6 +44,27 @@ Band:..schedule.not.yet.published.*
 2018-11-11-ENGLISH.*
 2018-12-09-ENGLISH.*
 }msx, 'COY,FSJ english looks ok';
+
+
+$ENV{QUERY_STRING} = 'styles=ENGLISH,ECDWORKSHOP&venues=STC,CCB,STALB&day=Wed';
+stdout_like {
+    do 'bin/serieslists.pl';
+} qr{
+2018-09-12-ENGLISH.*
+Caller:..Sharon.Green.*
+Band:..Toss.The.Possum.\(Laura.Zisette.\[UT\],.Rob.Zisette.\[VA\]\).with.Audrey.Knuth,.Christopher.Jacoby,.\$14/12/7.*
+2018-09-26-ENGLISH.*
+Caller:..Bruce.Hamilton.*
+Band:..Open.band.led.by.Audrey.Knuth,.Judy.Linsenberg,.Patti.Cobb.*
+2018-10-10-ENGLISH.*
+Caller:..tba.*
+Band:..schedule.not.yet.published.*
+2018-10-24-ENGLISH.*
+2018-11-14-ENGLISH.*
+2018-11-28-ENGLISH.*
+2018-12-12-ENGLISH.*
+}msx, 'workshops look ok';
+
 
 
 # vim: tabstop=4 shiftwidth=4 expandtab
