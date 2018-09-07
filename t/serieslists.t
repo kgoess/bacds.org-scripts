@@ -4,7 +4,7 @@
 use 5.14.0;
 use warnings;
 
-use Test::More tests => 3;
+use Test::More tests => 4;
 use Test::Output qw/stdout_like/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
@@ -67,6 +67,23 @@ stdout_like {
     2018-12-12-ENGLISH.*
 }msx, 'workshops look ok';
 
+$ENV{QUERY_STRING} = 'style=ENGLISH&venues=ASE,FBC,MT,FHL,SME&day=Tue&day2=Wed&day3=Thu';
+stdout_like {
+    do 'bin/serieslists.pl';
+} qr{
+    2018-09-18-ENGLISH.*
+    Tuesday,.September.18.*
+    Caller:..Alan.Winston.*
+    Band:..Audrey.Knuth,.Christopher.Jacoby,.Bill.Jensen.*
+    2018-10-02-ENGLISH.*
+    Tuesday,.October.2.*
+    Caller:..tba.*
+    Band:..schedule.not.yet.published.*
+    2018-10-16-ENGLISH.*
+    2018-11-06-ENGLISH.*
+    2018-12-04-ENGLISH.*
+    2018-12-18-ENGLISH.*
+}msx, 'day,day2,day3 handling looks ok';
 
 
 # vim: tabstop=4 shiftwidth=4 expandtab

@@ -7,9 +7,8 @@ use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year Day_of_Week_to_Text Today);
 use DBI;
 
-my ($style, $styles, $venue, $day, $day2, $day3, $day4, $day5, $day6, $day7);
-my ($venues);
-my ($wday);
+my ($style, $styles, $venue, $venues, @days_to_search);
+
 my %day_map = (
     Mon => 1,
     Tue => 2,
@@ -44,16 +43,12 @@ foreach my $i (@vals) {
     $styles = $data if $varname eq "styles";
     $venue = $data if $varname eq "venue";
     $venues = $data if $varname eq "venues";
-    $day = $data if $varname eq "day";
-    $day2 = $data if $varname eq "day2";
-    $day3 = $data if $varname eq "day3";
-    $day4 = $data if $varname eq "day4";
-    $day5 = $data if $varname eq "day5";
-    $day6 = $data if $varname eq "day6";
-    $day7 = $data if $varname eq "day7";
+    push @days_to_search, $data if $varname =~ /^day[2-7]?/;
 }
 my @vlist = split ',', $venues if $venues;
+push @vlist, $venue if $venue;
 my @slist = split ',', $styles if $styles;
+push @slist, $style if $style;
 
 my $today = sprintf "%4.4d-%2.2d-%2.2d", Today();
 
@@ -62,9 +57,6 @@ my $today = sprintf "%4.4d-%2.2d-%2.2d", Today();
 ##
 my $qrystr = "SELECT * FROM schedule";
 $qrystr .= " WHERE startday >= '$today'";
-if ($style) {
-    $qrystr .= " AND type LIKE '%$style%'";
-}
 if (@slist) {
     $qrystr .= " AND ( ";
     my $style = shift @slist;
@@ -83,10 +75,6 @@ if (@vlist) {
     }
     $qrystr .= " )";
 }
-if ($venue) {
-    $qrystr .= " AND ( loc LIKE '$venue%' )";
-}
-
 #print "query is $qrystr\n";
 
 ##
@@ -111,14 +99,7 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         
      $trailer = "\n";
         
-    if ($day_map{$day} eq $wday  ||
-       $day2 && ($wday && $day_map{$day2} eq $wday)  || 
-       $day3 && ($wday && $day_map{$day3} eq $wday)  || 
-       $day4 && ($wday && $day_map{$day4} eq $wday)  || 
-       $day5 && ($wday && $day_map{$day5} eq $wday)  || 
-       $day6 && ($wday && $day_map{$day6} eq $wday)  || 
-       $day7 && ($wday && $day_map{$day7} eq $wday)
-    ) {
+    if (grep { $day_map{$_} eq $wday } @days_to_search) {
         if (($type =~ /SPECIAL|WOODSHED|WORKSHOP/ )) {
              my $class = "special";
              $class = "workshop" if ( $type =~ /WORKSHOP/ );
