@@ -201,8 +201,6 @@ sub generate_jsonld {
     # questions;
     # is startDate ok without the time? might need a different table with FK
     #      from the schedule table
-    # is skipping endDate ok?
-    # would it be worth it putting the price into "offers" ? C
     return <<EOL;
 <script type="application/ld+json">
 {
@@ -210,6 +208,7 @@ sub generate_jsonld {
     "\@type":["Event","DanceEvent"],
     "name":"$nice_dance_type Dancing, calling by $leader to the music of $band",
     "startDate":"$date",
+    "endDate":"$date",
     "organizer":
     {
         "\@context":"http://schema.org",
@@ -232,19 +231,36 @@ sub generate_jsonld {
             "addressCountry":"USA"
         }
     },
-    "description":"$comments",
+    "description":"$nice_dance_type Dancing at $loc->{hall} in $loc->{city}. Everyone welcome, beginners and experts! No partner necessary. $comments",
     "image":"https://www.bacds.org/graphics/bacdsweblogomed.gif",
     "performer":
     [
         {
             "\@type":"MusicGroup",
-            "name":"$band",
+            "name":"$band"
         },
         {
             "\@type":"Person",
             "name":"$leader"
         }
     ],
+    "offers": [ {
+        "\@type":"Offer",
+        "name": "supporters",
+        "price":"\$20"
+    },{
+        "\@type":"Offer",
+        "name": "non-members",
+        "price":"\$12"
+    },{
+        "\@type":"Offer",
+        "name": "members",
+        "price":"\$10"
+    },{
+        "\@type":"Offer",
+        "name": "students or low-income or pay what you can",
+        "price":"\$6"
+    }
 }
 </script>
 EOL

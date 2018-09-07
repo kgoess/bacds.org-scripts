@@ -116,6 +116,7 @@ stdout_like {
     "\@type":."Event","DanceEvent".,
     "name":"English Dancing, calling by Alan Winston to the music of Audrey Knuth, Christopher Jacoby, Bill Jensen",
     "startDate":"2018-09-18",
+    "endDate":"2018-09-18",
     "organizer":
     {
         "\@context":"http://schema.org",
@@ -133,8 +134,7 @@ stdout_like {
             "\@type":"PostalAddress",
             "streetAddress":"555 Waverley St",
             "addressLocality":"Palo Alto",
-.*
-    "description":"Say Yes to Hambo!",
+.*"description":"English Dancing at All Saints Episcopal Church in Palo Alto. Everyone welcome, beginners and experts! No partner necessary. Say Yes to Hambo!",
 ]ms, 'single event handling json-ld';
 
 
