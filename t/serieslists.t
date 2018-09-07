@@ -4,8 +4,8 @@
 use 5.14.0;
 use warnings;
 
-use Test::More tests => 4;
-use Test::Output qw/stdout_like/;
+use Test::More tests => 5;
+use Test::Output qw/stdout_like stdout_is/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
 $ENV{TEST_TODAY} = '2018-09-06';
@@ -31,6 +31,8 @@ stdout_like {
 die $@ if $@;
 
 
+# **********
+# multiple venues
 $ENV{QUERY_STRING} = 'venues=COY,FSJ&day=Sun&style=ENGLISH';
 stdout_like {
     do 'bin/serieslists.pl';
@@ -48,6 +50,8 @@ Band:..schedule.not.yet.published.*
 }msx, 'COY,FSJ english looks ok';
 
 
+# ***************
+# multiple venues, multiple styles
 $ENV{QUERY_STRING} = 'styles=ENGLISH,ECDWORKSHOP&venues=STC,CCB,STALB&day=Wed';
 stdout_like {
     do 'bin/serieslists.pl';
@@ -69,6 +73,8 @@ stdout_like {
     2018-12-12-ENGLISH.*
 }msx, 'workshops look ok';
 
+# *****************
+# multiple days
 $ENV{QUERY_STRING} = 'style=ENGLISH&venues=ASE,FBC,MT,FHL,SME&day=Tue&day2=Wed&day3=Thu';
 stdout_like {
     do 'bin/serieslists.pl';
@@ -86,6 +92,21 @@ stdout_like {
     2018-12-04-ENGLISH.*
     2018-12-18-ENGLISH.*
 }msx, 'day,day2,day3 handling looks ok';
+
+# *****************
+# single event
+$ENV{QUERY_STRING} = 'single-event=2018-09-18&venue=ASE';
+#2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
+stdout_is {
+    do 'bin/serieslists.pl';
+} q{<a name="2018-09-18-ENGLISH"></a>
+<p class="dance">
+<b class="date">Tuesday, September 18</b><br />
+Caller:  Alan Winston<br />
+Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
+</p>
+
+}, 'single event handling';
 
 
 # vim: tabstop=4 shiftwidth=4 expandtab
