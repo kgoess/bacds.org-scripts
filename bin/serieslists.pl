@@ -12,6 +12,9 @@
 ## In the first case, we're the google events single-event version of the page,
 ## so we also add the json-ld
 ##
+##
+## This file is being tracked in git.  To clone the repo, add yourself to the
+## "git" group I created and then do "git clone /var/lib/git/bacds.org-scripts/".
 use strict;
 use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year Day_of_Week_to_Text Today);
