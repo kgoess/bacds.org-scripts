@@ -2,6 +2,16 @@
 ##
 ## Print out dances for each series.
 ##
+## Called from the content.html pages for each series like this:
+##     <!--#if expr='v("QUERY_STRING") =~ /single-event=([0-9]{4}-[0-9]{2}-[0-9]{2})/ && $1 =~ /(.*)/' -->
+##             <!--#include virtual="/scripts/serieslists.pl?single-event=$0&venue=MT" -->
+##     <!--#else -->
+##             <!--#include virtual="/scripts/serieslists.pl?styles=ENGLISH,ECDWORKSHOP,SPECIAL/ENGLISH&venues=MT,SBE&day=Fri&day2=Thu&day3=Tue" -->
+##     <!--#endif -->
+##
+## In the first case, we're the google events single-event version of the page,
+## so we also add the json-ld
+##
 use strict;
 use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year Day_of_Week_to_Text Today);
@@ -63,7 +73,7 @@ my $dbh = DBI->connect(qq[DBI:CSV:f_dir=$csv_dir;csv_eol=\n;csv_sep_char=|;csv_q
 ##
 my ($query_string, @bind_params) = 
     $single_event
-    ? build_single_event_query($single_event, shift @vlist)
+    ? build_single_event_query($single_event, $vlist[0])
     : build_upcoming_events_query(\@slist, \@vlist, $dbh); 
 
 ##
@@ -117,8 +127,10 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
             }
         }
     }
-    $type = "";
     print $trailer;
+    print generate_jsonld($dbh, $single_event, $vlist[0], $type, $leader, $band, $comments) 
+        if $single_event;
+    $type = "";
 }
 
 # I'd like to put these into bind params, but gave up after wrestling
@@ -165,6 +177,93 @@ sub build_single_event_query {
     #print STDERR "query is $qrystr, params are $event_date, $venue\n";
 
     return $qrystr, $event_date, $venue;
+}
+
+# see https://schema.org/DanceEvent
+# and http://eceilidh.org.uk/cps/structured-data-applied-to-english-ceilidh-events.php
+# a userful testing tool: https://search.google.com/structured-data/testing-tool/u/0/
+#
+# example data from the schedule table:
+#     startday|endday|type|loc|leader|band|comments|name|stdloc|url
+#     2018-01-02||ENGLISH|ASE|Bruce Hamilton|Anne Bingham Goess, Tom Lindemuth, Bill Jensen
+#
+# empirical experimentation shows the data is arriving here with " stripped out, so
+# it's safe to just dump into the JSON
+sub generate_jsonld {
+    my ($dbh, $date, $venue, $type, $leader, $band, $comments) = @_;
+
+    my $nice_dance_type = ucfirst lc $type;
+
+    # keys to $loc hashref are: vkey|hall|address|city|zip|comment|type
+    my $loc = lookup_address_for_vkey($dbh, $venue);
+
+
+    # questions;
+    # is startDate ok without the time? might need a different table with FK
+    #      from the schedule table
+    # is skipping endDate ok?
+    # would it be worth it putting the price into "offers" ? C
+    return <<EOL;
+<script type="application/ld+json">
+{
+    "\@context":"http://schema.org",
+    "\@type":["Event","DanceEvent"],
+    "name":"$nice_dance_type Dancing, calling by $leader to the music of $band",
+    "startDate":"$date",
+    "organizer":
+    {
+        "\@context":"http://schema.org",
+        "\@type":"Organization",
+        "name":"Bay Areay Country Dance Society",
+        "url":"http://www.bacds.org/"
+    },
+    "location":
+    {
+        "\@context":"http://schema.org",
+        "\@type":"Place",
+        "name":"$loc->{hall}",
+        "address":
+        {
+            "\@type":"PostalAddress",
+            "streetAddress":"$loc->{address}",
+            "addressLocality":"$loc->{city}",
+            "postalCode":"$loc->{zip}",
+            "addressRegion":"California",
+            "addressCountry":"USA"
+        }
+    },
+    "description":"$comments",
+    "image":"https://www.bacds.org/graphics/bacdsweblogomed.gif",
+    "performer":
+    [
+        {
+            "\@type":"MusicGroup",
+            "name":"$band",
+        },
+        {
+            "\@type":"Person",
+            "name":"$leader"
+        }
+    ],
+}
+</script>
+EOL
+
+}
+
+# vkey|hall|address|city|zip|comment|type
+# ACC|Arlington Community Church|52 Arlington Avenue|Kensington|||SPECIAL
+# ALB|Albany Veteran's Memorial Building|1325 Portland Avenue (off Key RouteBlvd)|Albany|||SPECIAL
+sub lookup_address_for_vkey {
+    my ($dbh, $vkey) = @_;
+
+    my $sth = $dbh->prepare('SELECT * FROM venue WHERE vkey = ?') or die $dbh->errstr;
+
+    $sth->execute($vkey) or die $sth->errstr;
+
+    my $row = $sth->fetchrow_hashref or die "no record found in venue table for '$vkey'";
+
+    return $row;
 }
 
 # vim: tabstop=4 shiftwidth=4 expandtab

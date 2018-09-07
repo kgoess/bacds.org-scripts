@@ -4,7 +4,7 @@
 use 5.14.0;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Output qw/stdout_like stdout_is/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
@@ -94,19 +94,49 @@ stdout_like {
 }msx, 'day,day2,day3 handling looks ok';
 
 # *****************
-# single event
+# single event, with json-ld
 $ENV{QUERY_STRING} = 'single-event=2018-09-18&venue=ASE';
 #2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
-stdout_is {
+stdout_like {
     do 'bin/serieslists.pl';
-} q{<a name="2018-09-18-ENGLISH"></a>
+} qr{^<a name="2018-09-18-ENGLISH"></a>
 <p class="dance">
 <b class="date">Tuesday, September 18</b><br />
 Caller:  Alan Winston<br />
 Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 </p>
+}ms, 'single event handling';
 
-}, 'single event handling';
+stdout_like {
+    do 'bin/serieslists.pl';
+} qr[
+<script type="application/ld\+json">
+{
+    "\@context":"http://schema.org",
+    "\@type":."Event","DanceEvent".,
+    "name":"English Dancing, calling by Alan Winston to the music of Audrey Knuth, Christopher Jacoby, Bill Jensen",
+    "startDate":"2018-09-18",
+    "organizer":
+    {
+        "\@context":"http://schema.org",
+        "\@type":"Organization",
+        "name":"Bay Areay Country Dance Society",
+        "url":"http://www.bacds.org/"
+    },
+    "location":
+    {
+        "\@context":"http://schema.org",
+        "\@type":"Place",
+        "name":"All Saints Episcopal Church",
+        "address":
+        {
+            "\@type":"PostalAddress",
+            "streetAddress":"555 Waverley St",
+            "addressLocality":"Palo Alto",
+.*
+    "description":"Say Yes to Hambo!",
+]ms, 'single event handling json-ld';
+
 
 
 # vim: tabstop=4 shiftwidth=4 expandtab
