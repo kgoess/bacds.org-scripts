@@ -8,7 +8,7 @@ use Test::More tests => 4;
 use Test::Output qw/stdout_like/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
-$ENV{TEST_NOW} = '1536267581';
+$ENV{TEST_TODAY} = '2018-09-06';
 
 $ENV{QUERY_STRING} = 'styles=CONTRA,HAMBO&venues=HVC&day=Sun';
 stdout_like {
@@ -27,6 +27,8 @@ stdout_like {
     2018-12-23-CONTRA.*
     2018-12-30-CONTRA.*
 }msx, 'HVC contra looks ok';
+
+die $@ if $@;
 
 
 $ENV{QUERY_STRING} = 'venues=COY,FSJ&day=Sun&style=ENGLISH';
