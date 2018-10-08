@@ -4,7 +4,7 @@
 use 5.14.0;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 8;
 use Test::Output qw/stdout_like stdout_is/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
@@ -96,6 +96,52 @@ stdout_like {
 # *****************
 # single event, with json-ld
 $ENV{QUERY_STRING} = 'single-event=2018-09-18&venue=ASE';
+#2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
+stdout_like {
+    do 'bin/serieslists.pl';
+} qr{^<a name="2018-09-18-ENGLISH"></a>
+<p class="dance">
+<b class="date">Tuesday, September 18</b><br />
+Caller:  Alan Winston<br />
+Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
+</p>
+}ms, 'single event handling';
+
+
+stdout_like {
+    do 'bin/serieslists.pl';
+} qr[
+<script type="application/ld\+json">
+{
+    "\@context":"http://schema.org",
+    "\@type":."Event","DanceEvent".,
+    "name":"English Dancing, calling by Alan Winston to the music of Audrey Knuth, Christopher Jacoby, Bill Jensen",
+    "startDate":"2018-09-18",
+    "endDate":"2018-09-18",
+    "organizer":
+    {
+        "\@context":"http://schema.org",
+        "\@type":"Organization",
+        "name":"Bay Areay Country Dance Society",
+        "url":"http://www.bacds.org/"
+    },
+    "location":
+    {
+        "\@context":"http://schema.org",
+        "\@type":"Place",
+        "name":"All Saints Episcopal Church",
+        "address":
+        {
+            "\@type":"PostalAddress",
+            "streetAddress":"555 Waverley St",
+            "addressLocality":"Palo Alto",
+.*"description":"English Dancing at All Saints Episcopal Church in Palo Alto. Everyone welcome, beginners and experts! No partner necessary. Say Yes to Hambo!",
+]ms, 'single event handling json-ld';
+
+
+# *****************
+# crap, need to support multiple venues
+$ENV{QUERY_STRING} = 'single-event=2018-09-18&venues=CCB,ASE,USA,WTFBBQLOL';
 #2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
 stdout_like {
     do 'bin/serieslists.pl';

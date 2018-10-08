@@ -76,14 +76,14 @@ my $dbh = DBI->connect(qq[DBI:CSV:f_dir=$csv_dir;csv_eol=\n;csv_sep_char=|;csv_q
 ##
 my ($query_string, @bind_params) = 
     $single_event
-    ? build_single_event_query($single_event, $vlist[0])
+    ? build_single_event_query($single_event, \@vlist)
     : build_upcoming_events_query(\@slist, \@vlist, $dbh); 
 
 ##
 ## Make the query
 ##
 my $sth = $dbh->prepare($query_string) or die $dbh->errstr;
-$sth->execute(@bind_params);
+$sth->execute(@bind_params) or die $sth->errstr;
 
 ##
 ## Print out results
@@ -131,7 +131,7 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         }
     }
     print $trailer;
-    print generate_jsonld($dbh, $single_event, $vlist[0], $type, $leader, $band, $comments) 
+    print generate_jsonld($dbh, $single_event, $loc, $type, $leader, $band, $comments) 
         if $single_event;
     $type = "";
 }
@@ -173,13 +173,20 @@ sub build_upcoming_events_query {
 }
 
 sub build_single_event_query {
-    my ($event_date, $venue) = @_;
+    my ($event_date, $venues) = @_;
 
-    my $qrystr = q{SELECT  * FROM schedule WHERE startday = ? AND loc = ?};
+    my $qmarks = join ',', map {'?'} @$venues;
+
+    my $qrystr = 
+        qq{SELECT * 
+           FROM schedule 
+           WHERE startday = ? 
+           AND loc IN ($qmarks) 
+           LIMIT 1};
 
     #print STDERR "query is $qrystr, params are $event_date, $venue\n";
 
-    return $qrystr, $event_date, $venue;
+    return $qrystr, $event_date, @$venues;
 }
 
 # see https://schema.org/DanceEvent
