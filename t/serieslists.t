@@ -101,7 +101,10 @@ stdout_like {
     do 'bin/serieslists.pl';
 } qr{^<a name="2018-09-18-ENGLISH"></a>
 <p class="dance">
-<b class="date">Tuesday, September 18</b><br />
+<b class="date">
+<a href="\?single-event=2018-09-18">
+Tuesday, September 18
+</a></b><br />
 Caller:  Alan Winston<br />
 Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 </p>
@@ -147,7 +150,10 @@ stdout_like {
     do 'bin/serieslists.pl';
 } qr{^<a name="2018-09-18-ENGLISH"></a>
 <p class="dance">
-<b class="date">Tuesday, September 18</b><br />
+<b class="date">
+<a href="\?single-event=2018-09-18">
+Tuesday, September 18
+</a></b><br />
 Caller:  Alan Winston<br />
 Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 </p>

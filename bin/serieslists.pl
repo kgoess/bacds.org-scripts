@@ -95,7 +95,7 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
     my $wday = Day_of_Week($date_yr, $date_mon, $date_day);
     $date_day =~ s/^0//g if $date_day < 10;
     $comments =~ s/\<q\>/"/g if $comments;
-        
+
      $trailer = "\n";
         
     if ($single_event or 
@@ -111,8 +111,10 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         }
         print "<a name=\"$startday-$type\"></a>\n";
         print "<p class=\"dance\">\n";
-        print "<b class=\"date\">";
-        print Day_of_Week_to_Text($wday).", ".$mon_lst[$date_mon-1] . " " . $date_day . "</b><br />\n";
+        print "<b class=\"date\">\n";
+        print qq{<a href="?single-event=$startday">\n};
+        print Day_of_Week_to_Text($wday).", ".$mon_lst[$date_mon-1] . " " . $date_day. "\n";
+        print qq{</a></b><br />\n};
         if ($leader) {
             print "Caller:  " . $leader . "<br />\n";
         }
