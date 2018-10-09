@@ -209,7 +209,7 @@ sub generate_jsonld {
     # keys to $loc hashref are: vkey|hall|address|city|zip|comment|type
     my $loc = lookup_address_for_vkey($dbh, $venue);
 
-    my $offer_url = "http://$ENV{HTTP_HOST}$ENV{DOCUMENT_URI}";
+    my $offer_url = "https://$ENV{HTTP_HOST}$ENV{DOCUMENT_URI}";
 
     # questions;
     # is startDate ok without the time? might need a different table with FK
@@ -227,7 +227,7 @@ sub generate_jsonld {
         "\@context":"http://schema.org",
         "\@type":"Organization",
         "name":"Bay Areay Country Dance Society",
-        "url":"http://www.bacds.org/"
+        "url":"https://www.bacds.org/"
     },
     "location":
     {
