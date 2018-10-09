@@ -20,7 +20,8 @@ use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year Day_of_Week_to_Text Today);
 use DBI;
 
-my ($style, $styles, $venue, $venues, @days_to_search, $single_event);
+my ($style, $styles, $venue, $venues, @days_to_search, $single_event,
+    $start_time, $end_time);
 
 my %day_map = (
     Mon => 1,
@@ -58,6 +59,8 @@ foreach my $i (@vals) {
     $venues = $data if $varname eq "venues";
     push @days_to_search, $data if $varname =~ /^day[2-7]?/;
     $single_event = $data if $varname eq "single-event";
+    $start_time = $data if $varname eq 'starttime';
+    $end_time = $data if $varname eq 'endtime';
 }
 my @vlist = split ',', $venues if $venues;
 push @vlist, $venue if $venue;
@@ -133,7 +136,8 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         }
     }
     print $trailer;
-    print generate_jsonld($dbh, $single_event, $loc, $type, $leader, $band, $comments) 
+    print generate_jsonld($dbh, $single_event, $loc, $type, $leader, $band,
+                          $comments, $start_time, $end_time) 
         if $single_event;
     $type = "";
 }
@@ -202,7 +206,8 @@ sub build_single_event_query {
 # empirical experimentation shows the data is arriving here with " stripped out, so
 # it's safe to just dump into the JSON
 sub generate_jsonld {
-    my ($dbh, $date, $venue, $type, $leader, $band, $comments) = @_;
+    my ($dbh, $date, $venue, $type, $leader, $band, $comments,
+        $start_time, $end_time) = @_;
 
     my $nice_dance_type = ucfirst lc $type;
 
@@ -211,22 +216,22 @@ sub generate_jsonld {
 
     my $offer_url = "https://$ENV{HTTP_HOST}$ENV{DOCUMENT_URI}";
 
-    # questions;
-    # is startDate ok without the time? might need a different table with FK
-    #      from the schedule table
+    my $start = join 'T', $date, $start_time;
+    my $end   = join 'T', $date, $end_time;
+
     return <<EOL;
 <script type="application/ld+json">
 {
     "\@context":"http://schema.org",
     "\@type":["Event","DanceEvent"],
     "name":"$nice_dance_type Dancing, calling by $leader to the music of $band",
-    "startDate":"$date",
-    "endDate":"$date",
+    "startDate":"$start",
+    "endDate":"$end",
     "organizer":
     {
         "\@context":"http://schema.org",
         "\@type":"Organization",
-        "name":"Bay Areay Country Dance Society",
+        "name":"Bay Area Country Dance Society",
         "url":"https://www.bacds.org/"
     },
     "location":

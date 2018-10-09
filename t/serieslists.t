@@ -95,7 +95,7 @@ stdout_like {
 
 # *****************
 # single event, with json-ld
-$ENV{QUERY_STRING} = 'single-event=2018-09-18&venue=ASE';
+$ENV{QUERY_STRING} = 'single-event=2018-09-18&venue=ASE&starttime=18:00&endtime=22:00';
 #2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
 stdout_like {
     do 'bin/serieslists.pl';
@@ -119,14 +119,14 @@ stdout_like {
     "\@context":"http://schema.org",
     "\@type":."Event","DanceEvent".,
     "name":"English Dancing, calling by Alan Winston to the music of Audrey Knuth, Christopher Jacoby, Bill Jensen",
-    "startDate":"2018-09-18",
-    "endDate":"2018-09-18",
+    "startDate":"2018-09-18T18:00",
+    "endDate":"2018-09-18T22:00",
     "organizer":
     {
         "\@context":"http://schema.org",
         "\@type":"Organization",
-        "name":"Bay Areay Country Dance Society",
-        "url":"http://www.bacds.org/"
+        "name":"Bay Area Country Dance Society",
+        "url":"https://www.bacds.org/"
     },
     "location":
     {
@@ -144,7 +144,7 @@ stdout_like {
 
 # *****************
 # crap, need to support multiple venues
-$ENV{QUERY_STRING} = 'single-event=2018-09-18&venues=CCB,ASE,USA,WTFBBQLOL';
+$ENV{QUERY_STRING} = 'single-event=2018-09-18&venues=CCB,ASE,USA,WTFBBQLOL&starttime=19:30&endtime=23:00';
 #2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
 stdout_like {
     do 'bin/serieslists.pl';
@@ -167,14 +167,14 @@ stdout_like {
     "\@context":"http://schema.org",
     "\@type":."Event","DanceEvent".,
     "name":"English Dancing, calling by Alan Winston to the music of Audrey Knuth, Christopher Jacoby, Bill Jensen",
-    "startDate":"2018-09-18",
-    "endDate":"2018-09-18",
+    "startDate":"2018-09-18T19:30",
+    "endDate":"2018-09-18T23:00",
     "organizer":
     {
         "\@context":"http://schema.org",
         "\@type":"Organization",
-        "name":"Bay Areay Country Dance Society",
-        "url":"http://www.bacds.org/"
+        "name":"Bay Area Country Dance Society",
+        "url":"https://www.bacds.org/"
     },
     "location":
     {
