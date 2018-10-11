@@ -265,35 +265,29 @@ sub generate_jsonld {
     "offers": [ {
         "\@type":"Offer",
         "name": "supporters",
-        "price":"20",
+        "price":"\$20 (please check actual prices at the door)",
         "priceCurrency": "USD",
         "url":"$offer_url",
         "validFrom":"$date",
-        "availability": "please check actual prices at the door"
     },{
         "\@type":"Offer",
         "name": "non-members",
-        "price":"12",
+        "price":"\$12 (please check actual prices at the door)",
         "priceCurrency": "USD",
         "url":"$offer_url",
         "validFrom":"$date",
-        "availability": "please check actual prices at the door"
     },{
         "\@type":"Offer",
         "name": "members",
-        "price":"10",
-        "priceCurrency": "USD",
+        "price":"\$10 (please check actual prices at the door)",
         "url":"$offer_url",
         "validFrom":"$date",
-        "availability": "please check actual prices at the door"
     },{
         "\@type":"Offer",
         "name": "students or low-income or pay what you can",
-        "price":"6",
-        "priceCurrency": "USD",
+        "price":"\$6 (please check actual prices at the door)",
         "url":"$offer_url",
         "validFrom":"$date",
-        "availability": "please check actual prices at the door"
     }
     ]
 }
