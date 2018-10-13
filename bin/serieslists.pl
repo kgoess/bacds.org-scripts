@@ -268,26 +268,26 @@ sub generate_jsonld {
         "price":"\$20 (please check actual prices at the door)",
         "priceCurrency": "USD",
         "url":"$offer_url",
-        "validFrom":"$date",
+        "validFrom":"$date"
     },{
         "\@type":"Offer",
         "name": "non-members",
         "price":"\$12 (please check actual prices at the door)",
         "priceCurrency": "USD",
         "url":"$offer_url",
-        "validFrom":"$date",
+        "validFrom":"$date"
     },{
         "\@type":"Offer",
         "name": "members",
         "price":"\$10 (please check actual prices at the door)",
         "url":"$offer_url",
-        "validFrom":"$date",
+        "validFrom":"$date"
     },{
         "\@type":"Offer",
         "name": "students or low-income or pay what you can",
         "price":"\$6 (please check actual prices at the door)",
         "url":"$offer_url",
-        "validFrom":"$date",
+        "validFrom":"$date"
     }
     ]
 }
