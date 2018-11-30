@@ -2,7 +2,10 @@
 ##
 ## Find out what dances are happening in the next week.
 ##
-##
+## This file is being tracked in git. Do a 'git clone /var/lib/git/bacds.org-scripts/'
+## to check out the repository, do your edits there, and copy the file into place
+## at /var/www/bacds.org/public_html/scripts/dancefinder.pl, or type "make install".
+#
 use strict;
 use Time::Local;
 use Date::Format;
@@ -476,10 +479,11 @@ ENDJSON
         else {
 	       print ", " . $st_yr;
         }
-	    
+
+		my $schemeless_danceurl = $danceurl ? $danceurl =~ s/^https?://r : '';
 		print ": <strong>$type</strong> ";
 		print " at ";
-		print "<a href=\"" .$danceurl . "\">" if $danceurl;
+		print "<a href=\"" .$schemeless_danceurl . "\">" if $danceurl;
 		print $loc_hall;
 		print " in " . $loc_city;
 		print "</a>" if $danceurl;
