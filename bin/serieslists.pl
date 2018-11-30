@@ -197,7 +197,7 @@ sub build_single_event_query {
 
 # see https://schema.org/DanceEvent
 # and http://eceilidh.org.uk/cps/structured-data-applied-to-english-ceilidh-events.php
-# a userful testing tool: https://search.google.com/structured-data/testing-tool/u/0/
+# a useful testing tool: https://search.google.com/structured-data/testing-tool/u/0/
 #
 # example data from the schedule table:
 #     startday|endday|type|loc|leader|band|comments|name|stdloc|url
@@ -249,7 +249,7 @@ sub generate_jsonld {
             "addressCountry":"USA"
         }
     },
-    "description":"$nice_dance_type Dancing at $loc->{hall} in $loc->{city}. Everyone welcome, beginners and experts! No partner necessary. $comments",
+    "description":"$nice_dance_type Dancing at $loc->{hall} in $loc->{city}. Everyone welcome, beginners and experts! No partner necessary. $comments (Prices may vary for special events or workshops. Check the calendar or website for specifics.)",
     "image":"https://www.bacds.org/graphics/bacdsweblogomed.gif",
     "performer":
     [
@@ -265,28 +265,34 @@ sub generate_jsonld {
     "offers": [ {
         "\@type":"Offer",
         "name": "supporters",
-        "price":"\$20 (please check actual prices at the door)",
+        "price":"20.00",
         "priceCurrency": "USD",
         "url":"$offer_url",
+        "availability" : "http://schema.org/LimitedAvailability",
         "validFrom":"$date"
     },{
         "\@type":"Offer",
         "name": "non-members",
-        "price":"\$12 (please check actual prices at the door)",
+        "price":"12.00",
         "priceCurrency": "USD",
         "url":"$offer_url",
+        "availability" : "http://schema.org/LimitedAvailability",
         "validFrom":"$date"
     },{
         "\@type":"Offer",
         "name": "members",
-        "price":"\$10 (please check actual prices at the door)",
+        "price":"10.00",
+        "priceCurrency": "USD",
         "url":"$offer_url",
+        "availability" : "http://schema.org/LimitedAvailability",
         "validFrom":"$date"
     },{
         "\@type":"Offer",
         "name": "students or low-income or pay what you can",
-        "price":"\$6 (please check actual prices at the door)",
+        "price":"6.00",
+        "priceCurrency": "USD",
         "url":"$offer_url",
+        "availability" : "http://schema.org/LimitedAvailability",
         "validFrom":"$date"
     }
     ]
