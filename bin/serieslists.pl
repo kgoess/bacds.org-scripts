@@ -97,7 +97,11 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
     my ($date_yr, $date_mon, $date_day) = ($startday =~ /(\d+)-(\d+)-(\d+)/);
     my $wday = Day_of_Week($date_yr, $date_mon, $date_day);
     $date_day =~ s/^0//g if $date_day < 10;
-    $comments =~ s/\<q\>/"/g if $comments;
+    if ($comments) {
+        $comments =~ s/\<q\>/"/g;
+    } else {
+        $comments = "";
+    }
 
      $trailer = "\n";
         
@@ -118,6 +122,10 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         print qq{<a href="?single-event=$startday">\n};
         print Day_of_Week_to_Text($wday).", ".$mon_lst[$date_mon-1] . " " . $date_day. "\n";
         print qq{</a></b><br />\n};
+        my ($address) = lookup_address_for_vkey($dbh, $loc);
+        if ($address) {
+           print "$address->{hall}, $address->{address}, $address->{city} <br />\n";
+        }
         if ($leader) {
             print "Caller:  " . $leader . "<br />\n";
         }
@@ -208,6 +216,16 @@ sub build_single_event_query {
 sub generate_jsonld {
     my ($dbh, $date, $venue, $type, $leader, $band, $comments,
         $start_time, $end_time) = @_;
+
+    if (!$start_time) {
+        warn "missing start_time for $date $venue $type\n";
+        $start_time = '00:00:00';
+    }
+    if (!$end_time) {
+        warn "missing end_time for $date $venue $type\n";
+        $end_time = '00:00:00';
+    }
+        
 
     my $nice_dance_type = ucfirst lc $type;
 
