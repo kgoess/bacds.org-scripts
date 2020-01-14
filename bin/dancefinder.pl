@@ -585,10 +585,24 @@ sub get_event_url {
 		    $eventurl = "oakland" if $type =~ /CEILIDH/;
 	        }
 	    
-	        if ($loc eq "FSJ") {
+	        if ($loc eq "FSJ"  || $loc eq "COY") {
 		    $eventurl = "san_jose" if $type =~ /CONTRA/;
 		    $eventurl = "san_jose" if $type =~ /ENGLISH/;
 		}
+
+                if ($loc eq "SME") {
+                               ## Get the day of week
+                                ($yr, $mon, $day) =
+                                    ($date =~ /(\d+)-(\d+)-(\d+)/);
+                                $wday = Day_of_Week($yr, $mon, $day);
+                                if ($wday == 5) {
+                                    $eventurl = "palo_alto_reg";
+
+                                } else {
+                                $eventurl = "peninsula"; 
+                                }
+                }
+
 		# Grace North Church/Christ Church Berkeley should be the only location at this point.
 		if ($loc eq "GNC" || $loc eq "STALB" || $loc eq "STC"|| $loc eq "CCB" || $loc eq "FUO"  || $loc eq "FBH"  || $loc eq "CRO" ) {
 			# Only one CONTRA series uses the hall
