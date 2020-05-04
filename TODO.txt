@@ -1,0 +1,14 @@
+From google Thu, Apr 30, 1:26 PM (3 days ago)
+
+	Add the new organizer property to your Event items on https://www.bacds.org/
+
+	Many events are now being hosted in virtual format, without a venue or location. In order to enable event organizers to provide more context to potential attendees, Google has added a new, optional property to Event items: organizer.
+
+	This new property is especially important for online events, where there isn't any venue information. When using this property, we recommend specifying at minimum the organizer.name and organizer.url subproperties.
+
+	Need more help?
+
+	•	Ensure that your Event items follow both the Event developer guidelines and Google's structured data guidelines and policies.
+	•	Read our Events FAQ page for answers to commonly asked questions.
+	•	Use the Rich Results Test to test your Event code. Make sure that you use a unique URL for each Event.
+	•	Ask questions in our forum for more help - mention message type [WNC-20119346].
