@@ -4,6 +4,7 @@
 use 5.14.0;
 use warnings;
 
+use Test::Differences qw/eq_or_diff/;
 use Test::More tests => 8;
 use Test::Output qw/stdout_like stdout_is/;
 
@@ -105,6 +106,7 @@ stdout_like {
 <a href="\?single-event=2018-09-18">
 Tuesday, September 18
 </a></b><br />
+All Saints Episcopal Church, 555 Waverley St, Palo Alto <br />
 Caller:  Alan Winston<br />
 Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 </p>
@@ -121,6 +123,8 @@ stdout_like {
     "name":"English Dancing, calling by Alan Winston to the music of Audrey Knuth, Christopher Jacoby, Bill Jensen",
     "startDate":"2018-09-18T18:00",
     "endDate":"2018-09-18T22:00",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
     "organizer":
     {
         "\@context":"http://schema.org",
@@ -138,8 +142,9 @@ stdout_like {
             "\@type":"PostalAddress",
             "streetAddress":"555 Waverley St",
             "addressLocality":"Palo Alto",
-.*"description":"English Dancing at All Saints Episcopal Church in Palo Alto. Everyone welcome, beginners and experts! No partner necessary. Say Yes to Hambo!",
+.*"description":"English Dancing at All Saints Episcopal Church in Palo Alto. Everyone welcome, beginners and experts! No partner necessary. Say Yes to Hambo!.*
 ]ms, 'single event handling json-ld';
+
 
 
 # *****************
@@ -154,10 +159,12 @@ stdout_like {
 <a href="\?single-event=2018-09-18">
 Tuesday, September 18
 </a></b><br />
+All Saints Episcopal Church, 555 Waverley St, Palo Alto <br />
 Caller:  Alan Winston<br />
 Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 </p>
 }ms, 'single event handling';
+
 
 stdout_like {
     do 'bin/serieslists.pl';
@@ -169,6 +176,8 @@ stdout_like {
     "name":"English Dancing, calling by Alan Winston to the music of Audrey Knuth, Christopher Jacoby, Bill Jensen",
     "startDate":"2018-09-18T19:30",
     "endDate":"2018-09-18T23:00",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
     "organizer":
     {
         "\@context":"http://schema.org",
@@ -186,7 +195,7 @@ stdout_like {
             "\@type":"PostalAddress",
             "streetAddress":"555 Waverley St",
             "addressLocality":"Palo Alto",
-.*"description":"English Dancing at All Saints Episcopal Church in Palo Alto. Everyone welcome, beginners and experts! No partner necessary. Say Yes to Hambo!",
+.*"description":"English Dancing at All Saints Episcopal Church in Palo Alto. Everyone welcome, beginners and experts! No partner necessary. Say Yes to Hambo!.*
 ]ms, 'single event handling json-ld';
 
 
