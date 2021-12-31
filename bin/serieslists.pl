@@ -237,6 +237,15 @@ sub generate_jsonld {
     my $start = join 'T', $date, $start_time;
     my $end   = join 'T', $date, $end_time;
 
+
+    # new fields eventAttendanceMode: could be Offline, Online or Mixed
+    # new field eventStatus could be:
+    # 		EventCancelled
+    # 		EventMovedOnline
+    # 		EventPostponed
+    # 		EventRescheduled
+    # 		EventScheduled
+    # just hard-coding them to start with
     return <<EOL;
 <script type="application/ld+json">
 {
@@ -245,6 +254,8 @@ sub generate_jsonld {
     "name":"$nice_dance_type Dancing, calling by $leader to the music of $band",
     "startDate":"$start",
     "endDate":"$end",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
     "organizer":
     {
         "\@context":"http://schema.org",
