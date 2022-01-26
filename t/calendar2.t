@@ -8,7 +8,7 @@ use Capture::Tiny qw/capture/;
 use File::Basename qw/basename/;
 use File::Temp qw/tempfile/;
 use Test::Differences qw/eq_or_diff/;
-use Test::More tests => 8;
+use Test::More tests => 2;
 use Test::Output qw/stdout_like stdout_is/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';

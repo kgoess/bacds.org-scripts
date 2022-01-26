@@ -19,6 +19,9 @@ use Date::Day;
 use DBI;
 use CGI;
 
+my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+my $TEST_TODAY = $ENV{TEST_TODAY};
+
 my ($dbh, $loc_dbh, $sth, $loc_sth);
 my ($startday,$endday,$type,$loc,$leader,$band,$comments);
 my ($st_day, $st_mon, $st_yr, $end_day, $end_mon, $end_yr);
@@ -84,7 +87,8 @@ my $q = new CGI;
 ##                 with the value of jsonobject
 ##    sdate - if given, we start with sdate (yyyy-nn-dd) rather than today
 ##    edate - if given, we use edate rather than sdate+numdays
-##    start - unix time stamp which we'll translate to sdate (support json feed for fullcalendar.js)
+##    start - unix time stamp which we'll translate to sdate (support json feed
+##            for fullcalendar.js)
 ##     end  - unix time stamp which we'll translte edate (as above)
 ##
 
@@ -162,7 +166,7 @@ if ($end ne ""){
 ##
 ## First, get the current date.
 ##
-($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+($today_day, $today_mon, $today_year) = my_localtime();
 $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
 $today_mon = "0$today_mon" if $today_mon < 10;
@@ -250,7 +254,7 @@ print STDERR "DANCEFINDER.PL QUERY: ", $qrystr, "\n";
 ##
 ## Set up the table and make the query
 ##
-$dbh = DBI->connect("DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\",'','');
+$dbh = get_dbh();
 # get number of rows
 $sth = $dbh->prepare($cqrystr);
 $sth->execute();
@@ -368,7 +372,7 @@ if ($numrows) {
         $st_mon =~ s/^0//g if $st_mon < 10;
 
         # Get location information
-        $loc_dbh = DBI->connect("DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\",'','');
+        $loc_dbh = get_dbh();
         $loc_qry = "SELECT * FROM venue";
         $loc_qry .= " WHERE vkey = '" . $loc . "'";
         $loc_sth = $loc_dbh->prepare($loc_qry);
@@ -667,5 +671,27 @@ sub get_hall_name_city {
         $loc_city = $city;
     }
     ($loc_hall, $loc_city);
+}
+
+
+sub my_localtime {
+    if ($TEST_TODAY) {
+        my ($year, $mon, $day) = split '-', $TEST_TODAY;
+        $mon--;
+        if ($mon < 0) {
+            $mon = 11;
+        }
+        $year -= 1900;
+        return $day, $mon, $year;
+    } else {
+        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+        return $today_day, $today_mon, $today_year;
+    }
+}
+
+sub get_dbh {
+    return DBI->connect(
+        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
+    );
 }
 # vim: ts=4 sw=4 et
