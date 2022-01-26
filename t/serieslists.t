@@ -13,7 +13,7 @@ $ENV{TEST_TODAY} = '2018-09-06';
 
 $ENV{QUERY_STRING} = 'styles=CONTRA,HAMBO&venues=HVC&day=Sun';
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr{
     2018-09-23-CONTRA.*
     Sunday,.September.23.*
@@ -36,7 +36,7 @@ die $@ if $@;
 # multiple venues
 $ENV{QUERY_STRING} = 'venues=COY,FSJ&day=Sun&style=ENGLISH';
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr{
 2018-09-09-ENGLISH.*
 Sunday,.September.9.*
@@ -55,7 +55,7 @@ Band:..schedule.not.yet.published.*
 # multiple venues, multiple styles
 $ENV{QUERY_STRING} = 'styles=ENGLISH,ECDWORKSHOP&venues=STC,CCB,STALB&day=Wed';
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr{
     <!--.TYPE.=.ENGLISH/WORKSHOP.-->.*
     <div.class="workshop">.*
@@ -78,7 +78,7 @@ stdout_like {
 # multiple days
 $ENV{QUERY_STRING} = 'style=ENGLISH&venues=ASE,FBC,MT,FHL,SME&day=Tue&day2=Wed&day3=Thu';
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr{
     2018-09-18-ENGLISH.*
     Tuesday,.September.18.*
@@ -99,7 +99,7 @@ stdout_like {
 $ENV{QUERY_STRING} = 'single-event=2018-09-18&venue=ASE&starttime=18:00&endtime=22:00';
 #2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr{^<a name="2018-09-18-ENGLISH"></a>
 <p class="dance">
 <b class="date">
@@ -114,7 +114,7 @@ Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 
 
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr[
 <script type="application/ld\+json">
 {
@@ -124,7 +124,7 @@ stdout_like {
     "startDate":"2018-09-18T18:00",
     "endDate":"2018-09-18T22:00",
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-    "eventStatus": "https://schema.org/EventScheduled",
+    "eventStatus": "https://schema.org/Event(Scheduled|Cancelled)",
     "organizer":
     {
         "\@context":"http://schema.org",
@@ -152,7 +152,7 @@ stdout_like {
 $ENV{QUERY_STRING} = 'single-event=2018-09-18&venues=CCB,ASE,USA,WTFBBQLOL&starttime=19:30&endtime=23:00';
 #2018-09-18||ENGLISH|ASE|Alan Winston|Audrey Knuth, Christopher Jacoby, Bill Jensen
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr{^<a name="2018-09-18-ENGLISH"></a>
 <p class="dance">
 <b class="date">
@@ -167,7 +167,7 @@ Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 
 
 stdout_like {
-    do 'bin/serieslists.pl';
+    do 'scripts/serieslists.pl';
 } qr[
 <script type="application/ld\+json">
 {
@@ -177,7 +177,7 @@ stdout_like {
     "startDate":"2018-09-18T19:30",
     "endDate":"2018-09-18T23:00",
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-    "eventStatus": "https://schema.org/EventScheduled",
+    "eventStatus": "https://schema.org/Event(Scheduled|Cancelled)",
     "organizer":
     {
         "\@context":"http://schema.org",
