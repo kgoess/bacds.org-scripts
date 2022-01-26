@@ -4,7 +4,7 @@ help:
 
 install:
 	cp scripts/*.pl /var/www/bacds.org/public_html/scripts/
-	cp cgi-bin/dancefinder.cgi /var/www/bacds.org/cgi-bin/dancefinder.cgi
+	cp cgi-bin/*.cgi /var/www/bacds.org/cgi-bin/
 
 test:
 	prove t
