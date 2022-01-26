@@ -52,8 +52,8 @@ my ($loc_hall, $loc_addr, $loc_city, $loc_ven_comment);
 ($today_day, $today_mon, $today_year) = my_localtime();
 $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
-$today_mon = "0$today_mon" if $today_mon < 10;
-$today_day = "0$today_day" if $today_day < 10;
+$today_mon = sprintf "%02d", $today_mon;
+$today_day = sprintf "%02d", $today_day;
 $today_year += 1900;
 $today = "$today_year-$today_mon-$today_day";
 

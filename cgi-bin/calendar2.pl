@@ -46,11 +46,11 @@ sub db_venue_lookup {
 	#
 	$sched_qrystr = "SELECT loc FROM $TableChoice";
 	$sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$sched_qrystr .= "0" if ($smon < 10);
-	$sched_qrystr .= $smon . "%'";
+	$sched_qrystr .= sprintf "%02d", $smon;
+	$sched_qrystr .= "%'";
 	$sched_qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$sched_qrystr .= "0" if ($emon < 10);
-	$sched_qrystr .= $emon . "%'";
+	$sched_qrystr .= sprintf "%02d", $emon;
+	$sched_qrystr .= "%'";
 	$sth = $dbh->prepare($sched_qrystr);
 	$sth->execute;
 	while (($venue) = $sth->fetchrow_array()) {
@@ -457,11 +457,11 @@ sub db_loc_lookup {
 	#
 	$sched_qrystr = "SELECT loc FROM $TableChoice";
 	$sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$sched_qrystr .= "0" if ($smon < 10);
-	$sched_qrystr .= $smon . "%'";
+	$sched_qrystr .= sprintf "%02d", $smon;
+	$sched_qrystr .= "%'";
 	$sched_qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$sched_qrystr .= "0" if ($emon < 10);
-	$sched_qrystr .= $emon . "%'";
+	$sched_qrystr .= sprintf "%02d", $emon;
+	$sched_qrystr .= "%'";
 	$sth = $dbh->prepare($sched_qrystr);
 	$sth->execute;
 	while (($venue) = $sth->fetchrow_array()) {
@@ -506,11 +506,11 @@ sub db_style_lookup {
 	#
 	$sched_qrystr = "SELECT type FROM $TableChoice";
 	$sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$sched_qrystr .= "0" if ($smon < 10);
-	$sched_qrystr .= $smon . "%'";
+	$sched_qrystr .= sprintf "%02d", $smon;
+	$sched_qrystr .= "%'";
 	$sched_qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$sched_qrystr .= "0" if ($emon < 10);
-	$sched_qrystr .= $emon . "%'";
+	$sched_qrystr .= sprintf "%02d", $emon;
+	$sched_qrystr .= "%'";
 	$sth = $dbh->prepare($sched_qrystr);
 	$sth->execute;
 	while (($style) = $sth->fetchrow_array()) {
@@ -567,11 +567,11 @@ sub db_leader_lookup {
 	#
 	$qrystr = "SELECT leader FROM $TableChoice";
 	$qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$qrystr .= "0" if ($smon < 10);
-	$qrystr .= $smon . "%'";
+	$qrystr .= sprintf "%02d", $smon;
+	$qrystr .= "%'";
 	$qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$qrystr .= "0" if ($emon < 10);
-	$qrystr .= $emon . "%'";
+	$qrystr .= sprintf "%02d", $emon;
+	$qrystr .= "%'";
 	$sth = $dbh->prepare($qrystr);
 	$sth->execute;
 	while (($ldr) = $sth->fetchrow_array()) {
@@ -612,11 +612,11 @@ sub db_muso_lookup {
 	#
 	$qrystr = "SELECT band FROM $TableChoice";
 	$qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$qrystr .= "0" if ($smon < 10);
-	$qrystr .= $smon . "%'";
+	$qrystr .= sprintf "%02d", $smon;
+	$qrystr .= "%'";
 	$qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$qrystr .= "0" if ($emon < 10);
-	$qrystr .= $emon . "%'";
+	$qrystr .= sprintf "%02d", $emon;
+	$qrystr .= "%'";
 	$sth = $dbh->prepare($qrystr);
 	$sth->execute;
 	while (($band) = $sth->fetchrow_array()) {
@@ -688,11 +688,11 @@ sub db_sched_lookup {
 	$qrystr = "SELECT ".
      "startday, endday, type, loc, leader, band, comments FROM $TableChoice";
 	$qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$qrystr .= "0" if ($smon < 10);
-	$qrystr .= $smon . "%'";
+	$qrystr .= sprintf "%02d", $smon;
+	$qrystr .= "%'";
 	$qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$qrystr .= "0" if ($emon < 10);
-	$qrystr .= $emon . "%'";
+	$qrystr .= sprintf "%02d", $emon;
+	$qrystr .= "%'";
 	$sth = $dbh->prepare($qrystr);
 	$sth->execute;
 	while (($stday,$endday,$typ,$loc,$ldr,$band,$cmts) = $sth->fetchrow_array()) {
