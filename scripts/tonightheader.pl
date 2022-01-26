@@ -18,6 +18,9 @@ use Date::Day;
 use DBI;
 use CGI;
 
+my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+my $TEST_TODAY = $ENV{TEST_TODAY};
+
 my ($dbh, $loc_dbh, $sth, $loc_sth);
 my ($startday,$endday,$type,$loc,$leader,$band,$comments);
 my ($st_day, $st_mon, $st_yr, $end_day, $end_mon, $end_yr);
@@ -46,28 +49,13 @@ $outputtype = $data if (defined($varname) && $varname eq "outputtype");
 ##
 ## First, get the current date.
 ##
-($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+($today_day, $today_mon, $today_year) = my_localtime();
 $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
-$today_mon = "0$today_mon" if $today_mon < 10;
-$today_day = "0$today_day" if $today_day < 10;
+$today_mon = sprintf "%02d", $today_mon;
+$today_day = sprintf "%02d", $today_day;
 $today_year += 1900;
 $today = "$today_year-$today_mon-$today_day";
-$numdays = 1;
-
-if ($numdays) {
-            ##
-            ## Now figure out what the date will be tomorrow
-            ##
-            $last_sec = $today_sec + (86400 * $numdays);
-            ($last_day, $last_mon, $last_year) = (localtime($last_sec))[3,4,5];
-            $last_mon++;
-            $last_mon = "0$last_mon" if $last_mon < 10;
-            $last_day = "0$last_day" if $last_day < 10;
-            $last_year += 1900;
-            $last = "$last_year-$last_mon-$last_day";
-    
-    }
 
 ##
 ## Now build our query string
@@ -75,25 +63,21 @@ if ($numdays) {
 $cqrystr = "SELECT COUNT(*) FROM schedule";
 #
 $qrydif .= " WHERE startday = '" . $today . "'";
-$qrydif .= " AND startday < '" . $last . "'" if ($numdays > 1);
 
 $cqrystr .= $qrydif;
+
 #print STDERR "tonightheader.pl:  ", $cqrystr, "\n";
 
 ##
 ## Set up the table and make the query
 ##
-$dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+$dbh = get_dbh();
 # get number of rows
 $sth = $dbh->prepare($cqrystr);
 $sth->execute();
 ($numrows) = $sth->fetchrow_array();
 
-if ($numrows) {
-    ($numrows == 1) ? $plural = " " : $plural = "s";
-    
-		  
-}
+$plural = $numrows > 1 ? "s" : "";
 
 ##
 ## Print out results
@@ -136,3 +120,24 @@ if (!$outputtype || ($outputtype && ($outputtype !~ /inline/i))) {
 ENDHTML
 }
 
+
+sub my_localtime {
+    if ($TEST_TODAY) {
+        my ($year, $mon, $day) = split '-', $TEST_TODAY;
+        $mon--;
+        if ($mon < 0) {
+            $mon = 11;
+        }
+        $year -= 1900;
+        return $day, $mon, $year;
+    } else {
+        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+        return $today_day, $today_mon, $today_year;
+    }
+}
+
+sub get_dbh {
+    return DBI->connect(
+        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
+    );
+}
