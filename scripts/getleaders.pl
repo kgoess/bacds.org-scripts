@@ -8,6 +8,9 @@ use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
 use DBI;
 
+my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+my $TEST_TODAY = $ENV{TEST_TODAY};
+
 my ($dbh, $loc_dbh, $sth, $loc_sth);
 my ($startday,$endday,$type,$loc,$leader,$band,$comments);
 my ($today_year,$today_mon,$today_day,$today, $today_sec);
@@ -53,7 +56,7 @@ my ($loc_hall, $loc_addr, $loc_city, $loc_ven_comment);
 ##
 ## First, get the current date.
 ##
-($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+($today_day, $today_mon, $today_year) = my_localtime();
 $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
 $today_mon = "0$today_mon" if $today_mon < 10;
@@ -94,7 +97,7 @@ $qrystr .= " AND leader IS NOT NULL";
 ##
 ## Set up the table and make the query
 ##
-$dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+$dbh = get_dbh();
 # get schedule info
 $sth = $dbh->prepare($qrystr);
 $sth->execute();
@@ -103,13 +106,14 @@ $sth->execute();
 ## Pull out caller names
 ##
 #print "content-type: text/html\n\n";
-while (($startday,$endday,$type,$loc,$leader,$band,$comments,$loc_type) = $sth->fetchrow_array()) {
+while (($startday, $endday, $type, $loc, $leader, $band, $comments, $loc_type)
+	 = $sth->fetchrow_array()
+) {
 	#
 	# If leader has a location code, nuke it
 	#
-	$_ = $leader;
-	s/ \[[^\]]+\].*//g;
-	@clst = split(/, /,$_);
+	$leader =~ s/ \[[^\]]+\].*//g;
+	@clst = split(/, /, $leader);
 	foreach $i (@clst) {
 		$leaderhash{$i} = $i if ! $leaderhash{$i};
 	}
@@ -122,3 +126,24 @@ foreach $i (sort keys %leaderhash) {
 	print "    <option value=\"$i\">" . $i . "</option>\n";
 }
 print "</select>\n";
+
+sub my_localtime {
+    if ($TEST_TODAY) {
+        my ($year, $mon, $day) = split '-', $TEST_TODAY;
+        $mon--;
+        if ($mon < 0) {
+            $mon = 11;
+        }
+        $year -= 1900;
+        return $day, $mon, $year;
+    } else {
+        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+        return $today_day, $today_mon, $today_year;
+    }
+}
+
+sub get_dbh {
+    return DBI->connect(
+        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
+    );
+}

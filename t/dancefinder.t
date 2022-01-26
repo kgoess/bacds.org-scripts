@@ -1,5 +1,3 @@
-# some basic tests for serieslists.pl as I change it around
-
 
 use 5.14.0;
 use warnings;
@@ -35,8 +33,8 @@ my $expected = decode_json(q{
       "title" : "ENGLISH at Christ Church Berkeley (formerly Grace North Church) in Berkeley.  Led by Bruce Hamilton.  Music by Open band led by Audrey Knuth, Judy Linsenberg, Patti Cobb.",
       "allDay" : true,
       "backgroundColor" : "darkturquoise",
-          "borderColor" : "darkblue",
-          "textColor" : "black"
+      "borderColor" : "darkblue",
+      "textColor" : "black"
     }
 });
 eq_or_diff $dance, $expected, "dancefinder.pl looks like it's working";

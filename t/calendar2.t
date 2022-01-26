@@ -1,5 +1,3 @@
-# some basic tests for serieslists.pl as I change it around
-
 
 use 5.14.0;
 use warnings;
