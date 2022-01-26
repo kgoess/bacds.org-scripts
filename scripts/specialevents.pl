@@ -9,6 +9,9 @@ use Time::Local;
 use DBI;
 use Date::Day;
 
+my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+my $TEST_TODAY = $ENV{TEST_TODAY};
+
 my ($dbh, $loc_dbh, $sth, $loc_sth);
 my ($startday,$endday,$type,$loc,$leader,$band,$comments, 
     $name, $stdloc, $dburl, $dbtime);
@@ -46,7 +49,7 @@ my ($loc_hall, $loc_addr, $loc_city, $loc_ven_comment);
 ##
 ## First, get the current date.
 ##
-($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+($today_day, $today_mon, $today_year) = my_localtime();
 $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
 $today_mon = "0$today_mon" if $today_mon < 10;
@@ -69,13 +72,13 @@ $qrystr .= " AND ( type LIKE '%CAMP%' OR type LIKE '%SPECIAL%' ) )";
 ##
 ## Set up the table and make the query
 ##
-$dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
-$loc_dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+$dbh = get_dbh();
+$loc_dbh = get_dbh();
 $sth = $dbh->prepare($qrystr)
     or die "prepare: " . $dbh->errstr();
 $sth->execute();
-$sth->bind_columns(\$startday,\$endday,\$type,\$loc,\$leader,\$band,\$comments,
-                   \$name,\$stdloc,\$dburl,\$dbtime)
+$sth->bind_columns(\$startday, \$endday, \$type, \$loc, \$leader, \$band, \$comments, 
+                   \$name, \$stdloc, \$dburl)
     or die "bind_columns: " . $dbh->errstr();
 ##
 ## Print out results
@@ -151,3 +154,24 @@ print "\n<!-- band=\"" . $band . "\" -->\n";
 	print "</p>\n";
 }
 $sth->finish();
+
+sub my_localtime {
+    if ($TEST_TODAY) {
+        my ($year, $mon, $day) = split '-', $TEST_TODAY;
+        $mon--;
+        if ($mon < 0) {
+            $mon = 11;
+        }
+        $year -= 1900;
+        return $day, $mon, $year;
+    } else {
+        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+        return $today_day, $today_mon, $today_year;
+    }
+}
+
+sub get_dbh {
+    return DBI->connect(
+        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
+    );
+}
