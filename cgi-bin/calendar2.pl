@@ -1,4 +1,4 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/perl
 #
 # calendar.pl -- print calendar of BACDS events.
 #
@@ -6,16 +6,24 @@
 # 2003-04-27
 #
 # 2020-11-24 edb comments: ignore lines starting with '#'
+#
+## This file is being tracked in git. DON'T MAKE IN-PLACE EDITS AND
+## EXPECT THEM TO SURVIVE.
+## To clone the repo, add yourself to the "git" group
+#  "sudo usermod -a -G git <username>" 
+## and then do "git clone /var/lib/git/bacds.org-scripts/"
 
 use strict;
+use warnings;
 use CGI qw/:standard :html3 :html4 *table *Tr *td *div/;
 use CGI::Carp;
 use Date::Calc qw(Today Days_in_Month Day_of_Week Month_to_Text);
 use DBI;
 
-our $TableChoice;
+my $TableChoice;
 
-# subs used in this code
+my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+my $TEST_TODAY = $ENV{TEST_TODAY};
 
 sub db_venue_lookup {
 	my ($syear, $smon, $eyear, $emon, $refloclst) = @_;
@@ -31,9 +39,7 @@ sub db_venue_lookup {
 	my $comment;
 	my %lochash;
 
-	## XXX -- need better way of handling this.
-	my $dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
-
+	my $dbh = get_dbh();
     
 	#
 	# First, figure out what venues we're using this month
@@ -112,7 +118,7 @@ sub print_schedule {
 	$div_start = 0;
 
 
-	my ($tyear, $tmon, $tday) = Today();
+	my ($tyear, $tmon, $tday) = my_today();
 
 	print start_table();
 	print start_Tr;
@@ -296,7 +302,7 @@ sub print_date {
 	my ($dow, $cyr, $cmon, $cdom, $datelnk) = @_;
 	my $dstr;
 
-	my ($tyear, $tmon, $tday) = Today();
+	my ($tyear, $tmon, $tday) = my_today();
 
 	print start_Tr() if ($dow == 0);
 	print start_td({-class => 'calendar'});
@@ -444,8 +450,7 @@ sub db_loc_lookup {
 	my $addr;
 	my $city;
     
-	## XXX -- need better way of handling this.
-	my $dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+	my $dbh = get_dbh();
 
 	#
 	# First, figure out what venues we're using this month
@@ -495,8 +500,7 @@ sub db_style_lookup {
 	my $style;
 	my $desc;
 
-	## XXX -- need better way of handling this.
-	my $dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+	my $dbh = get_dbh();
 	#
 	# First, figure out what styles are being danced this month
 	#
@@ -557,8 +561,7 @@ sub db_leader_lookup {
 	my $ldr;
 	my %ldr_hash;
 
-	## XXX -- need better way of handling this.
-	my $dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+	my $dbh = get_dbh();
 	#
 	# First, figure out what styles are being danced this month
 	#
@@ -603,8 +606,7 @@ sub db_muso_lookup {
 	my %musohash;
 	my @mlst;
 
-	## XXX -- need better way of handling this.
-	my $dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+	my $dbh = get_dbh();
 	#
 	# First, figure out what styles are being danced this month
 	#
@@ -680,8 +682,7 @@ sub db_sched_lookup {
 	my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts);
 	my @mlst;
 
-	## XXX -- need better way of handling this.
-	my $dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+	my $dbh = get_dbh();
 	#
 	# First, figure out what dances are being danced this month
 	$qrystr = "SELECT ".
@@ -712,8 +713,8 @@ sub main {
 
 	print header();
 
-	my ($cur_start_year, $cur_start_mon) = Today();
-	my ($cur_end_year, $cur_end_mon) = Today();
+	my ($cur_start_year, $cur_start_mon) = my_today();
+	my ($cur_end_year, $cur_end_mon) = my_today();
 
 	$TableChoice = 'schedule';
 
@@ -728,8 +729,8 @@ sub main {
 					$url_mon = $_;
 				}
 				if ($url_yr eq "current") {
-					($cur_start_year, $cur_start_mon) = Today();
-					($cur_end_year, $cur_end_mon) = Today();
+					($cur_start_year, $cur_start_mon) = my_today();
+					($cur_end_year, $cur_end_mon) = my_today();
 				} else {
 						if ($url_yr < $cur_start_year) {
 						  $TableChoice = 'schedule'.$url_yr;
@@ -742,8 +743,8 @@ sub main {
 					
 				}
 				   } else {
-				($cur_start_year, $cur_start_mon) = Today();
-				($cur_end_year, $cur_end_mon) = Today();
+				($cur_start_year, $cur_start_mon) = my_today();
+				($cur_end_year, $cur_end_mon) = my_today();
 			}
 		}
 
@@ -806,5 +807,20 @@ sub main {
 		print end_html();
 
 }
+
+sub my_today {
+	my ($tyear, $tmon, $tday) =
+		$TEST_TODAY
+		? split '-', $TEST_TODAY
+		: Today();
+	return $tyear, $tmon, $tday;
+}
+
+sub get_dbh {
+	return DBI->connect(
+		qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
+	);
+}
+
 
 main();

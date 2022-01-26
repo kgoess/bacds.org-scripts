@@ -29,8 +29,6 @@ stdout_like {
     2018-12-30-CONTRA.*
 }msx, 'HVC contra looks ok';
 
-die $@ if $@;
-
 
 # **********
 # multiple venues
