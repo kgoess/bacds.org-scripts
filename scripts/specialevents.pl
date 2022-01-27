@@ -78,7 +78,7 @@ $sth = $dbh->prepare($qrystr)
     or die "prepare: " . $dbh->errstr();
 $sth->execute();
 $sth->bind_columns(\$startday, \$endday, \$type, \$loc, \$leader, \$band, \$comments, 
-                   \$name, \$stdloc, \$dburl)
+                   \$name, \$stdloc, \$dburl, \$dbtime)
     or die "bind_columns: " . $dbh->errstr();
 ##
 ## Print out results
