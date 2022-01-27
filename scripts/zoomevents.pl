@@ -10,6 +10,9 @@ use Time::Local;
 use DBI;
 use Date::Day;
 
+my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+my $TEST_TODAY = $ENV{TEST_TODAY};
+
 my ($dbh, $loc_dbh, $sth, $loc_sth);
 my ($startday,$endday,$type,$loc,$leader,$band,$comments, 
     $name,$stdloc,$dburl,$url,$photo,$performerurl,$pacifictime);
@@ -58,11 +61,11 @@ $comments = "";
 ##
 ## First, get the current date.
 ##
-($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+($today_day, $today_mon, $today_year) = my_localtime();
 $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
-$today_mon = "0$today_mon" if $today_mon < 10;
-$today_day = "0$today_day" if $today_day < 10;
+$today_mon = sprintf "%02d", $today_mon;
+$today_day = sprintf "%02d", $today_day;
 $today_year += 1900;
 $today = "$today_year-$today_mon-$today_day";
 
@@ -76,8 +79,8 @@ if ($numdays ne ""  && $numdays > 1) {
 	$last_sec = $today_sec + (86400 * ($numdays));
 	($last_day, $last_mon, $last_year) = (localtime($last_sec))[3,4,5];
 	$last_mon++;
-	$last_mon = "0$last_mon" if $last_mon < 10;
-	$last_day = "0$last_day" if $last_day < 10;
+	$last_mon = sprintf "%02d", $last_mon;
+	$last_day = sprintf "%02d", $last_day;
 	$last_year += 1900;
 	$last = "$last_year-$last_mon-$last_day";
 
@@ -104,8 +107,8 @@ $qrystr .= " AND ( type LIKE '%ZOOM%'  OR type LIKE '%ONLINE%' ) )";
 ##
 ## Set up the table and make the query
 ##
-$dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
-$loc_dbh = DBI->connect(qq[DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
+$dbh = get_dbh();
+$loc_dbh = get_dbh();
 $sth = $dbh->prepare($qrystr)
     or die "prepare: " . $dbh->errstr();
 $sth->execute();
@@ -227,3 +230,25 @@ print "\n<!-- band=\"" . $band . "\" -->\n";
 	print "</p>\n";
 }
 $sth->finish();
+
+
+sub my_localtime {
+    if ($TEST_TODAY) {
+        my ($year, $mon, $day) = split '-', $TEST_TODAY;
+        $mon--;
+        if ($mon < 0) {
+            $mon = 11;
+        }
+        $year -= 1900;
+        return $day, $mon, $year;
+    } else {
+        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
+        return $today_day, $today_mon, $today_year;
+    }
+}
+
+sub get_dbh {
+    return DBI->connect(
+        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
+    );
+}
