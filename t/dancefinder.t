@@ -19,7 +19,7 @@ $ENV{QUERY_STRING} = 'json=TRUE&start=1538005600&end=1540005600_=1540005600';
 my ($stdout, $stderr, $exit) = capture {
     do 'scripts/dancefinder.pl';
 };
-die "dancefinder.pl died: $stderr" if !$exit;
+die "dancefinder.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 my $decoded = decode_json($stdout);

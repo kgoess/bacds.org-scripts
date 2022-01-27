@@ -15,7 +15,7 @@ $ENV{TEST_TODAY} = '2018-09-06';
 my ($stdout, $stderr, $exit) = capture {
     do 'scripts/specialevents.pl';
 };
-die "specialevents.pl died: $stderr" if !$exit;
+die "specialevents.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 like $stdout, qr{<strong>ENGLISH/SPECIAL</strong> at Hillside Club in Berkeley.},

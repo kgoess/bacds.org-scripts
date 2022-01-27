@@ -16,7 +16,7 @@ $ENV{TEST_TODAY} = '2018-09-06';
 my ($stdout, $stderr, $exit) = capture {
     do 'scripts/getmusos.pl';
 };
-die "getmusos.pl died: $stderr" if !$exit;
+die "getmusos.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 like $stdout, qr{<option value="Nonesuch Country Dance Band">Nonesuch Country Dance Band</option>},

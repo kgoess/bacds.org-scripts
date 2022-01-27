@@ -18,7 +18,9 @@ $ENV{REQUEST_URI} = '/calendars/2018/09/index.pl';
 my ($stdout, $stderr, $exit) = capture {
 	do 'cgi-bin/calendar2.pl';
 };
-die $stderr if !$exit;
+die "calendar2.pl died: $@ $stderr" if !$exit;
+note $stderr if $stderr;
+
 
 
 my $result = reformat_result($stdout);

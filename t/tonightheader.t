@@ -24,7 +24,7 @@ $ENV{TEST_TODAY} = '2018-01-03';
 ($stdout, $stderr, $exit) = capture {
     do 'scripts/tonightheader.pl';
 };
-die "tonightheader.pl died: $stderr" if !$exit;
+die "tonightheader.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 like $stdout, qr{<h2>Today's Dance!</h2>},
