@@ -7,4 +7,4 @@ install:
 	cp cgi-bin/*.cgi /var/www/bacds.org/cgi-bin/
 
 test:
-	prove t
+	prove -r -Ilib t
