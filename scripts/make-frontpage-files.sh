@@ -2,6 +2,8 @@
 #
 # make-frontpage-files.sh
 #
+# This is called from cron, see "sudo crontab -u apache -e"
+#
 # Alan Winston
 # 2008-09-09
 #
@@ -31,12 +33,6 @@ REQUEST_METHOD="" QUERY_STRING="numdays=10&outputtype=INLINE" perl scripts/dance
 REQUEST_METHOD="" QUERY_STRING="numdays=18&outputtype=INLINE" perl scripts/dancefinder.pl  > 18day.html
 # new file for special event listings
 perl scripts/specialevents.pl > specialevents.html
-#
-# edb 3may20  add support for ZOOM dance type
-perl scripts/zoomevents.pl > zoomevents.html
-#
-#apw 23aug20 alternate ZOOM dance type
-perl scripts/zoomevents2.pl > zoomevents2.html
 #
 # edb 24jul20 touch home page to update timestamp to show it's fresh data
 touch index.html
