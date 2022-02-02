@@ -4,6 +4,8 @@ package bacds::Model::Utils;
 use warnings;
 use 5.16.0;
 
+use DBI;
+
 use parent qw( Exporter );
 
 our @EXPORT_OK = qw/

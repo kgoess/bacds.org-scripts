@@ -6,13 +6,12 @@ use 5.16.0;
 
 use Carp qw/croak/;
 use DateTime;
-use DBI;
 
 use bacds::Model::Serial;
 use bacds::Model::Utils qw/get_dbh/;
 
 my @Columns = (
-    'event_id',
+    'event_id',     # the primary key, supplied by the db
     'startday',     # YYYY-MM-DD
     'endday',
     'type',         # "ENGLISH" or "ONLINE Concert & Dance"
@@ -35,6 +34,13 @@ use Class::Accessor::Lite(
 
 Class::Accessor::Lite->mk_accessors(@Columns);
 
+=head2 save
+
+$event->save writes a new event to the db, will fall back to $event->update
+if there's already an event_id.
+
+=cut
+
 sub save {
     my ($self) = @_;
 
@@ -44,7 +50,6 @@ sub save {
         return $self->update;
     }
 
-    # make these up for now
     $self->event_id(bacds::Model::Serial->get_next('schedule'));
     $self->created_ts(DateTime->now->iso8601);
     $self->modified_ts(DateTime->now->iso8601);
@@ -64,13 +69,17 @@ sub save {
     1;
 }
 
+=head2 load(event_id => 1234)
+
+=cut
+
 sub load {
     my ($class, %args) = @_;
 
     my $event_id = $args{event_id}
         or croak "missing event_id in call to $class->load";
 
-    my $table = $args{table} || 'SCHEDULE';
+    my $table = lc($args{table} || 'schedule');
 
     my $stmt =
         'SELECT '.
@@ -89,10 +98,22 @@ sub load {
     return $class->new($row);
 }
 
+=head2 load_all(%args)
+
+Load all the events from $args{table}, returns the objects
+as a list..
+
+%args can include:
+
+ - $args{after} = YYYY-MM-DD (inclusive)
+ - $args{before} = YYYY-MM-DD (exclusive)
+
+=cut
+
 sub load_all {
     my ($class, %args) = @_;
 
-    my $table = $args{table} || 'SCHEDULE';
+    my $table = lc($args{table} || 'schedule');
 
 
     my $stmt =
@@ -134,6 +155,12 @@ sub load_all {
     return @found;
 }
 
+=head2 load_all_from_old_schema
+
+Works on the csv schema from 2021, early 2022
+
+=cut
+
 sub load_all_from_old_schema {
     my ($class, %args) = @_;
 
@@ -172,6 +199,12 @@ sub load_all_from_old_schema {
     return @found;
 }
 
+=head2 load_all_from_really_old_schema
+
+Works on the csv schema through 2020
+
+=cut
+
 sub load_all_from_really_old_schema {
     my ($class, %args) = @_;
 
@@ -209,6 +242,12 @@ sub load_all_from_really_old_schema {
     return @found;
 }
 
+=head2 update
+
+$event->update writes the data currently in the object to the db
+
+=cut
+
 sub update {
     my ($self) = @_;
 
@@ -216,7 +255,7 @@ sub update {
         or croak "can't call update on an event without an event_id";
 
     my $stmt =
-        'UPDATE SCHEDULE SET '.
+        'UPDATE schedule SET '.
         join(', ', map { "$_ = ?" } @Columns ).
         ' WHERE event_id = ? ';
 
@@ -230,13 +269,19 @@ sub update {
     1;
 }
 
+=head2 delete
+
+$event->delete removes it from the database.
+
+=cut
+
 sub delete {
     my ($self) = @_;
 
     my $event_id = $self->event_id
         or croak "can't call delete on an event without an event_id";
 
-    my $stmt = 'DELETE FROM SCHEDULE WHERE event_id = ?';
+    my $stmt = 'DELETE FROM schedule WHERE event_id = ?';
 
     my $dbh = get_dbh();
     my $sth = $dbh->prepare($stmt)
@@ -247,6 +292,12 @@ sub delete {
 
     1;
 }
+
+=head2 create_table
+
+Used by the unit tests, this also documents the table schema.
+
+=cut
 
 sub create_table {
 
@@ -273,7 +324,6 @@ sub create_table {
     # DBD::CSV doesn't like comments
     $ddl =~ s/--.*//g;
 
-    # RaiseError is on by default?
     $dbh->do($ddl)
         or die $dbh->errstr;
 }
