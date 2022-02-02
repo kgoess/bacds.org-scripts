@@ -4,7 +4,7 @@ use warnings;
 use 5.16.0;
 
 use File::Temp qw/tempdir/;
-use Test::More tests => 99;
+use Test::More tests => 3;
 
 use bacds::Model::Serial;
 

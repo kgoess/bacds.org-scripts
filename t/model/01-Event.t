@@ -6,7 +6,7 @@ use warnings;
 use Data::Dump qw/dump/;
 use File::Path qw/rmtree/;
 use File::Temp qw/tempdir/;
-use Test::More tests => 9;
+use Test::More tests => 14;
 
 use bacds::Model::Event;
 
