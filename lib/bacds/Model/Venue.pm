@@ -1,3 +1,15 @@
+=head1 NAME
+
+bacds::Model::Venue - ORM to the venue table
+
+=head1 DESCRIPTION
+
+This is an interface to the venue table, dance halls and churches and whatnot.
+
+=head1 METHODS
+
+=cut
+
 
 package bacds::Model::Venue;
 

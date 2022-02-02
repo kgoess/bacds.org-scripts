@@ -1,7 +1,4 @@
 #!/usr/bin/perl -w
-#
-#
-
 ##
 ## Find out what dances are happening in the next week.
 ##
@@ -10,6 +7,8 @@
 ## at /var/www/bacds.org/public_html/scripts/dancefinder.pl, or type "make install".
 #
 ## This file is formatted with spaces. Please do not insert any hard tab characters.
+#
+## The dancefinder.pl script is used to create the 10day.html and 18day.html include files. 
 #
 use strict;
 use Time::Local;

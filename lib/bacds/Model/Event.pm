@@ -1,3 +1,13 @@
+=head1 NAME
+
+bacds::Model::Event - ORM to the schedule table
+
+=head1 DESCRIPTION
+
+Each row in the schedule table is an "Event". This is an
+interface to that table.
+
+=cut
 
 package bacds::Model::Event;
 
