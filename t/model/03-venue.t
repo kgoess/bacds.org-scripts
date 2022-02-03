@@ -6,7 +6,7 @@ use warnings;
 use Data::Dump qw/dump/;
 use File::Path qw/rmtree/;
 use File::Temp qw/tempdir/;
-use Test::More tests => 12;
+use Test::More tests => 15;
 
 use bacds::Model::Venue;
 
@@ -68,7 +68,15 @@ sub test_CRUD {
     #
     my $after_update = bacds::Model::Venue->load(venue_id => $venue->venue_id);
     is $after_update->address, '123 Updated St.';
-    is $loaded->city, 'Berkeley';
+    is $after_update->city, 'Berkeley';
+    is $after_update->vkey, 'CCB';
+
+    #
+    # load by vkey
+    #
+    $loaded = bacds::Model::Venue->load(vkey => $venue->vkey);
+    is $loaded->venue_id, $venue->venue_id;
+    is $loaded->vkey, $venue->vkey;
 
     #
     # delete

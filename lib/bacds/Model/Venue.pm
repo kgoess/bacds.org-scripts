@@ -17,6 +17,7 @@ use warnings;
 use 5.16.0;
 
 use Carp qw/croak/;
+use Data::Dump qw/dump/;
 use DateTime;
 
 use bacds::Model::Serial;
@@ -84,18 +85,35 @@ sub save {
 sub load {
     my ($class, %args) = @_;
 
-    my $venue_id = $args{venue_id}
-        or croak "missing venue_id in call to $class->load";
 
     my $stmt =
         'SELECT '.
         join(', ', @Columns).
-        " FROM venue WHERE venue_id = ? ";
+        " FROM venue WHERE ";
+
+    my (@where_clauses, @where_params);
+
+    my $has_target = 0;
+
+    if (my $venue_id = $args{venue_id}) {
+        push @where_clauses, 'venue_id = ?';
+        push @where_params, $venue_id;
+        $has_target = 1;
+    }
+    if (my $vkey = $args{vkey}) {
+        push @where_clauses, 'vkey = ?';
+        push @where_params, $vkey;
+        $has_target = 1;
+    }
+
+    $has_target or croak "missing any lookup args in call to $class->load";
+
+    $stmt .= join ' AND ', @where_clauses;
 
     my $dbh = get_dbh();
     my $sth = $dbh->prepare($stmt)
         or die $dbh->errstr;
-    $sth->execute($venue_id)
+    $sth->execute(@where_params)
         or die $sth->errstr;
 
     my $row = $sth->fetchrow_hashref
@@ -132,6 +150,45 @@ sub load_all {
     return @found;
 }
 
+=head2 load_all_from_old_schema
+
+Load from the pre-ORM table (before Feb. 2022)
+
+=cut
+
+sub load_all_from_old_schema {
+    my ($class, %args) = @_;
+
+    my $table = $args{table}
+        or die "missing 'table' arg in call to load_all_from_old_schema";
+
+    my @old_columns = qw/
+        vkey
+        hall
+        address
+        city
+        zip
+        comment
+        type
+    /;
+
+    my $stmt = 
+        'SELECT '.
+        join(', ', @old_columns).
+        " FROM $table";
+
+    my $dbh = get_dbh();
+    my $sth = $dbh->prepare($stmt)
+        or die $dbh->errstr;
+    $sth->execute()
+        or die $sth->errstr;
+
+    my @found;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @found, $class->new($row);
+    }
+    return @found;
+}
 
 =head2 update
 

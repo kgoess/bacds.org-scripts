@@ -8,7 +8,9 @@
 #
 ## This file is formatted with spaces. Please do not insert any hard tab characters.
 #
-## The dancefinder.pl script is used to create the 10day.html and 18day.html include files. 
+## The dancefinder.pl script is used to create the 10day.html and 18day.html
+## include files.
+## It's called from make-frontpage-files.sh once per minute by cron.
 #
 use strict;
 use Time::Local;
@@ -17,6 +19,8 @@ use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
 use Date::Day;
 use DBI;
 use CGI;
+
+use bacds::Model::Venue;
 
 my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 my $TEST_TODAY = $ENV{TEST_TODAY};
@@ -371,18 +375,13 @@ if ($numrows) {
         $st_mon =~ s/^0//g if $st_mon < 10;
 
         # Get location information
-        $loc_dbh = get_dbh();
-        $loc_qry = "SELECT * FROM venue";
-        $loc_qry .= " WHERE vkey = '" . $loc . "'";
-        $loc_sth = $loc_dbh->prepare($loc_qry);
-        $loc_sth->execute();
-        $loc_hall = $loc_addr = $loc_city = $loc_ven_comment = ' ';
-        while (($key, $hall, $addr, $city, $ven_comment) = $loc_sth->fetchrow_array()) {
-            $loc_hall = $hall;
-            $loc_addr = $addr;
-            $loc_city = $city;
-            $loc_ven_comment = $ven_comment;
+        if (my $venue = bacds::Model::Venue->load(vkey => $loc)) {
+            $loc_hall = $venue->hall;
+            $loc_addr = $venue->address;
+            $loc_city = $venue->city;
+            $loc_ven_comment = $venue->comment;
         }
+
             # If a URL was specified in the db, override all other URLS.
         if (defined($dburl) && $dburl !~ /^$/) {
             $styleurl = $dburl;
@@ -650,26 +649,14 @@ sub get_event_url {
     $eventurl;
 }
 
-#sub get_hall_name_city ($) {
 sub get_hall_name_city {
     my ($venue) = @_;
-    my ($dbh, $qry, $sth);
-    my ($hall, $city);
-    my ($loc_hall, $loc_city);
-    $hall = ' ';
-    $city = ' ';
 
     # Get location information
-    $dbh = DBI->connect("DBI:CSV:f_dir=/var/www/bacds.org/public_html/data;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\",'','');
-    $qry = "SELECT hall, city FROM venue";
-    $qry .= " WHERE vkey = '" . $venue . "'";
-    $sth = $dbh->prepare($qry);
-    $sth->execute();
-    while (($hall, $city) = $sth->fetchrow_array()) {
-        $loc_hall = $hall;
-        $loc_city = $city;
+    if (my $venue = bacds::Model::Venue->load(vkey => $venue)) {
+        return $venue->hall, $venue->city;
     }
-    ($loc_hall, $loc_city);
+    return;
 }
 
 

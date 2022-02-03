@@ -1,83 +1,93 @@
-vkey|hall|address|city|zip|comment|type
-ACC|Arlington Community Church|52 Arlington Avenue|Kensington|||SPECIAL
-ALB|Albany Veteran's Memorial Building|1325 Portland Avenue (off Key RouteBlvd)|Albany|||SPECIAL
-ALM|Alameda Ballroom|1415 Broadway (between Central Ave. &amp; Santa Clara Ave.)|Alameda|||SPECIAL
-ALT|Alta Sierra Armenian Church Camp||||near Kings Canyon National Park|CAMP
-ARM|Armenian Cultural Center|Brotherhood Way|||San Francisco|CAMP
-ASE|All Saints Episcopal Church|555 Waverley St|Palo Alto||Corner of Waverley St &amp; Hamilton Ave|SERIES
-ASH|Ashkenaz|1317 San Pablo Avenue|Berkeley||At Gilman|SPECIAL
-AST|All Saints Episcopal Church|555 Waverley St|Palo Alto|||SERIES
-BET|Bethany United Methodist Church|1268 Sanchez Street|San Francisco||Corner of Sanchez and Clipper Streets|SERIES
-BOA|Board Meeting Location -- see link||SF Airport Area||SPECIAL
-BR|Bishop's Ranch|5297 Westside Road|Healdsburg|Healdsburg in the Sonoma wine country|CAMP
-BTW|Booker T Washington Community Center|800 Presidio Ave|San Francisco|94115||SPECIAL
-CCB|Christ Church Berkeley (formerly Grace North Church)|2138 Cedar Street|Berkeley||Between Walnut and Oxford|SERIES
-COY|Historic Coyote Grange|8140 Monterey Road|Coyote|SERIES
-CRO|The Crowden School|1475 Rose|Berkeley||Corner of Rose and Sacramento|SERIES
-DGK|DanceGround Keriac|1805 Divisadero at Bush|San Francisco||3 blocks North of Geary|SERIES
-ECV|El Cerrito Veterans Hall|6401 Stockton Avenue|El Cerrito||One block east of San Pablo Ave|SERIES
-FBC|First Baptist Church of Palo Alto|305 N California Ave|Palo Alto||ENGLISH
-FBH|Finnish Brotherhood Hall|1970 Chestnut|Berkeley||Off University|SPECIAL
-FCC|Fairfax Community Church|2398 Sir Francis Drake Blvd|Fairfax||No longer used|LEGACY
-FHL|Foothills Congregational Church|461 Orange Avenue|Los Altos||SERIES
-FHS|Foothill Horizons Camp||Sonora||Sonora in the California Gold Country|CAMP
-FIN|Finn Hall|1819 Tenth Street|Berkeley||Between Hearst and Delaware, 1-1/2 blocks north of University Avenue|SERIES
-FLX|Flex-It|425 Evelyn Avenue|Mountain View||Across from Mountain View CalTrain Station|SERIES
-FSJ|First Unitarian Church of San Jose|160 N 3rd St|San Jose|||ENGLISH
-FUM|First United Methodist Church of Palo Alto|Hamilton at Byron|Palo Alto||upstairs, 1 block from University, 1 block from Middlefield|SERIES
-FUO|First Unitarian Church of Oakland|685 14th Street|Oakland|SERIES
-GH|Goat Hall|400 Missouri Street|San Francisco|||SPECIAL
-GIC|Geoffrey&rsquo;s Inner Circle|410 14th St.|Oakland|||SPECIAL
-GNC|Christ Church Berkeley (formerly Grace North Church)|2138 Cedar Street|Berkeley||Between Walnut and Oxford|SERIES
-GOC|Greek Orthodox Cathedral of the Ascension|4700 Lincoln Avenue|Oakland|||SPECIAL
-HC|Hillside Club|2286 Cedar Street|Berkeley|||SPECIAL
-HPP|Carriage House at Holbrook-Palmer Park|150 Watkins Avenue|Atherton|||SERIES
-HUM|Humanist Hall|390 27th Street|Oakland||between Broadway and Telegraph|SPECIAL
-HVC|Hill and Valley Club - 1808 B Street (at Linden)|1808 B Street|Hayward||Corner of B and Linden|SPECIAL/CONTRA
-JG|Jones Gulch Camp|11000 Pescadero Rd|La Honda||West of Palo Alto|CAMP
-JLS|Jane Lathrop Stanford Middle School480 E. Meadow|Palo Alto|corner of Waverley|SERIES
-JPC|Janet Pomeroy Center|207 Skyline Blvd|San Francisco|near Lake Merced in SF|park on Armory Rd|SPECIAL
-LMDC|Lake Merritt Dance Center|200 Grand Avenue|Oakland|near Harrison and Grand||SPECIAL
-LSC|Lucie Stern Center|1305 Middlefield Road|Palo Alto|||SERIES
-MEN|Mendocino Woodlands Camp||Mendocino||Near Mendocino|CAMP
-MON|Monte Toyon Camp|Cathedral Drive|Aptos|Near Aptos|CAMP
-MT|Palo Alto Masonic Temple|461 Florence Street|Palo Alto||1/2 block north of University|SERIES
-MVM|Mountain View Masonic Temple|890 Church Street|Mountain View||Between Castro & Shoreline|SERIES
-NF|Nature Friends|3115 Butters Drive|Oakland||Hwy 13 to Joaquin Miller,east, take second right onto Butters and look right for post|SPECIAL
-ODF|Oakland Free Dance Festival, Oakland Vets's Hall||http://www.fridaynightwaltz.com for more info|
-OV2|Oakland Veterans' Hall|200 Grand Ave at Harrison|Oakland||Hall 2 (upstairs)|SPECIAL
-OVMB|Oakland Veterans' Hall|200 Grand Ave at Harrison|Oakland|||SPECIAL
-PA|YWCA of the Mid-Peninsula|4161 Alma Street|Palo Alto||Between San Antonio and Charleston|SERIES
-PSS|Prospect Sierra Middle School|960 Avis Drive|El Cerrito|Off of Moeser Lane|SERIES
-PVM|Piedmont Veterans Memorial Hall|401 Highland Avenue|Piedmont|||SPECIAL/ENGLISH 
-RHM|Royal Hodge Masonic Center|651 Roble Avenue|Menlo Park|||SPECIAL
-SBE|St. Bede's Episcopal Church|2650 Sand Hill Rd|Menlo Park||Around a mile east of I280 (toward Stanford), on North side of street|
-SCZ|CPDES (Portuguese) Hall|216 Evergreen|Santa Cruz||Near Harvey West Park and Costco|SPECIAL
-SEB|Wischemann Hall|460 Eddie Lane|Sebastopol||One country block north of Rt. 12, west of US 101|SPECIAL
-SES|Prospect Sierra Elementary School|2060 Tapscott Ave|El Cerrito||The Other Prospect Sierra School|SERIES
-SF|St. Paul's Presbyterian Church|1399 43rd Avenue|San Francisco||Corner of 43rd Avenue and Judah Street|SERIES
-SFV|SFV Lodge in Mountain View|361 Villa Street|Mountain View||Near Calderon
-SJP|St. John's Presbyterian Church|25 Lake|San Francisco|at Arguello|SERIES
-SJW|San Jose Woman's Club|75 South 11th Street|San Jose|||SPECIAL/ENGLISH|
-SME|St. Mark's Episcopal Church|600 Colorado Avenue|Palo Alto||1-1/2 blocks off Middlefield|SPECIAL
-SMM|Saint Mary Magdalen Church|2005 Berryman St|Berkeley|At Milvia|SPECIAL
-SMT|San Mateo Masonic Temple|100 N. Ellsworth|San Mateo||At Tilton|SERIES
-SPC|St. John's Presbyterian Church|25 Lake|San Francisco|at Arguello|SERIES
-SRC|Sequoia Retreat Center||Ben Lomond|in the Santa Cruz Mountains|SPECIAL
-SRF|San Rafael Masonic Hall|1010 Lootens Place|San Rafael||At 4th St|SPECIAL
-SSC|Sebastopol Senior Center|167 High Street|Sebastopol|||SPECIAL
-STALB|St. Alban's Church|1501 Washington Avenue|Albany||Curtis &amp; Washington, 1 block off Solano Ave|Special
-STA|St. Andrew's United Methodist Church|4111 Alma Street|Palo Alto||Across parking lot from former Mid-Peninsula YWCA|SERIES
-STC|St. Clement's Episcopal Church|2837 Claremont Boulevard|Berkeley||Off Ashby|SPECIAL
-STM|St. Mark's Church|600 Colorado Avenue|Palo Alto||Off Middlefield|SPECIAL
-SYN|Synergy School|1387 Valencia|San Francisco||At 25th Street|SPECIAL
-TBA|Location to be announced||the Bay Area||SERIES
-TBDEB|Location yet to be determined||East Bay||SERIES
-TBD|Location to be announced||the Bay Area||SERIES
-TBDPE|Location yet to be determined||Peninsula area||SERIES
-TBDSB|Location yet to be determined||South Bay||SERIES
-TBDSF|Location yet to be determined||San Francisco||SERIES
-TGH|Telegraph Hill Heighborhood Center|660 Lombard St|San Francisco|9413||SPECIAL
-VAR|Various Locations||Various Bay Area Cities|||SPECIAL
-WCP|Woman's Club of Palo Alto|475 Homer Avenue|Palo Alto|||SERIES
-WOM|Women's Building of the Bay Area|3543 18th Street|San Francisco||Between Valencia and Guererro|SPECIAL
+venue_id|vkey|hall|address|city|zip|comment|type|created_ts|modified_ts
+2|ACC|\Arlington Community Church\|\52 Arlington Avenue\|Kensington|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+3|ALB|\Albany Veteran's Memorial Building\|\1325 Portland Avenue (off Key RouteBlvd)\|Albany|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+4|ALM|\Alameda Ballroom\|\1415 Broadway (between Central Ave. &amp; Santa Clara Ave.)\|Alameda|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+5|ALT|\Alta Sierra Armenian Church Camp\||||\near Kings Canyon National Park\|CAMP|2022-02-03T05:03:28|2022-02-03T05:03:28
+6|ARM|\Armenian Cultural Center\|\Brotherhood Way\|||\San Francisco\|CAMP|2022-02-03T05:03:28|2022-02-03T05:03:28
+7|ASE|\All Saints Episcopal Church\|\555 Waverley St\|\Palo Alto\||\Corner of Waverley St &amp; Hamilton Ave\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+8|ASH|Ashkenaz|\1317 San Pablo Avenue\|Berkeley||\At Gilman\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+9|AST|\All Saints Episcopal Church\|\555 Waverley St\|\Palo Alto\|||SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+10|BET|\Bethany United Methodist Church\|\1268 Sanchez Street\|\San Francisco\||\Corner of Sanchez and Clipper Streets\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+11|BOA|\Board Meeting Location -- see link\||\SF Airport Area\||SPECIAL||2022-02-03T05:03:28|2022-02-03T05:03:28
+12|BR|\Bishop's Ranch\|\5297 Westside Road\|Healdsburg|\Healdsburg in the Sonoma wine country\|CAMP||2022-02-03T05:03:28|2022-02-03T05:03:28
+13|BTW|\Booker T Washington Community Center\|\800 Presidio Ave\|\San Francisco\|94115||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+14|CCB|\Christ Church Berkeley (formerly Grace North Church)\|\2138 Cedar Street\|Berkeley||\Between Walnut and Oxford\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+15|COY|\Historic Coyote Grange\|\8140 Monterey Road\|Coyote|SERIES|||2022-02-03T05:03:28|2022-02-03T05:03:28
+16|CRO|\The Crowden School\|\1475 Rose\|Berkeley||\Corner of Rose and Sacramento\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+17|DGK|\DanceGround Keriac\|\1805 Divisadero at Bush\|\San Francisco\||\3 blocks North of Geary\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+18|ECV|\El Cerrito Veterans Hall\|\6401 Stockton Avenue\|\El Cerrito\||\One block east of San Pablo Ave\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+19|FBC|\First Baptist Church of Palo Alto\|\305 N California Ave\|\Palo Alto\||ENGLISH||2022-02-03T05:03:28|2022-02-03T05:03:28
+20|FBH|\Finnish Brotherhood Hall\|\1970 Chestnut\|Berkeley||\Off University\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+21|FCC|\Fairfax Community Church\|\2398 Sir Francis Drake Blvd\|Fairfax||\No longer used\|LEGACY|2022-02-03T05:03:28|2022-02-03T05:03:28
+22|FHL|\Foothills Congregational Church\|\461 Orange Avenue\|\Los Altos\||SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+23|FHS|\Foothill Horizons Camp\||Sonora||\Sonora in the California Gold Country\|CAMP|2022-02-03T05:03:28|2022-02-03T05:03:28
+24|FIN|\Finn Hall\|\1819 Tenth Street\|Berkeley||\Between Hearst and Delaware, 1-1/2 blocks north of University Avenue\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+25|FLX|Flex-It|\425 Evelyn Avenue\|\Mountain View\||\Across from Mountain View CalTrain Station\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+26|FSJ|\First Unitarian Church of San Jose\|\160 N 3rd St\|\San Jose\|||ENGLISH|2022-02-03T05:03:28|2022-02-03T05:03:28
+27|FUM|\First United Methodist Church of Palo Alto\|\625 Hamilton at Byron\|\Palo Alto\||\upstairs, 1 block from University, 1 block from Middlefield\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+28|FUO|\First Unitarian Church of Oakland\|\685 14th Street\|Oakland|SERIES|||2022-02-03T05:03:28|2022-02-03T05:03:28
+29|GH|\Goat Hall\|\400 Missouri Street\|\San Francisco\|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+30|GIC|\Geoffrey&rsquo;s Inner Circle\|\410 14th St.\|Oakland|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+31|GNC|\Christ Church Berkeley (formerly Grace North Church)\|\2138 Cedar Street\|Berkeley||\Between Walnut and Oxford\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+32|GOC|\Greek Orthodox Cathedral of the Ascension\|\4700 Lincoln Avenue\|Oakland|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+33|GSP|\Good Shepherd Parish\|\1300 5th Ave\|Belmont|||FAMILY|2022-02-03T05:03:28|2022-02-03T05:03:28
+34|HC|\Hillside Club\|\2286 Cedar Street\|Berkeley|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+35|HPP|\Carriage House at Holbrook-Palmer Park\|\150 Watkins Avenue\|Atherton|||SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+36|HUM|\Humanist Hall\|\390 27th Street\|Oakland||\between Broadway and Telegraph\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+37|HVC|\Hill and Valley Club - 1808 B Street (at Linden)\|\1808 B Street\|Hayward||\Corner of B and Linden\|CONTRA/SPECIAL/ENGLISH/SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+38|JG|\Jones Gulch Camp\|\11000 Pescadero Rd\|\La Honda\||\West of Palo Alto\|CAMP|2022-02-03T05:03:28|2022-02-03T05:03:28
+39|JLS|\Jane Lathrop Stanford Middle School480 E. Meadow\|\Palo Alto\|\corner of Waverley\|SERIES|||2022-02-03T05:03:28|2022-02-03T05:03:28
+40|JPC|\Janet Pomeroy Center\|\207 Skyline Blvd\|\San Francisco\|\near Lake Merced in SF\|\park on Armory Rd\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+41|KDT|\Kids ’N Dance ’N Theater\|\3840 Macarthur Blvd\|Oakland|||TEEN/SPECIAL/SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+42|LMDC|\Lake Merritt Dance Center\|\200 Grand Avenue\|Oakland|\near Harrison and Grand\||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+43|LSC|\Lucie Stern Center\|\1305 Middlefield Road\|\Palo Alto\|||SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+44|MEN|\Mendocino Woodlands Camp\||Mendocino||\Near Mendocino\|CAMP|2022-02-03T05:03:28|2022-02-03T05:03:28
+45|MON|\Monte Toyon Camp\|\Cathedral Drive\|Aptos|\Near Aptos\|CAMP||2022-02-03T05:03:28|2022-02-03T05:03:28
+46|MT|\Palo Alto Masonic Temple\|\461 Florence Street\|\Palo Alto\||\1/2 block north of University\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+47|MVM|\Mountain View Masonic Temple\|\890 Church Street\|\Mountain View\||\Between Castro & Shoreline\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+48|NF|\Nature Friends\|\3115 Butters Drive\|Oakland||\Hwy 13 to Joaquin Miller,east, take second right onto Butters and look right for post\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+49|ODF|\Oakland Free Dance Festival, Oakland Vets's Hall\||\http://www.fridaynightwaltz.com for more info\||||2022-02-03T05:03:28|2022-02-03T05:03:28
+50|OV2|\Oakland Veterans' Hall\|\200 Grand Ave at Harrison\|Oakland||\Hall 2 (upstairs)\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+51|OVMB|\Oakland Veterans' Hall\|\200 Grand Ave at Harrison\|Oakland|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+52|PA|\YWCA of the Mid-Peninsula\|\4161 Alma Street\|\Palo Alto\||\Between San Antonio and Charleston\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+53|PRC|\Pomeroy Recreation Center [formerly Janet Pomeroy Center)\|\207 Skyline Blvd\|\San Francisco\|\near Lake Merced in SF\|\park on Armory Rd\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+54|PSS|\Prospect Sierra Middle School\|\960 Avis Drive\|\El Cerrito\|\Off of Moeser Lane\|SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+55|PVM|\Piedmont Veterans Memorial Hall\|\401 Highland Avenue\|Piedmont|||\SPECIAL/ENGLISH \|2022-02-03T05:03:28|2022-02-03T05:03:28
+56|RHM|\Royal Hodge Masonic Center\|\651 Roble Avenue\|\Menlo Park\|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+57|SBE|\St. Bede's Episcopal Church\|\2650 Sand Hill Rd\|\Menlo Park\||\Around a mile east of I280 (toward Stanford), on North side of street\||2022-02-03T05:03:28|2022-02-03T05:03:28
+58|SCZ|\CPDES (Portuguese) Hall\|\216 Evergreen\|\Santa Cruz\||\Near Harvey West Park and Costco\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+59|SEB|\Wischemann Hall\|\460 Eddie Lane\|Sebastopol||\One country block north of Rt. 12, west of US 101\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+60|SES|\Prospect Sierra Elementary School\|\2060 Tapscott Ave\|\El Cerrito\||\The Other Prospect Sierra School\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+61|SF|\St. Paul's Presbyterian Church\|\1399 43rd Avenue\|\San Francisco\||\Corner of 43rd Avenue and Judah Street\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+62|SFV|\SFV Lodge in Mountain View\|\361 Villa Street\|\Mountain View\||\Near Calderon\||2022-02-03T05:03:28|2022-02-03T05:03:28
+63|SJP|\St. John's Presbyterian Church\|\25 Lake\|\San Francisco\|\at Arguello\|SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+64|SJW|\San Jose Woman's Club\|\75 South 11th Street\|\San Jose\|||SPECIAL/ENGLISH|2022-02-03T05:03:28|2022-02-03T05:03:28
+65|SME|\St. Mark's Episcopal Church\|\600 Colorado Avenue\|\Palo Alto\||\1-1/2 blocks off Middlefield\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+66|SMM|\Saint Mary Magdalen Church\|\2005 Berryman St\|Berkeley|\At Milvia\|SPECIAL||2022-02-03T05:03:28|2022-02-03T05:03:28
+67|SMT|\San Mateo Masonic Temple\|\100 N. Ellsworth\|\San Mateo\||\At Tilton\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+68|SPC|\St. John's Presbyterian Church\|\25 Lake\|\San Francisco\|\at Arguello\|SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+69|SRC|\Sequoia Retreat Center\||\Ben Lomond\|\in the Santa Cruz Mountains\|SPECIAL||2022-02-03T05:03:28|2022-02-03T05:03:28
+70|SRF|\San Rafael Masonic Hall\|\1010 Lootens Place\|\San Rafael\||\At 4th St\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+71|SSC|\Sebastopol Senior Center\|\167 High Street\|Sebastopol|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+72|SSU|\Sonoma State University\|\1801 East Cotati Avenue\|\Rohnert Park\|||CAMP|2022-02-03T05:03:28|2022-02-03T05:03:28
+73|STALB|\St. Alban's Church\|\1501 Washington Avenue\|Albany||\Curtis &amp; Washington, 1 block off Solano Ave\|Special|2022-02-03T05:03:28|2022-02-03T05:03:28
+74|STA|\St. Andrew's United Methodist Church\|\4111 Alma Street\|\Palo Alto\||\Across parking lot from former Mid-Peninsula YWCA\|SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+75|STC|\St. Clement's Episcopal Church\|\2837 Claremont Boulevard\|Berkeley||\Off Ashby\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+76|STM|\St. Mark's Church\|\600 Colorado Avenue\|\Palo Alto\||\Off Middlefield\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+77|SYN|\Synergy School\|\1387 Valencia\|\San Francisco\||\At 25th Street\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+78|TBA|\Location to be announced\||\the Bay Area\||SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+79|TBDEB|\Location yet to be determined\||\East Bay\||SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+80|TBD|\Location to be announced\||\the Bay Area\||SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+81|TBDPE|\Location yet to be determined\||\Peninsula area\||SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+82|TBDSB|\Location yet to be determined\||\South Bay\||SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+83|TBDSF|\Location yet to be determined\||\San Francisco\||SERIES||2022-02-03T05:03:28|2022-02-03T05:03:28
+84|TGH|\Telegraph Hill Heighborhood Center\|\660 Lombard St\|\San Francisco\|9413||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+85|VAR|\Various Locations\||\Various Bay Area Cities\|||SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+86|WCP|\Woman's Club of Palo Alto\|\475 Homer Avenue\|\Palo Alto\|||SERIES|2022-02-03T05:03:28|2022-02-03T05:03:28
+87|WOM|\Women's Building of the Bay Area\|\3543 18th Street\|\San Francisco\||\Between Valencia and Guererro\|SPECIAL|2022-02-03T05:03:28|2022-02-03T05:03:28
+88|ZOOM|Zoom.us||\the cloud\||\Virtual Online Only, join us over the Internet using Zoom.us\||2022-02-03T05:03:28|2022-02-03T05:03:28
+89|\ZOOM Waltz\|Zoom.us||\the cloud\||\Virtual Online Only, join us over the Internet using Zoom.us\||2022-02-03T05:03:28|2022-02-03T05:03:28
+90|\ZOOM Concert\|Zoom.us||\the cloud\||\Virtual Online Only, join us over the Internet using Zoom.us\||2022-02-03T05:03:28|2022-02-03T05:03:28
+91|\ZOOM Contra\|Zoom.us||\the cloud\||\Virtual Online Only, join us over the Internet using Zoom.us\||2022-02-03T05:03:28|2022-02-03T05:03:28
+92|ONLINE|wherever||\the cloud\||\join us over the Internet \||2022-02-03T05:03:28|2022-02-03T05:03:28
+93|FACEBOOK|\FaceBook Live\||\the cloud\||\Virtual Online Only, join us over the Internet, watch at FaceBook Live \||2022-02-03T05:03:28|2022-02-03T05:03:28

@@ -9,6 +9,8 @@ use Time::Local;
 use DBI;
 use Date::Day;
 
+use bacds::Model::Venue;
+
 my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 my $TEST_TODAY = $ENV{TEST_TODAY};
 
@@ -111,17 +113,12 @@ while ($sth->fetch) {
         }
 	print ":  ";
 	# get location information
-	$loc_qry = "SELECT * FROM venue";
-	$loc_qry .= " WHERE vkey = '" . $loc . "'";
-	$loc_sth = $loc_dbh->prepare($loc_qry);
-	$loc_sth->execute();
-	while (($key, $hall, $addr, $city, $ven_comment) =
-	    $loc_sth->fetchrow_array()) {
-		$loc_hall = $hall;
-		$loc_addr = $addr;
-		$loc_city = $city;
-		$loc_ven_comment = $ven_comment;
-	}
+    if (my $venue = bacds::Model::Venue->load(vkey => $loc)) {
+        $loc_hall = $venue->hall;
+        $loc_addr = $venue->address;
+        $loc_city = $venue->city;
+        $loc_ven_comment = $venue->comment;
+    }
 print "\n<!-- band=\"" . $band . "\" -->\n";
 	if ($type =~ /CAMP/) {
 		print "<strong>$type</strong>: ";
