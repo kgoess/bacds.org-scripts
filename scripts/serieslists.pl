@@ -16,11 +16,15 @@
 ## This file is being tracked in git.  To clone the repo, add yourself to the
 ## "git" group I created and then do "git clone /var/lib/git/bacds.org-scripts/".
 use strict;
-use Time::Local;
+use Data::Dump qw/dump/;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year Day_of_Week_to_Text Today);
 use DBI;
+use JSON qw/to_json/;
+use Time::Local;
 
-my ($style, $styles, $venue, $venues, @days_to_search, $single_event,
+use bacds::Model::Venue;
+
+my ($style, $styles, $vkey, $vkeys, @days_to_search, $single_event,
     $start_time, $end_time);
 
 my %day_map = (
@@ -55,15 +59,15 @@ foreach my $i (@vals) {
     my ($varname, $data) = split(/=/,$i);
     $style = $data if $varname eq "style";
     $styles = $data if $varname eq "styles";
-    $venue = $data if $varname eq "venue";
-    $venues = $data if $varname eq "venues";
+    $vkey = $data if $varname eq "venue";
+    $vkeys = $data if $varname eq "venues";
     push @days_to_search, $data if $varname =~ /^day[2-7]?/;
     $single_event = $data if $varname eq "single-event";
     $start_time = $data if $varname eq 'starttime';
     $end_time = $data if $varname eq 'endtime';
 }
-my @vlist = split ',', $venues if $venues;
-push @vlist, $venue if $venue;
+my @vlist = split ',', $vkeys if $vkeys;
+push @vlist, $vkey if $vkey;
 my @slist = split ',', $styles if $styles;
 push @slist, $style if $style;
 
@@ -122,9 +126,9 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         print qq{<a href="?single-event=$startday">\n};
         print Day_of_Week_to_Text($wday).", ".$mon_lst[$date_mon-1] . " " . $date_day. "\n";
         print qq{</a></b><br />\n};
-        my ($address) = lookup_address_for_vkey($dbh, $loc);
-        if ($address) {
-           print "$address->{hall}, $address->{address}, $address->{city} <br />\n";
+        my ($venue) = lookup_address_for_vkey($dbh, $loc);
+        if ($venue) {
+           print $venue->hall.', '.$venue->address.', '.$venue->city." <br />\n";
         }
         if ($leader) {
             print "Caller:  " . $leader . "<br />\n";
@@ -172,12 +176,12 @@ sub build_upcoming_events_query {
     }
     if (@$vlist) {
         $qrystr .= " AND ( ";
-        my $venue = shift @$vlist;
-        $venue = $dbh->quote("$venue%");
-        $qrystr .= " loc LIKE $venue";
-        foreach $venue (@$vlist) {
-            $venue = $dbh->quote("$venue%");
-            $qrystr .= " or loc LIKE $venue";
+        my $vkey = shift @$vlist;
+        $vkey = $dbh->quote("$vkey%");
+        $qrystr .= " loc LIKE $vkey";
+        foreach $vkey (@$vlist) {
+            $vkey = $dbh->quote("$vkey%");
+            $qrystr .= " or loc LIKE $vkey";
         }
         $qrystr .= " )";
     }
@@ -214,15 +218,15 @@ sub build_single_event_query {
 # empirical experimentation shows the data is arriving here with " stripped out, so
 # it's safe to just dump into the JSON
 sub generate_jsonld {
-    my ($dbh, $date, $venue, $type, $leader, $band, $comments,
+    my ($dbh, $date, $vkey, $type, $leader, $band, $comments,
         $start_time, $end_time) = @_;
 
     if (!$start_time) {
-        warn "missing start_time for $date $venue $type\n";
+        warn "missing start_time for $date $vkey $type\n";
         $start_time = '00:00:00';
     }
     if (!$end_time) {
-        warn "missing end_time for $date $venue $type\n";
+        warn "missing end_time for $date $vkey $type\n";
         $end_time = '00:00:00';
     }
         
@@ -230,7 +234,7 @@ sub generate_jsonld {
     my $nice_dance_type = ucfirst lc $type;
 
     # keys to $loc hashref are: vkey|hall|address|city|zip|comment|type
-    my $loc = lookup_address_for_vkey($dbh, $venue);
+    my $venue = lookup_address_for_vkey($dbh, $vkey);
 
     my $offer_url = "https://$ENV{HTTP_HOST}$ENV{DOCUMENT_URI}";
 
@@ -246,87 +250,92 @@ sub generate_jsonld {
     # 		EventRescheduled
     # 		EventScheduled
     # just hard-coding them to start with
-    return <<EOL;
-<script type="application/ld+json">
-{
-    "\@context":"http://schema.org",
-    "\@type":["Event","DanceEvent"],
-    "name":"$nice_dance_type Dancing, calling by $leader to the music of $band",
-    "startDate":"$start",
-    "endDate":"$end",
-    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-    "eventStatus": "https://schema.org/EventCancelled",
-    "organizer":
-    {
-        "\@context":"http://schema.org",
-        "\@type":"Organization",
-        "name":"Bay Area Country Dance Society",
-        "url":"https://www.bacds.org/"
-    },
-    "location":
-    {
-        "\@context":"http://schema.org",
-        "\@type":"Place",
-        "name":"$loc->{hall}",
-        "address":
-        {
-            "\@type":"PostalAddress",
-            "streetAddress":"$loc->{address}",
-            "addressLocality":"$loc->{city}",
-            "postalCode":"$loc->{zip}",
-            "addressRegion":"California",
-            "addressCountry":"USA"
-        }
-    },
-    "description":"$nice_dance_type Dancing at $loc->{hall} in $loc->{city}. Everyone welcome, beginners and experts! No partner necessary. $comments (Prices may vary for special events or workshops. Check the calendar or website for specifics.)",
-    "image":"https://www.bacds.org/graphics/bacdsweblogomed.gif",
-    "performer":
-    [
-        {
-            "\@type":"MusicGroup",
-            "name":"$band"
+
+    my %json_data = (
+       '@context'  => 'http://schema.org',
+       '@type'    => ['Event','DanceEvent'],
+        name        => "$nice_dance_type Dancing, calling by $leader to the music of $band",
+        startDate   => $start,
+        endDate     => $end,
+        eventAttendanceMode => 'https://schema.org/OfflineEventAttendanceMode',
+        eventStatus => 'https://schema.org/EventCancelled', # FIX ME after plague
+        organizer => {
+           '@context' => 'http://schema.org',
+           '@type'    => 'Organization',
+            name      => 'Bay Area Country Dance Society',
+            url       => 'https://www.bacds.org/'
         },
+        location => {
+           '@context' => 'http://schema.org',
+           '@type'    => 'Place',
+            name      => $venue->hall,
+            address => {
+               '@type'          => "PostalAddress",
+                streetAddress   => $venue->address,
+                addressLocality => $venue->city,
+                postalCode      => $venue->zip,
+                addressRegion   => "California",
+                addressCountry  => "USA"
+            }
+        },
+        description => "$nice_dance_type Dancing at ".$venue->hall." in ".$venue->city.". ".
+            "Everyone welcome, beginners and experts! No partner necessary. ".
+            "$comments (Prices may vary for special events or workshops. Check ".
+            "the calendar or website for specifics.)",
+        image => 'https://www.bacds.org/graphics/bacdsweblogomed.gif',
+        performer => [
+            {
+               '@type' => 'MusicGroup',
+                name   => $band,
+            },
+            {
+               '@type' => 'Person',
+                name => $leader,
+            }
+        ],
+        offers => [
         {
-            "\@type":"Person",
-            "name":"$leader"
+            '@type' => "Offer",
+            name => "supporters",
+            price => "20.00",
+            priceCurrency => "USD",
+            url => $offer_url,
+            availability => "http://schema.org/LimitedAvailability",
+            validFrom  => $date,
+        },{
+            '@type' => 'Offer',
+            name => 'non-members',
+            price => '12.00',
+            priceCurrency => 'USD',
+            url => $offer_url,
+            availability => 'http://schema.org/LimitedAvailability',
+            validFrom => $date,
+        },{
+            '@type' => 'Offer',
+            name => 'members',
+            price => '10.00',
+            priceCurrency => 'USD',
+            url => $offer_url,
+            availability => 'http://schema.org/LimitedAvailability',
+            validFrom => $date,
+        },{
+            '@type' => 'Offer',
+            name => 'students or low-income or pay what you can',
+            price => '6.00',
+            priceCurrency => 'USD',
+            url => $offer_url,
+            availability => 'http://schema.org/LimitedAvailability',
+            validFrom => $date
         }
-    ],
-    "offers": [ {
-        "\@type":"Offer",
-        "name": "supporters",
-        "price":"20.00",
-        "priceCurrency": "USD",
-        "url":"$offer_url",
-        "availability" : "http://schema.org/LimitedAvailability",
-        "validFrom":"$date"
-    },{
-        "\@type":"Offer",
-        "name": "non-members",
-        "price":"12.00",
-        "priceCurrency": "USD",
-        "url":"$offer_url",
-        "availability" : "http://schema.org/LimitedAvailability",
-        "validFrom":"$date"
-    },{
-        "\@type":"Offer",
-        "name": "members",
-        "price":"10.00",
-        "priceCurrency": "USD",
-        "url":"$offer_url",
-        "availability" : "http://schema.org/LimitedAvailability",
-        "validFrom":"$date"
-    },{
-        "\@type":"Offer",
-        "name": "students or low-income or pay what you can",
-        "price":"6.00",
-        "priceCurrency": "USD",
-        "url":"$offer_url",
-        "availability" : "http://schema.org/LimitedAvailability",
-        "validFrom":"$date"
-    }
-    ]
-}
-</script>
+        ]
+
+    );
+
+    my $json_str = to_json(\%json_data, { pretty => 1 });
+    return <<EOL;
+    <script type="application/ld+json">
+    $json_str
+    </script>
 EOL
 
 }
@@ -337,13 +346,7 @@ EOL
 sub lookup_address_for_vkey {
     my ($dbh, $vkey) = @_;
 
-    my $sth = $dbh->prepare('SELECT * FROM venue WHERE vkey = ?') or die $dbh->errstr;
-
-    $sth->execute($vkey) or die $sth->errstr;
-
-    my $row = $sth->fetchrow_hashref or die "no record found in venue table for '$vkey'";
-
-    return $row;
+    return bacds::Model::Venue->load(vkey => $vkey);
 }
 
 # vim: tabstop=4 shiftwidth=4 expandtab
