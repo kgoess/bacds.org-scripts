@@ -2,7 +2,7 @@
 ##
 ## public_html/dancefinder/content.html:<!--#include virtual="/scripts/getstyles.pl" -->
 ##
-##
+## This includes camps (where endday IS NOT null)
 use strict;
 use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
