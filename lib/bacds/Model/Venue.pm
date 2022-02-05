@@ -254,7 +254,7 @@ sub create_table {
     # untested in postgres and sqlite, DBD::CSV will ignore the attributes
     my $ddl = 'CREATE TABLE venue (
         venue_id INT, -- BIGSERIAL PRIMARY KEY,
-        vkey CHAR(10) NOT NULL,
+        vkey CHAR(10) NOT NULL UNIQUE,
         hall VARCHAR(64) NOT NULL,
         address VARCHAR(128) NOT NULL,
         city VARCHAR(32) NOT NULL,
