@@ -58,8 +58,8 @@ foreach $i (@vals) {
 ($today_day, $today_mon, $today_year) = my_localtime();
 $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
-$today_mon = "0$today_mon" if $today_mon < 10;
-$today_day = "0$today_day" if $today_day < 10;
+$today_mon = sprintf "%02d", $today_mon;
+$today_day = sprintf "%02d", $today_day;
 $today_year += 1900;
 $today = "$today_year-$today_mon-$today_day";
 
@@ -70,8 +70,8 @@ if ($numdays) {
 	$last_sec = $today_sec + (86400 * 8);
 	($last_day, $last_mon, $last_year) = (localtime($last_sec))[3,4,5];
 	$last_mon++;
-	$last_mon = "0$last_mon" if $last_mon < 10;
-	$last_day = "0$last_day" if $last_day < 10;
+	$last_mon = sprintf "%02d", $last_mon;
+	$last_day = sprintf "%02d", $last_day;
 	$last_year += 1900;
 	$last = "$last_year-$last_mon-$last_day";
 
