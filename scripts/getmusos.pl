@@ -106,7 +106,9 @@ $sth->execute();
 ## Pull out band and muso names
 ##
 #print "content-type: text/html\n\n";
-while (($startday,$endday,$type,$loc,$leader,$band,$comments,$loc_type) = $sth->fetchrow_array()) {
+while (($startday, $endday, $type, $loc, $leader, $band, $comments, $loc_type)
+	 = $sth->fetchrow_array()
+) {
 	$guest = "";
 	$mstr = "";
 	$bandname = "";

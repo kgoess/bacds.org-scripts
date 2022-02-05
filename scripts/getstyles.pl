@@ -105,8 +105,9 @@ $sth->execute();
 ## Pull out styles
 ##
 #print "content-type: text/html\n\n";
-while (($startday,$endday,$type,$loc,$leader,$band,$comments,$loc_type) = 
-        $sth->fetchrow_array()) {
+while (($startday, $endday, $type, $loc, $leader, $band, $comments, $loc_type)
+	 = $sth->fetchrow_array()
+) {
 	my $temp_type;
 	$temp_type = $type;
 	$temp_type = 'SPECIAL' if $type =~ /SPECIAL/;

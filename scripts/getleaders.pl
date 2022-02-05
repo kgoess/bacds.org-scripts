@@ -2,7 +2,7 @@
 ##
 ## public_html/dancefinder/content.html:<!--#include virtual="/scripts/getleaders.pl" -->
 ##
-##
+## note that this script doesn't look at QUERY_STRING
 use strict;
 use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
