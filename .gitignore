@@ -1,0 +1,4 @@
+*.sw?
+*.expected
+*.got
+t/data/schedule.lock

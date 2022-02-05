@@ -23,9 +23,15 @@ use bacds::Model::Utils qw/get_dbh/;
 my @Columns = (
     'event_id',     # the primary key, supplied by the db
     'startday',     # YYYY-MM-DD
-    'endday',
+    'endday',       # endday is only populated for camps
+                    # add an "is_camp" field?
+
     'type',         # "ENGLISH" or "ONLINE Concert & Dance"
+                    # rename to "style" for consistency?
+
     'loc',          # "CCB" or "ONLINE"
+                    # rename to "venue" or "vkey" for consistency?
+
     'leader',       # "Bruce Hamilton"
     'band',         # can include HTML, links, etc.
     'comments',
@@ -117,6 +123,10 @@ as a list..
 
  - $args{after} = YYYY-MM-DD (inclusive)
  - $args{before} = YYYY-MM-DD (exclusive)
+ - $args{without_end_date} excludes camps
+ - $args{style} will do a "type LIKE %$style%" query
+ - $args{venue} the "vkey" aka "loc" column, e.g. CCB
+ - $args{includes_leader} adds a "leader IS NOT NULL"
 
 =cut
 
@@ -125,7 +135,6 @@ sub load_all {
 
     my $table = lc($args{table} || 'schedule');
 
-
     my $stmt =
         'SELECT '.
         join(', ', @Columns).
@@ -133,6 +142,7 @@ sub load_all {
 
     my (@where_clauses, @where_params);
     
+    my $dbh = get_dbh();
     
     if (my $after = $args{after}) {
         croak "invalid value for 'after': $after"
@@ -148,11 +158,28 @@ sub load_all {
         push @where_params, $before;
     }
 
+    if ($args{without_end_date}) {
+        push @where_clauses, 'endday IS NULL';
+    }
+
+    if (my $style = $args{style}) {
+        $style = $dbh->quote("%$style%");
+        push @where_clauses, "type LIKE $style";
+    }
+
+    if (my $venue = $args{venue}) {
+        push @where_clauses, 'loc = ?';
+        push @where_params, $venue;
+    }
+
+    if ($args{includes_leader}) {
+        push @where_clauses, 'leader IS NOT NULL';
+    }
+
     if (@where_clauses) {
         $stmt .= ' WHERE '.join(' AND ', @where_clauses);
     }
 
-    my $dbh = get_dbh();
     my $sth = $dbh->prepare($stmt)
         or die "prepare failed for '$stmt' ".$dbh->errstr;
     $sth->execute(@where_params)
