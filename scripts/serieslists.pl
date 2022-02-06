@@ -94,9 +94,6 @@ my @events = bacds::Model::Event->load_all(@load_args);
 ##
 ## Print out results
 ##
-#print "content-type: text/html\n\n";
-#while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3, $p4) = 
-#        $sth->fetchrow_array()) {
 foreach my $event (@events) {
     my $startday = $event->startday;
     my $type     = $event->type;
