@@ -20,3 +20,8 @@ update() needs to change the date_updated column
 
 break out band into a separate table, "musos", many-to-one, and keep the
 current "band" column as an advert blurb
+
+rename type to style, loc to venue
+
+all DateTime-now needs to change to
+DateTime->now(time_zone => "America/Los_Angeles")'

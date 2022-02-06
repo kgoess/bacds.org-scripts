@@ -15,6 +15,7 @@ use warnings;
 use 5.16.0;
 
 use Carp qw/croak/;
+use Data::Dump qw/dump/;
 use DateTime;
 
 use bacds::Model::Serial;
@@ -133,7 +134,7 @@ as a list..
 sub load_all {
     my ($class, %args) = @_;
 
-    my $table = lc($args{table} || 'schedule');
+    my $table = lc(delete $args{table} || 'schedule');
 
     my $stmt =
         'SELECT '.
@@ -144,41 +145,81 @@ sub load_all {
     
     my $dbh = get_dbh();
     
-    if (my $after = $args{after}) {
+    if (my $on_date = delete $args{on_date}) {
+        croak "invalid value for 'on_date': $on_date"
+            unless $on_date =~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+        push @where_clauses, 'startday = ?';
+        push @where_params, $on_date;
+
+    }
+
+    if (my $after = delete $args{after}) {
         croak "invalid value for 'after': $after"
             unless $after =~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
         push @where_clauses, 'startday >= ?';
         push @where_params, $after;
     }
 
-    if (my $before = $args{before}) {
+    if (my $before = delete $args{before}) {
         croak "invalid value for 'before': $before"
             unless $before =~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
         push @where_clauses, 'startday < ?';
         push @where_params, $before;
     }
 
-    if ($args{without_end_date}) {
+    if (delete $args{without_end_date}) {
         push @where_clauses, 'endday IS NULL';
     }
 
-    if (my $style = $args{style}) {
+    if (my $style = delete $args{style}) {
         $style = $dbh->quote("%$style%");
         push @where_clauses, "type LIKE $style";
     }
+    if (my $slist = delete $args{style_in_list}) {
+        push @where_clauses,
+            '(' .
+            join(' OR ',
+                map {
+                    my $style = $dbh->quote("%$_%");
+                    " type LIKE $style";
+                }
+                @$slist
+            ) .
+            ')'
+            if @$slist;
+    }
+    if (my $vlist = delete $args{venue_in_list}) {
+        push @where_clauses,
+            '(' .
+            join(' OR ',
+                map {
+                    my $venue = $dbh->quote("%$_%");
+                    " loc LIKE $venue";
+                }
+                @$vlist
+            ) .
+            ')'
+            if @$vlist;
+    }
 
-    if (my $venue = $args{venue}) {
+    if (my $venue = delete $args{venue}) {
         push @where_clauses, 'loc = ?';
         push @where_params, $venue;
     }
 
-    if ($args{includes_leader}) {
+    if (delete $args{includes_leader}) {
         push @where_clauses, 'leader IS NOT NULL';
+    }
+
+    if (%args) {
+        croak "unrecognized args in call to load_all: ".dump %args;
     }
 
     if (@where_clauses) {
         $stmt .= ' WHERE '.join(' AND ', @where_clauses);
     }
+
+    say STDERR "$stmt\nparams:\n".join("\n", @where_params) if $ENV{DEBUG};
 
     my $sth = $dbh->prepare($stmt)
         or die "prepare failed for '$stmt' ".$dbh->errstr;

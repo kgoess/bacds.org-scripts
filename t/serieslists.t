@@ -14,6 +14,7 @@ use Test::Output qw/stdout_like stdout_is/;
 $ENV{TEST_CSV_DIR} = 't/data/';
 $ENV{TEST_TODAY} = '2018-09-06';
 $ENV{HTTP_HOST} = 'www.bacds.org';
+$ENV{DOCUMENT_URI} = '/offer-url';
 $ENV{PERL5LIB} = join ':', @INC; # so that system "..." works
 
 my ($stdout, $stderr, $exit);
@@ -25,6 +26,7 @@ $ENV{QUERY_STRING} = 'styles=CONTRA,HAMBO&venues=HVC&day=Sun';
 if ($exit) {
     die $stdout.$stderr;
 }
+say STDERR $stderr if $stderr;
 like $stdout, qr{
     2018-09-23-CONTRA.*
     Sunday,.September.23.*
@@ -51,6 +53,7 @@ $ENV{QUERY_STRING} = 'venues=COY,FSJ&day=Sun&style=ENGLISH';
 if ($exit) {
     die $stdout.$stderr;
 }
+say STDERR $stderr if $stderr;
 like $stdout, qr{
 2018-09-09-ENGLISH.*
 Sunday,.September.9.*
@@ -72,6 +75,7 @@ $ENV{QUERY_STRING} = 'styles=ENGLISH,ECDWORKSHOP&venues=STC,CCB,STALB&day=Wed';
 ($stdout, $stderr, $exit) = capture {
     system "scripts/serieslists.pl";
 };
+say STDERR $stderr if $stderr;
 if ($exit) {
     die $stdout.$stderr;
 }
@@ -104,6 +108,7 @@ $ENV{QUERY_STRING} = 'style=ENGLISH&venues=ASE,FBC,MT,FHL,SME&day=Tue&day2=Wed&d
 if ($exit) {
     die $stdout.$stderr;
 }
+say STDERR $stderr if $stderr;
 like $stdout, qr{
     2018-09-18-ENGLISH.*
     Tuesday,.September.18.*
@@ -130,6 +135,7 @@ $ENV{QUERY_STRING} = 'single-event=2018-09-18&venue=ASE&starttime=18:00&endtime=
 if ($exit) {
     die $stdout.$stderr;
 }
+say STDERR $stderr if $stderr;
 like $stdout,
 qr{^<a name="2018-09-18-ENGLISH"></a>
 <p class="dance">
@@ -150,6 +156,7 @@ Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 if ($exit) {
     die $stdout.$stderr;
 }
+say STDERR $stderr if $stderr;
 $stdout =~ m{<script.*?>(.+?)</script>}ms
     or die "can't find <script> tags in $stdout";
 
@@ -229,6 +236,7 @@ $ENV{QUERY_STRING} = 'single-event=2018-09-18&venues=CCB,ASE,USA,WTFBBQLOL&start
 if ($exit) {
     die $stdout.$stderr;
 }
+say STDERR $stderr if $stderr;
 like $stdout,
 qr{^<a name="2018-09-18-ENGLISH"></a>
 <p class="dance">
@@ -249,6 +257,7 @@ Band:  Audrey Knuth, Christopher Jacoby, Bill Jensen<br /><br />
 if ($exit) {
     die $stdout.$stderr;
 }
+say STDERR $stderr if $stderr;
 $stdout =~ m{<script.*?>(.+?)</script>}ms
     or die "can't find <script> tags in $stdout";
 

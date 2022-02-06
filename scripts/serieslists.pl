@@ -18,9 +18,12 @@
 use strict;
 use Data::Dump qw/dump/;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year Day_of_Week_to_Text Today);
+use DateTime;
 use DBI;
 use JSON qw/to_json/;
 use Time::Local;
+
+use bacds::Model::Event;
 
 use bacds::Model::Venue;
 
@@ -71,33 +74,37 @@ push @vlist, $vkey if $vkey;
 my @slist = split ',', $styles if $styles;
 push @slist, $style if $style;
 
-
-##
-## Set up the table
-##
-my $csv_dir = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $dbh = DBI->connect(qq[DBI:CSV:f_dir=$csv_dir;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\],'','');
-
-##
-## Build the query string
-##
-my ($query_string, @bind_params) = 
+#
+# load the events for those args
+#
+my @load_args = 
     $single_event
-    ? build_single_event_query($single_event, \@vlist)
-    : build_upcoming_events_query(\@slist, \@vlist, $dbh); 
-
-##
-## Make the query
-##
-my $sth = $dbh->prepare($query_string) or die $dbh->errstr;
-$sth->execute(@bind_params) or die $sth->errstr;
+    ? (
+        on_date => $single_event,
+        venue_in_list => \@vlist,
+    )
+    : (
+        after => ($ENV{TEST_TODAY} || DateTime->now(time_zone => 'America/Los_Angeles')->ymd),
+        style_in_list => \@slist,
+        venue_in_list => \@vlist,
+    )
+;
+my @events = bacds::Model::Event->load_all(@load_args);
 
 ##
 ## Print out results
 ##
 #print "content-type: text/html\n\n";
-while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3, $p4) = 
-        $sth->fetchrow_array()) {
+#while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3, $p4) = 
+#        $sth->fetchrow_array()) {
+foreach my $event (@events) {
+    my $startday = $event->startday;
+    my $type     = $event->type;
+    my $loc      = $event->loc;
+    my $leader   = $event->leader;
+    my $band     = $event->band;
+    my $comments = $event->comments;
+    
     my ($date_yr, $date_mon, $date_day) = ($startday =~ /(\d+)-(\d+)-(\d+)/);
     my $wday = Day_of_Week($date_yr, $date_mon, $date_day);
     $date_day =~ s/^0//g if $date_day < 10;
@@ -107,7 +114,7 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         $comments = "";
     }
 
-     $trailer = "\n";
+    $trailer = "\n";
         
     if ($single_event or 
         grep { $day_map{$_} eq $wday } @days_to_search
@@ -126,7 +133,7 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         print qq{<a href="?single-event=$startday">\n};
         print Day_of_Week_to_Text($wday).", ".$mon_lst[$date_mon-1] . " " . $date_day. "\n";
         print qq{</a></b><br />\n};
-        my ($venue) = lookup_address_for_vkey($dbh, $loc);
+        my ($venue) = lookup_address_for_vkey($loc);
         if ($venue) {
            print $venue->hall.', '.$venue->address.', '.$venue->city." <br />\n";
         }
@@ -148,64 +155,12 @@ while (my ($startday, $endday, $type, $loc, $leader, $band, $comments, $p2, $p3,
         }
     }
     print $trailer;
-    print generate_jsonld($dbh, $single_event, $loc, $type, $leader, $band,
+    print generate_jsonld($single_event, $loc, $type, $leader, $band,
                           $comments, $start_time, $end_time) 
         if $single_event;
     $type = "";
 }
 
-# I'd like to put these into bind params, but gave up after wrestling
-# with that for a couple hours
-sub build_upcoming_events_query {
-    my ($slist, $vlist, $dbh) = @_; 
-
-    my $today = $dbh->quote($ENV{TEST_TODAY} || sprintf "%4.4d-%2.2d-%2.2d", Today());
-
-    my $qrystr = "SELECT * FROM schedule";
-    $qrystr .= " WHERE startday >= $today";
-    if (@$slist) {
-        $qrystr .= " AND ( ";
-        my $style = shift @$slist;
-        $style = $dbh->quote("%$style%");
-        $qrystr .= " type LIKE $style";
-        foreach $style (@$slist) {
-            $style = $dbh->quote("%$style%");
-            $qrystr .= " or type LIKE $style";
-        }
-        $qrystr .= " )";
-    }
-    if (@$vlist) {
-        $qrystr .= " AND ( ";
-        my $vkey = shift @$vlist;
-        $vkey = $dbh->quote("$vkey%");
-        $qrystr .= " loc LIKE $vkey";
-        foreach $vkey (@$vlist) {
-            $vkey = $dbh->quote("$vkey%");
-            $qrystr .= " or loc LIKE $vkey";
-        }
-        $qrystr .= " )";
-    }
-    #print STDERR "query is $qrystr\n";
-
-    return $qrystr;
-}
-
-sub build_single_event_query {
-    my ($event_date, $venues) = @_;
-
-    my $qmarks = join ',', map {'?'} @$venues;
-
-    my $qrystr = 
-        qq{SELECT * 
-           FROM schedule 
-           WHERE startday = ? 
-           AND loc IN ($qmarks) 
-           LIMIT 1};
-
-    #print STDERR "query is $qrystr, params are $event_date, $venue\n";
-
-    return $qrystr, $event_date, @$venues;
-}
 
 # see https://schema.org/DanceEvent
 # and http://eceilidh.org.uk/cps/structured-data-applied-to-english-ceilidh-events.php
@@ -218,7 +173,7 @@ sub build_single_event_query {
 # empirical experimentation shows the data is arriving here with " stripped out, so
 # it's safe to just dump into the JSON
 sub generate_jsonld {
-    my ($dbh, $date, $vkey, $type, $leader, $band, $comments,
+    my ($date, $vkey, $type, $leader, $band, $comments,
         $start_time, $end_time) = @_;
 
     if (!$start_time) {
@@ -234,7 +189,7 @@ sub generate_jsonld {
     my $nice_dance_type = ucfirst lc $type;
 
     # keys to $loc hashref are: vkey|hall|address|city|zip|comment|type
-    my $venue = lookup_address_for_vkey($dbh, $vkey);
+    my $venue = lookup_address_for_vkey($vkey);
 
     my $offer_url = "https://$ENV{HTTP_HOST}$ENV{DOCUMENT_URI}";
 
@@ -344,7 +299,7 @@ EOL
 # ACC|Arlington Community Church|52 Arlington Avenue|Kensington|||SPECIAL
 # ALB|Albany Veteran's Memorial Building|1325 Portland Avenue (off Key RouteBlvd)|Albany|||SPECIAL
 sub lookup_address_for_vkey {
-    my ($dbh, $vkey) = @_;
+    my ($vkey) = @_;
 
     return bacds::Model::Venue->load(vkey => $vkey);
 }

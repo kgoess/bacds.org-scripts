@@ -6,7 +6,7 @@ use warnings;
 use Data::Dump qw/dump/;
 use File::Path qw/rmtree/;
 use File::Temp qw/tempdir/;
-use Test::More tests => 14;
+use Test::More tests => 22;
 
 use bacds::Model::Event;
 
@@ -19,6 +19,9 @@ eval {
 
     test_CRUD();
     test_load_all();
+    test_load_all_style_in_list();
+    test_load_all_venue_in_list();
+    test_load_all_on_date();
 
     rmtree $datadir;
 
@@ -108,4 +111,107 @@ sub test_load_all {
 
     my @middle_two = bacds::Model::Event->load_all(after => '2022-01-02', before => '2022-01-04');
     is @middle_two, 2, "after 01-02 (inclusive) and before 01-04, there's two";
+
+    $_->delete for @all;
+}
+
+# testing the style_in_list => [ENGLISH, CONTRA] arg
+sub test_load_all_style_in_list {
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", type => 'STYLE1')->save
+        for (1, 2);
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", type => 'STYLE2')->save
+        for (1, 2);
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", type => 'STYLE3')->save
+        for (1, 2);
+
+    my @got;
+
+    # one of the styles
+    @got = bacds::Model::Event->load_all( style_in_list => ['STYLE1']);
+    is @got, 2, 'just STYLE1' or dump \@got;
+
+
+    # two of the styles
+    @got = bacds::Model::Event->load_all( style_in_list => ['STYLE1', 'STYLE2']);
+    is @got, 4, 'STYLE1 and STYLE2' or dump \@got;
+
+    # two styles and a date
+    @got = bacds::Model::Event->load_all(
+        style_in_list => ['STYLE1', 'STYLE2'],
+        after => '2022-01-02',
+    );
+    is @got, 2, 'STYLE1 and STYLE2 just on Jan 2nd' or dump \@got;
+    is_deeply [sort map { $_->type } @got], [sort (qw/STYLE1 STYLE2/)],
+        'one of each of the two for the 2nd' or dump \@got;
+
+    $_->delete for bacds::Model::Event->load_all;
+}
+
+
+# testing the venue_in_list => [CCB, SPF] arg
+sub test_load_all_venue_in_list {
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", loc => 'VENUE1')->save
+        for (1, 2);
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", loc => 'VENUE2')->save
+        for (1, 2);
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", loc => 'VENUE3')->save
+        for (1, 2);
+
+    my @got;
+
+    # one of the venues
+    @got = bacds::Model::Event->load_all( venue_in_list => ['VENUE1']);
+    is @got, 2, 'just VENUE1' or dump \@got;
+
+
+    # two of the venues
+    @got = bacds::Model::Event->load_all( venue_in_list => ['VENUE1', 'VENUE2']);
+    is @got, 4, 'VENUE1 and VENUE2' or dump \@got;
+
+    # two venues and a date
+    @got = bacds::Model::Event->load_all(
+        venue_in_list => ['VENUE1', 'VENUE2'],
+        after => '2022-01-02',
+    );
+    is @got, 2, 'VENUE1 and VENUE2 just on Jan 2nd' or dump \@got;
+    is_deeply [sort map { $_->loc } @got], [sort (qw/VENUE1 VENUE2/)],
+        'one of each of the two for the 2nd' or dump \@got;
+
+    $_->delete for bacds::Model::Event->load_all;
+}
+
+
+sub test_load_all_on_date {
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", loc => 'VENUE1')->save
+        for (1, 2);
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", loc => 'VENUE2')->save
+        for (1, 2);
+
+    bacds::Model::Event->new(startday => "2022-01-0$_", loc => 'VENUE3')->save
+        for (1, 2);
+
+    my @got;
+
+    # one of the venues
+    @got = bacds::Model::Event->load_all(
+        on_date => '2022-01-01',
+        venue_in_list => ['VENUE1'],
+    );
+    is @got, 1, 'one VENUE1 on jan 1' or dump \@got;
+
+    @got = bacds::Model::Event->load_all(
+        on_date => '2022-01-01',
+        venue_in_list => ['VENUE1', 'VENUE2'],
+    );
+    is @got, 2, 'two for VENUE1 and VENUE2 on jan 1' or dump \@got;
+
+    $_->delete for bacds::Model::Event->load_all;
 }
