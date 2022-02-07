@@ -21,23 +21,18 @@ use DBI;
 use CGI;
 
 use bacds::Model::Venue;
+use bacds::Model::Event;
 
 my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 my $TEST_TODAY = $ENV{TEST_TODAY};
 
-my ($dbh, $loc_dbh, $sth, $loc_sth);
-my ($startday,$endday,$type,$loc,$leader,$band,$comments);
 my ($st_day, $st_mon, $st_yr, $end_day, $end_mon, $end_yr);
-my ($today_year,$today_mon,$today_day,$today, $today_sec);
 my ($last_year,$last_mon,$last_day,$last, $last_sec);
-my ($s_day, $s_mon, $s_year, $e_day, $e_mon, $e_year);
-my ($qrystr, $cqrystr, $qrydif, $loc_qry, $loc_type);
 my ($style, $venue, $numdays);
 my ($json, $jsonobject, $sdate, $edate, $start, $end, $id);
 my ($styleurl, $danceurl, $dburl, $stdloc, $header, $trailer);
 my ($outputtype, $muso, $qmuso, $caller, $qcaller);
-my @vals;
-my ($i, $varname, $data, $debugmsg);
+my ($debugmsg);
 my @monlst = (
     "January",
     "February",
@@ -62,14 +57,10 @@ my %day_lst = (
     'SUN' => 'Sunday'
 );
 
-my ($yr, $mon, $day);
-my ($key, $hall, $addr, $city, $ven_comment);
-my ($loc_hall, $loc_addr, $loc_city, $loc_ven_comment);
+my ($loc_hall, $loc_city, $loc_ven_comment);
 my $menu_file = '/var/www/bacds.org/public_html/shared/menu.html';
 my $meta_file = '/var/www/bacds.org/public_html/shared/meta-tags.html';
 my $footer_file = '/var/www/bacds.org/public_html/shared/copyright.html';
-my $argstr;
-my $value;
 my $numrows;
 my $q = new CGI;
 
@@ -102,9 +93,9 @@ $numdays = $style = $venue = $outputtype = $muso = $caller = $json
 if ( $ENV{"REQUEST_METHOD"} eq "BOGUS-WAS-GET"  or
      $ENV{'REQUEST_METHOD'} eq "") {
 
-    @vals = split(/&/,$ENV{"QUERY_STRING"}) if $ENV{"QUERY_STRING"};
-    foreach $i (@vals) {
-        ($varname, $data) = split(/=/,$i);
+    my @vals = split(/&/,$ENV{"QUERY_STRING"}) if $ENV{"QUERY_STRING"};
+    foreach my $i (@vals) {
+        my ($varname, $data) = split(/=/,$i);
         $style = $data if $varname eq "style";
         $venue = $data if $varname eq "venue";
         $numdays = $data if $varname eq "numdays";
@@ -169,18 +160,16 @@ if ($end ne ""){
 ##
 ## First, get the current date.
 ##
-($today_day, $today_mon, $today_year) = my_localtime();
-$today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
+my ($today_day, $today_mon, $today_year) = my_localtime();
+my $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
 $today_mon++;
 $today_mon = sprintf "%02d", $today_mon;
 $today_day = sprintf "%02d", $today_day;
 $today_year += 1900;
-$today = "$today_year-$today_mon-$today_day";
+my $today = "$today_year-$today_mon-$today_day";
 
 if ($sdate eq "") {$sdate = $today};
-$s_year = substr($sdate, 0, 4);
-$s_mon = substr($sdate,5,2);
-$s_day = substr($sdate,8,2);
+my $s_year = substr($sdate, 0, 4);
 
 
 if ($numdays ne ""  && $numdays > 1) {
@@ -215,63 +204,43 @@ if ($s_year != $today_year) {
 };
 
 ##
-## Now build our query string
+## Now build our query
 ##
-$qrystr =
-   "SELECT startday,endday,type,loc,leader,band,comments,url FROM schedule$query_year";
-$cqrystr = "SELECT COUNT(*) FROM schedule$query_year";
-#
+my @load_args;
 if (($numdays == 0) && ($edate eq "")) {
-    $qrydif .= " WHERE startday >= '" . $sdate . "'";
+    push @load_args, after => $sdate;
 } else {
     if ($numdays == 1) {
-        $qrydif .= " WHERE startday = '" . $sdate . "'";
+        push @load_args, on_date => $sdate;
     } else {
-        $qrydif .= " WHERE startday >= '" . $sdate . "'";
-        $qrydif .= " AND startday < '" . $last . "'";
+        push @load_args, after => $sdate;
+        push @load_args, before => $last;
     }
 }
 
-$qrydif .= " AND loc = '" . $venue . "'" if $venue;
-$qrydif .= " AND type LIKE '%" . $style . "%'" if $style;
+push @load_args, venue => $venue if $venue;;
+push @load_args, style => $style if $style;
+
 if ($caller) {
-    $_ = $caller;
-    s/'.+//g;
-    $qcaller = $_;
+    $qcaller = $caller =~ s/'.+//gr;
+    push @load_args, leader => $qcaller;
 }
-$qrydif .= " AND leader LIKE '%" . $qcaller . "%'" if $qcaller;
+
 if ($muso) {
-    $_ = $muso;
-    s/'.+//g;
-    $qmuso = $_;
-}
-$qrydif .= " AND band LIKE '%" . $qmuso . "%'" if $qmuso;
-#$qrydif .= " AND endday IS NULL";
-#$qrydif .= " AND leader IS NOT NULL";
-
-$qrystr .= $qrydif if defined($qrydif);
-$cqrystr .= $qrydif if defined($qrydif);
-
-print STDERR "DANCEFINDER.PL QUERY: ", $qrystr, "\n";
-
-##
-## Set up the table and make the query
-##
-$dbh = get_dbh();
-# get number of rows
-$sth = $dbh->prepare($cqrystr);
-$sth->execute();
-($numrows) = $sth->fetchrow_array();
-
-if ($numrows) {
-    # get schedule info
-    $sth = $dbh->prepare($qrystr);
-    $sth->execute();
+    $qmuso = $muso =~ s/'.+//gr;
+    push @load_args, band => $muso;
 }
 
-##
-## Print out results
-## if it's !inline then we want a header
+print STDERR "DANCEFINDER.PL QUERY: @load_args\n";
+
+
+#
+# load the results
+#
+my @events = bacds::Model::Event->load_all(@load_args);
+
+#
+# print the results
 #
 if ($outputtype  !~ /inline/i) {
     if ($json eq "TRUE") {
@@ -317,19 +286,27 @@ ENDHTML
     }
 }
 
-## print "numdays = $numdays, query = $qrystr";
-
 if ($json eq "TRUE") {
     $id = 0;
     print "$jsonobject [ ";
 }
 
-if ($numrows) {
+#if ($numrows) {
+if (@events) {
 
+#    while (($startday, $endday, $type, $loc, $leader, $band, $comments, $dburl)
+#        = $sth->fetchrow_array()
+#    ) {
+    foreach my $event (@events) {
+        my $startday = $event->startday;
+        my $endday   = $event->endday;
+        my $type     = $event->type;
+        my $loc      = $event->loc;
+        my $leader   = $event->leader;
+        my $band     = $event->band;
+        my $comments = $event->comments;
+        my $dburl    = $event->url;
 
-    while (($startday, $endday, $type, $loc, $leader, $band, $comments, $dburl)
-        = $sth->fetchrow_array()
-    ) {
         $styleurl = '';
         # Get style URL
             #$styleurl = "http://www.bacds.org/series/community/"
@@ -377,7 +354,6 @@ if ($numrows) {
         # Get location information
         if (my $venue = bacds::Model::Venue->load(vkey => $loc)) {
             $loc_hall = $venue->hall;
-            $loc_addr = $venue->address;
             $loc_city = $venue->city;
             $loc_ven_comment = $venue->comment;
         }
@@ -474,7 +450,7 @@ ENDJSON
             }
 
             if ($endday ne "") {
-                ($end_yr, $end_mon, $end_day) = ($endday =~ /(\d+)-(\d+)-(\d+)/);
+                my ($end_yr, $end_mon, $end_day) = ($endday =~ /(\d+)-(\d+)-(\d+)/);
                 $end_day =~ s/^0//g if $end_day < 10;
                 $end_mon =~ s/^0//g if $end_mon < 10;
             }

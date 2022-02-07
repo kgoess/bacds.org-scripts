@@ -181,7 +181,7 @@ sub load_all {
             join(' OR ',
                 map {
                     my $style = $dbh->quote("%$_%");
-                    " type LIKE $style";
+                    "type LIKE $style";
                 }
                 @$slist
             ) .
@@ -194,7 +194,7 @@ sub load_all {
             join(' OR ',
                 map {
                     my $venue = $dbh->quote("%$_%");
-                    " loc LIKE $venue";
+                    "loc LIKE $venue";
                 }
                 @$vlist
             ) .
@@ -207,6 +207,15 @@ sub load_all {
         push @where_params, $venue;
     }
 
+    if (my $band = delete $args{band}) {
+        $band = $dbh->quote("%$band%");
+        push @where_clauses, "band like $band";
+    }
+
+    if (my $leader = delete $args{leader}) {
+        $leader = $dbh->quote("%$leader%");
+        push @where_clauses, "leader like $leader";
+    }
     if (delete $args{includes_leader}) {
         push @where_clauses, 'leader IS NOT NULL';
     }

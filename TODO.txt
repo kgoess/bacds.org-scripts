@@ -26,6 +26,9 @@ rename type to style, loc to venue
 all DateTime-now needs to change to
 DateTime->now(time_zone => "America/Los_Angeles")'
 
-check that dancefinder.pl is decoding spaces in params correctly
+check that dancefinder.pl is decoding spaces %20 in params correctly
+have load_all remove any % from string in LIKE queries
 
 make some of these LIKE queries ignore case
+
+
