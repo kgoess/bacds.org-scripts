@@ -162,7 +162,7 @@ if ($start ne ""){
     $sdate = time2str("%Y-%m-%d", $start)
 };
 if ($end ne ""){
-    $edate = time2str("%Y-%m4%d", $end)
+    $edate = time2str("%Y-%m-%d", $end)
 };
 
 
