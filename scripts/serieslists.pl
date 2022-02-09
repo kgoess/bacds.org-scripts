@@ -17,11 +17,11 @@
 ## "git" group I created and then do "git clone /var/lib/git/bacds.org-scripts/".
 use strict;
 use Date::Calc qw(Day_of_Week Day_of_Week_to_Text);
-use DateTime;
 use JSON qw/to_json/;
 
 use bacds::Model::Event;
 use bacds::Model::Venue;
+use bacds::Utils qw/today_ymd/;
 
 my ($style, $styles, $vkey, $vkeys, @days_to_search, $single_event,
     $start_time, $end_time);
@@ -80,7 +80,7 @@ my @load_args =
         venue_in_list => \@vlist,
     )
     : (
-        after => ($ENV{TEST_TODAY} || DateTime->now(time_zone => 'America/Los_Angeles')->ymd),
+        after => today_ymd(),
         style_in_list => \@slist,
         venue_in_list => \@vlist,
     )

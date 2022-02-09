@@ -23,8 +23,8 @@ current "band" column as an advert blurb
 
 rename type to style, loc to venue
 
-all DateTime-now needs to change to
-DateTime->now(time_zone => "America/Los_Angeles")'
+DONE all DateTime-now needs to change to
+        DateTime->now(time_zone => "America/Los_Angeles")'
 
 check that dancefinder.pl is decoding spaces %20 in params correctly
 have load_all remove any % from string in LIKE queries

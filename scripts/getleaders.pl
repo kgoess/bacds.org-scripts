@@ -5,9 +5,9 @@
 ## note that this script doesn't look at QUERY_STRING
 
 use strict;
-use DateTime;
 
 use bacds::Model::Event;
+use bacds::Utils qw/today_ymd/;
 
 my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 my $TEST_TODAY = $ENV{TEST_TODAY};
@@ -51,12 +51,7 @@ foreach my $i (sort keys %leaderhash) {
 print "</select>\n";
 
 sub my_localtime {
-    if ($TEST_TODAY) {
-        my ($year, $mon, $day) = split '-', $TEST_TODAY;
-        return $day, $mon, $year;
-    } else {
-        my $now = DateTime->now;
-        return map { $now->$_ } qw/day month year/;
-    }
+    my ($year, $mon, $day) = split '-', today_ymd();
+    return $day, $mon, $year;
 }
 

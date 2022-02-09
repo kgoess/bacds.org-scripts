@@ -18,10 +18,9 @@ use 5.16.0;
 
 use Carp qw/croak/;
 use Data::Dump qw/dump/;
-use DateTime;
 
 use bacds::Model::Serial;
-use bacds::Model::Utils qw/get_dbh/;
+use bacds::Model::Utils qw/get_dbh now_iso8601/;
 
 my @Columns = (
     'venue_id',     # the primary key, supplied by the db
@@ -60,8 +59,8 @@ sub save {
     }
 
     $self->venue_id(bacds::Model::Serial->get_next('venue'));
-    $self->created_ts(DateTime->now->iso8601);
-    $self->modified_ts(DateTime->now->iso8601);
+    $self->created_ts(now_iso8601());
+    $self->modified_ts(now_iso8601());
 
     my $stmt = 
         'INSERT INTO venue ('.

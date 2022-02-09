@@ -16,10 +16,10 @@ use 5.16.0;
 
 use Carp qw/croak/;
 use Data::Dump qw/dump/;
-use DateTime;
 
 use bacds::Model::Serial;
-use bacds::Model::Utils qw/get_dbh/;
+use bacds::Model::Utils qw/get_dbh now_iso8601/;
+use bacds::Utils qw/today_ymd/;
 
 my @Columns = (
     'event_id',     # the primary key, supplied by the db
@@ -68,8 +68,9 @@ sub save {
     }
 
     $self->event_id(bacds::Model::Serial->get_next('schedule'));
-    $self->created_ts(DateTime->now->iso8601);
-    $self->modified_ts(DateTime->now->iso8601);
+
+    $self->created_ts(now_iso8601());
+    $self->modified_ts(now_iso8601());
 
     my $stmt = 
         'INSERT INTO schedule ('.
@@ -232,7 +233,7 @@ sub load_all {
     }
 
     if (delete $args{camps_and_specials}) {
-        my $today = $ENV{TEST_TODAY} || DateTime->now->iso8601;
+        my $today = $ENV{TEST_TODAY} || today_ymd();
         push @where_clauses, join ' AND ', 
             q{ ( ( endday >= ? OR startday >= ?) },
             q{   (type LIKE '%CAMP%' OR type LIKE '%SPECIAL%' ) ) }
@@ -358,7 +359,7 @@ plural.
 
 sub get_count_for_today {
 
-    my $today = $ENV{TEST_TODAY} || DateTime->now->iso8601;
+    my $today = today_ymd();
 
     my $stmt = "SELECT COUNT(*) FROM schedule WHERE startday = ?";
 
