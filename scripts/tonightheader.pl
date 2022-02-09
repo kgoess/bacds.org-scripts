@@ -12,7 +12,6 @@
 ## This script doesn't do anything with any arguments.
 
 use strict;
-use DBI;
 use CGI;
 
 use bacds::Model::Event;

@@ -12,9 +12,8 @@
 ## 'musos" should be a separate table, many-to-one
 
 use strict;
-use Time::Local;
-use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
-use DBI;
+
+use DateTime;
 
 use bacds::Model::Event;
 
@@ -112,8 +111,3 @@ sub my_localtime {
     }
 }
 
-sub get_dbh {
-    return DBI->connect(
-        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
-    );
-}

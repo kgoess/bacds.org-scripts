@@ -4,9 +4,7 @@
 ##
 ## This includes camps (where endday IS NOT null)
 use strict;
-use Time::Local;
 use DateTime;
-use DBI;
 
 use bacds::Model::Event;
 
@@ -86,8 +84,3 @@ sub my_localtime {
     }
 }
 
-sub get_dbh {
-    return DBI->connect(
-        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
-    );
-}

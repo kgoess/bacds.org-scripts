@@ -16,15 +16,11 @@
 ## This file is being tracked in git.  To clone the repo, add yourself to the
 ## "git" group I created and then do "git clone /var/lib/git/bacds.org-scripts/".
 use strict;
-use Data::Dump qw/dump/;
-use Date::Calc qw(Day_of_Week Week_Number Day_of_Year Day_of_Week_to_Text Today);
+use Date::Calc qw(Day_of_Week Day_of_Week_to_Text);
 use DateTime;
-use DBI;
 use JSON qw/to_json/;
-use Time::Local;
 
 use bacds::Model::Event;
-
 use bacds::Model::Venue;
 
 my ($style, $styles, $vkey, $vkeys, @days_to_search, $single_event,

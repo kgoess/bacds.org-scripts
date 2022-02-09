@@ -6,9 +6,7 @@
 ##
 ## This script doesn't take any parameters.
 use strict;
-use Time::Local;
-use DBI;
-use Date::Day;
+use Date::Day qw/day/;
 
 use bacds::Model::Venue;
 use bacds::Model::Event;

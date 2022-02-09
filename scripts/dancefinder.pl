@@ -13,11 +13,10 @@
 ## It's called from make-frontpage-files.sh once per minute by cron.
 #
 use strict;
-use Time::Local;
-use Date::Format;
-use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
-use Date::Day;
-use DBI;
+use Time::Local qw/timelocal/;
+use Date::Format qw/time2str strftime/;
+use Date::Calc qw/Day_of_Week/;
+use Date::Day qw/day/;
 use CGI;
 
 use bacds::Model::Venue;
@@ -653,9 +652,4 @@ sub my_localtime {
     }
 }
 
-sub get_dbh {
-    return DBI->connect(
-        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
-    );
-}
 # vim: ts=4 sw=4 et
