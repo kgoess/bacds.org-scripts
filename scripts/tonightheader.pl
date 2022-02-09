@@ -6,85 +6,24 @@
 ##
 ## current usage:
 ##
-## public_html/scripts/make-frontpage-files.sh:REQUEST_METHOD="" QUERY_STRING="numdays=1&outputtype=INLINE" perl scripts/tonightheader.pl > tonight.html
-## public_html/scripts/make-tonight-file.sh:perl scripts/tonightheader.pl outputtype=INLINE > tonight.html
+## public_html/scripts/make-frontpage-files.sh:REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight.html
+## public_html/scripts/make-tonight-file.sh:perl scripts/tonightheader.pl > tonight.html
 ##
-##
+## This script doesn't do anything with any arguments.
 
 use strict;
-use Time::Local;
-use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
-use Date::Day;
 use DBI;
 use CGI;
 
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $TEST_TODAY = $ENV{TEST_TODAY};
+use bacds::Model::Event;
 
-my ($dbh, $loc_dbh, $sth, $loc_sth);
-my ($startday,$endday,$type,$loc,$leader,$band,$comments);
-my ($st_day, $st_mon, $st_yr, $end_day, $end_mon, $end_yr);
-my ($today_year,$today_mon,$today_day,$today, $today_sec);
-my ($last_year,$last_mon,$last_day,$last, $last_sec);
-my ($qrystr, $cqrystr, $qrydif, $loc_qry, $loc_type);
-my ($style, $venue, $numdays);
-my ($styleurl, $danceurl, $dburl, $stdloc, $plural);
-my ($outputtype, $muso, $qmuso, $caller, $qcaller);
-my @vals;
-my ($i, $varname, $data);
-my ($yr, $mon, $day);
-my ($key, $hall, $addr, $city, $ven_comment);
-my ($loc_hall, $loc_addr, $loc_city, $loc_ven_comment);
-my $menu_file = '/var/www/bacds.org/public_html/shared/menu.html';
 my $meta_file = '/var/www/bacds.org/public_html/shared/meta-tags.html';
-my $footer_file = '/var/www/bacds.org/public_html/shared/copyright.html';
-my $argstr;
-my $value;
-my $numrows;
-my $q = new CGI;
 
+my $numrows = bacds::Model::Event->get_count_for_today();
 
-$outputtype = $data if (defined($varname) && $varname eq "outputtype");
+my $plural = $numrows > 1 ? "s" : "";
 
-##
-## First, get the current date.
-##
-($today_day, $today_mon, $today_year) = my_localtime();
-$today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
-$today_mon++;
-$today_mon = sprintf "%02d", $today_mon;
-$today_day = sprintf "%02d", $today_day;
-$today_year += 1900;
-$today = "$today_year-$today_mon-$today_day";
-
-##
-## Now build our query string
-##
-$cqrystr = "SELECT COUNT(*) FROM schedule";
-#
-$qrydif .= " WHERE startday = '" . $today . "'";
-
-$cqrystr .= $qrydif;
-
-#print STDERR "tonightheader.pl:  ", $cqrystr, "\n";
-
-##
-## Set up the table and make the query
-##
-$dbh = get_dbh();
-# get number of rows
-$sth = $dbh->prepare($cqrystr);
-$sth->execute();
-($numrows) = $sth->fetchrow_array();
-
-$plural = $numrows > 1 ? "s" : "";
-
-##
-## Print out results
-##
-#print "content-type: text/html\n\n";
-if (!$outputtype || ($outputtype && ($outputtype !~ /inline/i))) {
-	print <<ENDHTML;
+print <<ENDHTML;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xthml1-strict.dtd">
 <html>
 <head>
@@ -99,45 +38,18 @@ ENDHTML
 <body index="scriptoutput">
 <h1>
 ENDHTML
-	print "\n</h1>\n";
+print "\n</h1>\n";
 
-}
 if ($numrows) {
     print "<h2>Today's Dance$plural!</h2>\n";
-# print "<table border><tr><td>\n";
-# NHC -- Think semantic markup -vs- relying on side effects from an unnecessary
-#	 presentation tag to get the effect that you want.
-# and look for "div.tonight" style in /css/base.css for styling
+    # look for "div.tonight" style in /css/base.css for styling
     print '<div class="tonight">', "\n";
 } else {
     print '<div>', "\n";
 }    
     
-if (!$outputtype || ($outputtype && ($outputtype !~ /inline/i))) {
-	print <<ENDHTML;
+print <<ENDHTML;
 </body>
 </html>
 ENDHTML
-}
 
-
-sub my_localtime {
-    if ($TEST_TODAY) {
-        my ($year, $mon, $day) = split '-', $TEST_TODAY;
-        $mon--;
-        if ($mon < 0) {
-            $mon = 11;
-        }
-        $year -= 1900;
-        return $day, $mon, $year;
-    } else {
-        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
-        return $today_day, $today_mon, $today_year;
-    }
-}
-
-sub get_dbh {
-    return DBI->connect(
-        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
-    );
-}

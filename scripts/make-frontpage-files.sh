@@ -21,7 +21,7 @@ cd $basedir
 # kmg 02Feb20 remove both zoomevents per discussion with edb and apw, see
 #             thread "Zoomevents2.pl script, content.html page, messed with
 #             schedule database"
-REQUEST_METHOD="" QUERY_STRING="numdays=1&outputtype=INLINE" perl scripts/tonightheader.pl > tonight.html
+REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight.html
 #
 # append today's dances to the header piece
 # edb 8dec08  set environment vars to eliminate error msgs
