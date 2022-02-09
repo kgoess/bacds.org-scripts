@@ -6,6 +6,7 @@ help:
 
 install:
 	cp scripts/*.pl /var/www/bacds.org/public_html/scripts/
+	cp scripts/*.sh /var/www/bacds.org/public_html/scripts/
 	cp cgi-bin/*.cgi /var/www/bacds.org/cgi-bin/
 
 test:
@@ -13,6 +14,9 @@ test:
 
 diff-with-prod:
 	for f in scripts/*.pl ; do \
+		diff -u $$f /var/www/bacds.org/public_html/scripts/$$(basename $$f); \
+	done
+	for f in scripts/*.sh ; do \
 		diff -u $$f /var/www/bacds.org/public_html/scripts/$$(basename $$f); \
 	done
 	for f in cgi-bin/*.cgi ; do \
