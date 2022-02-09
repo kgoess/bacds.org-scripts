@@ -4,21 +4,15 @@
 ##
 ## public_html/scripts/make-frontpage-files.sh:perl scripts/specialevents.pl > specialevents.html
 ##
+## This script doesn't take any parameters.
 use strict;
 use Time::Local;
 use DBI;
 use Date::Day;
 
 use bacds::Model::Venue;
+use bacds::Model::Event;
 
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $TEST_TODAY = $ENV{TEST_TODAY};
-
-my ($dbh, $loc_dbh, $sth, $loc_sth);
-my ($startday,$endday,$type,$loc,$leader,$band,$comments, 
-    $name, $stdloc, $dburl, $dbtime);
-my ($today_year,$today_mon,$today_day,$today, $today_sec);
-my ($qrystr, $loc_qry);
 my @mon_lst = (
 	"January",
 	"February",
@@ -43,60 +37,29 @@ my %day_lst = ('MON' => 'Monday',
                'SUN' => 'Sunday' );
     
 
-my ($st_yr, $st_mon, $st_day);
-my ($end_yr, $end_mon, $end_day);
-my ($key, $hall, $addr, $city, $ven_comment);
-my ($loc_hall, $loc_addr, $loc_city, $loc_ven_comment);
 
-##
-## First, get the current date.
-##
-($today_day, $today_mon, $today_year) = my_localtime();
-$today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
-$today_mon++;
-$today_mon = sprintf "%02d", $today_mon;
-$today_day = sprintf "%02d", $today_day;
-$today_year += 1900;
-$today = "$today_year-$today_mon-$today_day";
-
-#print "Today is $today\n";
-
-##
-## Now build our query string
-##
-$qrystr = "SELECT * FROM schedule";
-$qrystr .= " WHERE ( ( endday >= '" . $today . "'  ";
-$qrystr .= " OR  startday >= '" . $today . "' ) ";
-$qrystr .= " AND ( type LIKE '%CAMP%' OR type LIKE '%SPECIAL%' ) )";
-
-#print $qrystr . "\n";
-
-##
-## Set up the table and make the query
-##
-$dbh = get_dbh();
-$loc_dbh = get_dbh();
-$sth = $dbh->prepare($qrystr)
-    or die "prepare: " . $dbh->errstr();
-$sth->execute();
-$sth->bind_columns(\$startday, \$endday, \$type, \$loc, \$leader, \$band, \$comments, 
-                   \$name, \$stdloc, \$dburl, \$dbtime)
-    or die "bind_columns: " . $dbh->errstr();
 ##
 ## Print out results
 ##
-#print "content-type: text/html\n\n";
-while ($sth->fetch) {
+my @events = bacds::Model::Event->load_all(camps_and_specials => 1);
+foreach my $event (@events) {
+    my $startday = $event->startday;
+    my $endday   = $event->endday;
+    my $type     = $event->type;
+    my $loc      = $event->loc;
+    my $leader   = $event->leader;
+    my $band     = $event->band;
+    my $comments = $event->comments;
+    my $dburl    = $event->url;
+    
 	# Adjust dates and comments
-	($st_yr, $st_mon, $st_day) = ($startday =~ /(\d+)-(\d+)-(\d+)/);
-	$st_day =~ s/^0//g if $st_day < 10;
-	$st_mon =~ s/^0//g if $st_mon < 10;
+	my ($st_yr, $st_mon, $st_day) = ($startday =~ /(\d+)-(\d+)-(\d+)/);
 	$comments =~ s/<q>/"/g;
+
+    my ($end_yr, $end_mon, $end_day);
 	if ($endday ne "") {
 		($end_yr, $end_mon, $end_day) =
 		    ($endday =~ /(\d+)-(\d+)-(\d+)/);
-		$end_day =~ s/^0//g if $end_day < 10;
-		$end_mon =~ s/^0//g if $end_mon < 10;
 	}
 	print "<p class=\"listing\">\n";
 	print $day_lst{&day($st_mon,$st_day,$st_yr)}.", ".
@@ -113,13 +76,13 @@ while ($sth->fetch) {
         }
 	print ":  ";
 	# get location information
+    my ($loc_hall, $loc_city,$loc_ven_comment);
     if (my $venue = bacds::Model::Venue->load(vkey => $loc)) {
         $loc_hall = $venue->hall;
-        $loc_addr = $venue->address;
         $loc_city = $venue->city;
         $loc_ven_comment = $venue->comment;
     }
-print "\n<!-- band=\"" . $band . "\" -->\n";
+    print "\n";
 	if ($type =~ /CAMP/) {
 		print "<strong>$type</strong>: ";
 		#print $loc_hall . ", " . $loc_ven_comment . ".  ";
@@ -137,7 +100,7 @@ print "\n<!-- band=\"" . $band . "\" -->\n";
 		print "<strong>$type</strong>";
 		print " at " . $loc_hall . " in " . $loc_city . ".  ";
 	        if ($comments !~ /^$/) { print "<em>$comments</em>" . ".\n";}
-print "\n<!-- band=\"" . $band . "\" -->\n";
+        print "\n";
 		if ($leader !~ /^$/) {
 		    print $leader;
 		    print " with music by ", $band if ($band !~ /^$/);
@@ -150,25 +113,6 @@ print "\n<!-- band=\"" . $band . "\" -->\n";
 	}
 	print "</p>\n";
 }
-$sth->finish();
 
-sub my_localtime {
-    if ($TEST_TODAY) {
-        my ($year, $mon, $day) = split '-', $TEST_TODAY;
-        $mon--;
-        if ($mon < 0) {
-            $mon = 11;
-        }
-        $year -= 1900;
-        return $day, $mon, $year;
-    } else {
-        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
-        return $today_day, $today_mon, $today_year;
-    }
-}
+1;
 
-sub get_dbh {
-    return DBI->connect(
-        qq[DBI:CSV:f_dir=$CSV_DIR;csv_eol=\n;csv_sep_char=|;csv_quote_char=\\], '', ''
-    );
-}

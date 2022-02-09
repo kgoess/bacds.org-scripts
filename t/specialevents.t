@@ -15,8 +15,16 @@ $ENV{TEST_TODAY} = '2018-09-06';
 my ($stdout, $stderr, $exit) = capture {
     do 'scripts/specialevents.pl';
 };
-die "specialevents.pl died: $@ $stderr" if !$exit;
+die "specialevents.pl died: $@ $stderr $stdout" if !$exit;
 note $stderr if $stderr;
 
-like $stdout, qr{<strong>ENGLISH/SPECIAL</strong> at Hillside Club in Berkeley.},
+my $expected = <<EOL;
+<p class="listing">
+Saturday, November 17, 2018:  
+<strong>ENGLISH/SPECIAL</strong> at Hillside Club in Berkeley.  
+Kalia Kliban, Sharon Green, Mary Luckhardt with music by Shira Kammen, Judy Linsenberg, Bill Skeen, Katherine Heater &mdash; <b>18 dances from 1718 1718 English Ball</b> (now sold out) <a href="/events/1718">More Info</a>
+</p>
+EOL
+
+eq_or_diff $stdout, $expected,
     "looks like specialevents.pl is working";

@@ -122,12 +122,23 @@ as a list..
 
 %args can include:
 
+ - $args{on_date} = YYYY-MM-DD
  - $args{after} = YYYY-MM-DD (inclusive)
  - $args{before} = YYYY-MM-DD (exclusive)
  - $args{without_end_date} excludes camps
+
  - $args{style} will do a "type LIKE %$style%" query
+ - $args{style_in_list} = ["CONTRA", "ENGLISH"], does LIKE queries
+
  - $args{venue} the "vkey" aka "loc" column, e.g. CCB
+ - $args{venue_in_list} = ["CCB", "FUM"]
+
+ - $args{band} = does a "band like LIKE %$band%" query
+
+ - $args{leader} = does a "leader like LIKE %$leader%" query
  - $args{includes_leader} adds a "leader IS NOT NULL"
+
+ - $args{camps_and_specials} = boolean, shows future or in-progress CAMP or SPECIAL
 
 =cut
 
@@ -188,6 +199,11 @@ sub load_all {
             ')'
             if @$slist;
     }
+
+    if (my $venue = delete $args{venue}) {
+        push @where_clauses, 'loc = ?';
+        push @where_params, $venue;
+    }
     if (my $vlist = delete $args{venue_in_list}) {
         push @where_clauses,
             '(' .
@@ -202,22 +218,26 @@ sub load_all {
             if @$vlist;
     }
 
-    if (my $venue = delete $args{venue}) {
-        push @where_clauses, 'loc = ?';
-        push @where_params, $venue;
-    }
-
     if (my $band = delete $args{band}) {
         $band = $dbh->quote("%$band%");
-        push @where_clauses, "band like $band";
+        push @where_clauses, "band LIKE $band";
     }
 
     if (my $leader = delete $args{leader}) {
         $leader = $dbh->quote("%$leader%");
-        push @where_clauses, "leader like $leader";
+        push @where_clauses, "leader LIKE $leader";
     }
     if (delete $args{includes_leader}) {
         push @where_clauses, 'leader IS NOT NULL';
+    }
+
+    if (delete $args{camps_and_specials}) {
+        my $today = $ENV{TEST_TODAY} || DateTime->now->iso8601;
+        push @where_clauses, join ' AND ', 
+            q{ ( ( endday >= ? OR startday >= ?) },
+            q{   (type LIKE '%CAMP%' OR type LIKE '%SPECIAL%' ) ) }
+        ;
+        push @where_params, $today, $today;
     }
 
     if (%args) {
