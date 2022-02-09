@@ -197,6 +197,8 @@ if ($edate ne "") {
 }
 
 
+### leaving query_year unimplemented until we migrate all the schedule stuff to
+### a single table --kg 2022-02-08
 my ($query_year);
 $query_year = "";
 if ($s_year != $today_year) {
