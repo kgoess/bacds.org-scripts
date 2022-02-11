@@ -201,6 +201,8 @@ sub update {
     $self->venue_id
         or croak "can't call update on an venue without an venue_id";
 
+    $self->modified_ts(now_iso8601());
+
     my $stmt =
         'UPDATE VENUE SET '.
         join(', ', map { "$_ = ?" } @Columns ).

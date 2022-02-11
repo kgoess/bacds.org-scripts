@@ -386,6 +386,8 @@ sub update {
     $self->event_id
         or croak "can't call update on an event without an event_id";
 
+    $self->modified_ts(now_iso8601());
+
     my $stmt =
         'UPDATE schedule SET '.
         join(', ', map { "$_ = ?" } @Columns ).
