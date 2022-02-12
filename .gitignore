@@ -2,3 +2,10 @@
 *.expected
 *.got
 t/data/schedule.lock
+MYMETA.json
+MYMETA.yml
+Makefile
+pm_to_blib
+blib
+cgi-bin/.exists
+scripts/.exists
