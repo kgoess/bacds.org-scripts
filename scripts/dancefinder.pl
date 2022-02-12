@@ -451,7 +451,7 @@ ENDJSON
             }
 
             if ($endday ne "") {
-                my ($end_yr, $end_mon, $end_day) = ($endday =~ /(\d+)-(\d+)-(\d+)/);
+                ($end_yr, $end_mon, $end_day) = ($endday =~ /(\d+)-(\d+)-(\d+)/);
                 $end_day =~ s/^0//g if $end_day < 10;
                 $end_mon =~ s/^0//g if $end_mon < 10;
             }
