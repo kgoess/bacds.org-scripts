@@ -4,6 +4,5 @@ blib
 Makefile
 Makefile.old
 .exists
-.swp
 edit-calendar.pl.lo
 .vim

@@ -15,6 +15,10 @@ To install this module and all the scripts type the following:
 (You can also do "make diff-with-prod" before "make install" to see what the
 changes will be.)
 
+For some reason the "make install" is installing any vim .swp files in
+scripts/. Doesn't happen for lib/. Not sure how to fix that.
+Watch for them in the "make install" and remove them yourself if it happens.
+
 COPYRIGHT AND LICENCE
 
 Copyright (C) 2022 by Kevin M. Goess
