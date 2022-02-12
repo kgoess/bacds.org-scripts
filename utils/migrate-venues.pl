@@ -3,6 +3,7 @@
 use 5.16.0;
 use warnings;
 
+use DateTime;
 use File::Copy qw/move/;
 use Getopt::Long;
 
@@ -20,14 +21,17 @@ my $path_to_venue = "$data_dir/venue";
 
 $ENV{TEST_CSV_DIR} = $data_dir;
 
-move $path_to_venue, "$path_to_venue.old"
-    or die "can't move to $path_to_venue.old $!";
+my $now = DateTime->now->ymd('').DateTime->now->hms('');
+
+move $path_to_venue, "$path_to_venue$now"
+    or die "can't move to $path_to_venue$now $!";
 
 bacds::Model::Venue->create_table;
 
-my @venues = bacds::Model::Venue->load_all_from_old_schema(table => 'venue.old');
+my @venues = bacds::Model::Venue->load_all_from_old_schema(table => "venue$now");
 
 
 foreach my $venue (@venues) {
+    say join ' ', 'migrating', map { $venue->$_ } qw/vkey hall/;
     $venue->save;
 }

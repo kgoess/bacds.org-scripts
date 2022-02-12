@@ -62,6 +62,7 @@ diff-with-prod:
 	for f in cgi-bin/*.cgi ; do \
 		diff -u $$f /var/www/bacds.org/cgi-bin/$$(basename $$f); \
 	done
+
 MAKE_FRAG
 }
 
