@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # make-frontpage-files.sh
 #
@@ -7,7 +7,7 @@
 # Alan Winston
 # 2008-09-09
 #
-basedir="/var/www/bacds.org/public_html/"
+basedir=${TEST_BASE_DIR-/var/www/bacds.org/public_html/}
 #
 # write files into the home directory
 cd $basedir
