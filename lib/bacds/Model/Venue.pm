@@ -77,13 +77,17 @@ sub save {
     1;
 }
 
-=head2 load(venue_id => 1234)
+=head2 load(%args)
+
+%args can include
+
+    - $args{venue_id} = the primary key
+    - $args{vkey} = e.g. CCB
 
 =cut
 
 sub load {
     my ($class, %args) = @_;
-
 
     my $stmt =
         'SELECT '.
@@ -94,18 +98,22 @@ sub load {
 
     my $has_target = 0;
 
-    if (my $venue_id = $args{venue_id}) {
+    if (my $venue_id = delete $args{venue_id}) {
         push @where_clauses, 'venue_id = ?';
         push @where_params, $venue_id;
         $has_target = 1;
     }
-    if (my $vkey = $args{vkey}) {
+    if (my $vkey = delete $args{vkey}) {
         push @where_clauses, 'vkey = ?';
         push @where_params, $vkey;
         $has_target = 1;
     }
 
     $has_target or croak "missing any lookup args in call to $class->load";
+
+    if (%args) {
+        croak "unrecognized args in call to $class->load_all: ".dump %args;
+    }
 
     $stmt .= join ' AND ', @where_clauses;
 

@@ -242,7 +242,7 @@ sub load_all {
     }
 
     if (%args) {
-        croak "unrecognized args in call to load_all: ".dump %args;
+        croak "unrecognized args in call to $class->load_all: ".dump %args;
     }
 
     if (@where_clauses) {

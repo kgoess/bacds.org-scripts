@@ -18,6 +18,7 @@ scripts/edit-calendar.pl
 scripts/getleaders.pl
 scripts/getmusos.pl
 scripts/getstyles.pl
+scripts/getvenues.pl
 scripts/make-frontpage-files.sh
 scripts/make-tonight-file.sh
 scripts/serieslists.pl
@@ -33,6 +34,7 @@ t/data/venue
 t/getleaders.t
 t/getmusos.t
 t/getstyles.t
+t/getvenues.t
 t/model/01-event.t
 t/model/02-serial.t
 t/model/03-venue.t
