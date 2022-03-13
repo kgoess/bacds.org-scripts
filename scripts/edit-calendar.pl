@@ -195,7 +195,7 @@ my $band_input = $event_edit_window->add(
     'band', 'TextEditor',
     -title => 'The Band',
     -wrapping => 1,
-    -y => 16,
+    -y => 17,
     -width => 80,
     -border => 1,
     -padbottom => 1,
