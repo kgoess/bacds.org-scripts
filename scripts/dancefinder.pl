@@ -238,7 +238,8 @@ print STDERR "DANCEFINDER.PL QUERY: @load_args\n";
 #
 # load the results
 #
-my @events = bacds::Model::Event->load_all(@load_args);
+my @events = sort { $a->startday cmp $b->startday }
+             bacds::Model::Event->load_all(@load_args);
 
 #
 # print the results
