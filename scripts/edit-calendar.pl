@@ -179,6 +179,23 @@ my $type_input = $event_edit_window->add(
     -width => 30,
 );
 
+
+# url
+$y += 1;
+$event_edit_window->add(
+    undef, 'Label',
+     -y => $y,
+    -text => "URL:",
+    -width => 7,
+);
+my $url_input = $event_edit_window->add(
+    undef, 'TextEntry',
+    -sbborder => 1,
+    -y => $y,
+    -x => 21,
+    -width => 30,
+);
+
 # empty row
 $y += 1;
 
@@ -284,6 +301,7 @@ sub open_edit_event_window {
     $venue_list->set_selection();
     $caller_input->text($event->leader);
     $type_input->text($event->type);
+    $url_input->text($event->url);
     $startdate_input->text($event->startday);
     $enddate_input->text($event->endday);
     $venue_label->text($event->loc);
@@ -300,6 +318,7 @@ sub open_create_event_window {
     $venue_list->focus;
     $caller_input->text('');
     $type_input->text('');
+    $url_input->text('');
     $startdate_input->text('');
     $enddate_input->text('');
     $venue_label->text('(select from list)');
@@ -343,12 +362,12 @@ sub save_event {
     $event->startday($startdate_input->text);
     $event->endday($enddate_input->text);
     $event->type($type_input->text);
+    $event->url($url_input->text);
     $event->loc($venue_label->text);
     $event->leader($caller_input->text);
     $event->band($band_input->text);
 
     #$event->comments(xxx);
-    #$event->url(xxx);
     #$event->photo(xxx);
     #$event->performer_url(xxx);
     #$event->pacific_time(xxx);
