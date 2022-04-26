@@ -7,11 +7,34 @@ use Curses;
 use Curses::UI;
 use Data::Dump qw/dump/;
 use File::Basename;
+use Getopt::Long;
 
 use bacds::Model::Event;
 use bacds::Model::Venue;
 
+
+my ($help);
+GetOptions (
+    "h|help" => \$help
+);
+
+if ($help) {
+    say <<USAGE;
+
+usage: $0
+  --help this help
+
+Set TEST_CSV_DIR in your environment to use something else
+besides '/var/www/bacds.org/public_html/data'.
+
+USAGE
+    exit;
+}
+
+
+
 my $debug = 0;
+
 $SIG{__DIE__} = sub {
     open my $fh, ">", basename "$0.log";
     print $fh @_, "\n";
@@ -71,139 +94,6 @@ my $event_edit_window = $cui->add(
     -ipad         => 1,
 );
 
-#venue
-$event_edit_window->add(
-    undef, 'Label',
-     -y => -20,
-    -text => "Venue:",
-    -width => 7,
-);
-my $venue_label = $event_edit_window->add(
-    undef, 'Label',
-    -y => -20,
-    -x => 8,
-    #-text => "Venue:",
-    -width => 20,
-);
-
-#caller
-$event_edit_window->add(
-    undef, 'Label',
-     -y => -19,
-    -text => "Caller:",
-    -width => 7,
-);
-my $caller_input = $event_edit_window->add(
-    undef, 'TextEntry',
-    -sbborder => 1,
-    -y => -19,
-    -x => 21,
-    -width => 50,
-    #-text => $Even$Event_To_Edit->leader,
-);
-
-# dance type
-$event_edit_window->add(
-    undef, 'Label',
-     -y => -18,
-    -text => "Type:",
-    -width => 7,
-);
-my $type_input = $event_edit_window->add(
-    undef, 'TextEntry',
-    -sbborder => 1,
-    -y => -18,
-    -x => 21,
-    -width => 30,
-);
-
-# start date
-$event_edit_window->add(
-    undef,  'Label',
-    -y => -16,
-     -text => 'Start Date:'
-);
-my $startdate_input = $event_edit_window->add( 
-    'startdatelabel', 'Label', 
-    -width => 10, 
-    -y => -16, 
-    -x => 12, 
-    -text => 'none',
-);
-
-$event_edit_window->add(
-    undef, 'Buttonbox',
-    -y => -16,    
-    -x => 23,
-    -buttons => [
-         { 
-	   -label => "< Set date >",
-	   -onpress => sub { 
-	       my $label = shift()->parent->getobj('startdatelabel');
-	       my $date = $label->get;
-	       $date = undef if $date eq 'none';
-	       my $return = $cui->calendardialog(-date => $date);
-	       $label->text($return) if defined $return;
-	   }
-         },{
-	   -label => "< Clear date >",
-	   -onpress => sub {
-	       my $label = shift()->parent->getobj('startdatelabel');
-	       $label->text('none');
-	   }
-	 }
-    ]
-);
-# end date
-$event_edit_window->add(
-     undef,  'Label',
-     -y => -15,
-     -text => 'End Date:'
-);
-my $enddate_input = $event_edit_window->add( 
-    'enddatelabel', 'Label', 
-    -width => 10, 
-    -y => -15, 
-    -x => 12, 
-    -text => 'none',
-);
-
-$event_edit_window->add(
-    undef, 'Buttonbox',
-    -y => -15,    
-    -x => 23,
-    -buttons => [
-         { 
-	   -label => "< Set date >",
-	   -onpress => sub { 
-	       my $label = shift()->parent->getobj('enddatelabel');
-	       my $date = $label->get;
-	       $date = undef if $date eq 'none';
-	       my $return = $cui->calendardialog(-date => $date);
-	       $label->text($return) if defined $return;
-	   }
-         },{
-	   -label => "< Clear date >",
-	   -onpress => sub {
-	       my $label = shift()->parent->getobj('enddatelabel');
-	       $label->text('none');
-	   }
-	 }
-    ]
-);
-my $band_input = $event_edit_window->add(
-    'band', 'TextEditor',
-    -title => 'The Band',
-    -wrapping => 1,
-    -y => 17,
-    -width => 80,
-    -border => 1,
-    -padbottom => 1,
-    -vscrollbar => 1,
-    -hscrollbar => 1,
-    #-onChange => sub { },
-);
-
 my @venues = sort { $a->vkey cmp $b->vkey } bacds::Model::Venue->load_all();
 my (%venue_labels, @venue_values, %venue_position_in_list);
 my $i = 0;
@@ -215,10 +105,12 @@ foreach my $venue (@venues) {
 }
 
     
+# venue list
+my $y = 1;
 my $venue_list = $event_edit_window->add(
     undef, 'Listbox',
-    -y          => 1,
-    -padbottom  => 20,
+    -y          => $y,
+    -height     => 10,
     -values     => \@venue_values,
     -labels     => \%venue_labels,
     -width      => 80,
@@ -226,6 +118,151 @@ my $venue_list = $event_edit_window->add(
     -title      => "Venue",
     -vscrollbar => 1,
     -onchange   => \&select_venue,
+);
+
+#venue entry
+$y += 10;
+$event_edit_window->add(
+    undef, 'Label',
+    -y => $y,
+    -text => "Venue:",
+    -width => 7,
+);
+my $venue_label = $event_edit_window->add(
+    undef, 'Label',
+    -y => $y,
+    -x => 8,
+    #-text => "Venue:",
+    -width => 20,
+);
+
+#caller entry
+$y += 1;
+$event_edit_window->add(
+    undef, 'Label',
+     -y => $y,
+    -text => "Caller:",
+    -width => 7,
+);
+my $caller_input = $event_edit_window->add(
+    undef, 'TextEntry',
+    -sbborder => 1,
+    -y => $y,
+    -x => 21,
+    -width => 50,
+    #-text => $Even$Event_To_Edit->leader,
+);
+
+# dance type
+$y += 1;
+$event_edit_window->add(
+    undef, 'Label',
+     -y => $y,
+    -text => "Type:",
+    -width => 7,
+);
+my $type_input = $event_edit_window->add(
+    undef, 'TextEntry',
+    -sbborder => 1,
+    -y => $y,
+    -x => 21,
+    -width => 30,
+);
+
+# empty row
+$y += 1;
+
+# start date
+$y += 1;
+$event_edit_window->add(
+    undef,  'Label',
+    -y => $y,
+     -text => 'Start Date:'
+);
+my $startdate_input = $event_edit_window->add( 
+    'startdatelabel', 'Label', 
+    -width => 10, 
+    -y => $y, 
+    -x => 12, 
+    -text => 'none',
+);
+
+$event_edit_window->add(
+    undef, 'Buttonbox',
+    -y => $y,    
+    -x => 23,
+    -buttons => [
+         { 
+	   -label => "< Set date >",
+	   -onpress => sub { 
+	       my $label = shift()->parent->getobj('startdatelabel');
+	       my $date = $label->get;
+	       $date = undef if $date eq 'none';
+	       my $return = $cui->calendardialog(-date => $date);
+	       $label->text($return) if defined $return;
+	   }
+         },{
+	   -label => "< Clear date >",
+	   -onpress => sub {
+	       my $label = shift()->parent->getobj('startdatelabel');
+	       $label->text('none');
+	   }
+	 }
+    ]
+);
+
+# end date
+$y += 1;
+$event_edit_window->add(
+     undef,  'Label',
+     -y => $y,
+     -text => 'End Date:'
+);
+my $enddate_input = $event_edit_window->add( 
+    'enddatelabel', 'Label', 
+    -width => 10, 
+    -y => $y, 
+    -x => 12, 
+    -text => 'none',
+);
+
+$event_edit_window->add(
+    undef, 'Buttonbox',
+    -y => $y,    
+    -x => 23,
+    -buttons => [
+         { 
+	   -label => "< Set date >",
+	   -onpress => sub { 
+	       my $label = shift()->parent->getobj('enddatelabel');
+	       my $date = $label->get;
+	       $date = undef if $date eq 'none';
+	       my $return = $cui->calendardialog(-date => $date);
+	       $label->text($return) if defined $return;
+	   }
+         },{
+	   -label => "< Clear date >",
+	   -onpress => sub {
+	       my $label = shift()->parent->getobj('enddatelabel');
+	       $label->text('none');
+	   }
+	 }
+    ]
+);
+
+# band: big text box
+$y += 2;
+my $band_input = $event_edit_window->add(
+    'band', 'TextEditor',
+    -title => 'The Band',
+    -wrapping => 1,
+    -y => $y,
+    -width => 80,
+    -border => 1,
+    -padbottom => 1,
+    -vscrollbar => 1,
+    -hscrollbar => 1,
+    #-onChange => sub { },
 );
 
 sub open_edit_event_window {
