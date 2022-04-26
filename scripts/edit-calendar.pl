@@ -6,12 +6,20 @@ use warnings;
 use Curses;
 use Curses::UI;
 use Data::Dump qw/dump/;
+use DateTime;
 use File::Basename;
 use Getopt::Long;
 
 use bacds::Model::Event;
 use bacds::Model::Venue;
+use bacds::Model::Utils qw/csv_dir/;
 
+my $logfile = "/tmp/" . basename "$0.$<.log";
+
+my $db_file = csv_dir() . "schedule";
+if (!-w  $db_file) {
+    die "You don't have write permissions to the db file:\n\t$db_file\nPlease fix that up before continuing";
+}
 
 my ($help);
 GetOptions (
@@ -27,6 +35,7 @@ usage: $0
 Set TEST_CSV_DIR in your environment to use something else
 besides '/var/www/bacds.org/public_html/data'.
 
+Errors can be found in $logfile
 USAGE
     exit;
 }
@@ -36,8 +45,9 @@ USAGE
 my $debug = 0;
 
 $SIG{__DIE__} = sub {
-    open my $fh, ">", basename "$0.log";
-    print $fh @_, "\n";
+    open my $fh, ">>", $logfile or warn "can't open $logfile $!";
+    my $date = DateTime->now->iso8601;
+    print $fh "$date user[$<] @_\n";
     close $fh;
 };
 
