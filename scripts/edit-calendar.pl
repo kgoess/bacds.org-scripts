@@ -183,14 +183,14 @@ my $startdate_input = $event_edit_window->add(
     'startdatelabel', 'Label', 
     -width => 10, 
     -y => $y, 
-    -x => 12, 
+    -x => 17, 
     -text => 'none',
 );
 
 $event_edit_window->add(
     undef, 'Buttonbox',
     -y => $y,    
-    -x => 23,
+    -x => 28,
     -buttons => [
          { 
 	   -label => "< Set date >",
@@ -216,20 +216,19 @@ $y += 1;
 $event_edit_window->add(
      undef,  'Label',
      -y => $y,
-     -text => 'End Date:'
+     -text => 'End Date (opt):'
 );
 my $enddate_input = $event_edit_window->add( 
     'enddatelabel', 'Label', 
     -width => 10, 
     -y => $y, 
-    -x => 12, 
-    -text => 'none',
+    -x => 17, 
 );
 
 $event_edit_window->add(
     undef, 'Buttonbox',
     -y => $y,    
-    -x => 23,
+    -x => 28,
     -buttons => [
          { 
 	   -label => "< Set date >",
@@ -308,6 +307,28 @@ sub save_event {
     return unless $editing_event;
 
     my $event = $Current_Event || bacds::Model::Event->new;
+
+    if (!$startdate_input->text) {
+        $cui->dialog("Missing startdate");
+        return;
+    }
+    if (!$type_input->text) {
+        $cui->dialog("Missing type");
+        return;
+    }
+    if (!$venue_label->text or $venue_label->text =~ /select from list/) {
+        $cui->dialog("Missing venue");
+        return;
+    }
+    if (!$caller_input->text) {
+        $cui->dialog("Missing caller");
+        return;
+    }
+    if (!$band_input->text) {
+        $cui->dialog("Missing band");
+        return;
+    }
+        
 
     $event->startday($startdate_input->text);
     $event->endday($enddate_input->text);
