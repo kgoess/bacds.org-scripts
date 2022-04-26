@@ -16,7 +16,7 @@ use bacds::Model::Utils qw/csv_dir/;
 
 my $logfile = "/tmp/" . basename "$0.$<.log";
 
-my $db_file = csv_dir() . "schedule";
+my $db_file = csv_dir() . "/schedule";
 if (!-w  $db_file) {
     die "You don't have write permissions to the db file:\n\t$db_file\nPlease fix that up before continuing";
 }
