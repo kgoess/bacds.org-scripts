@@ -494,7 +494,7 @@ ENDJSON
                                           $type =~ /WORKSHOP/ ||
                                           $type =~ /CAMP/);
             }
-            print '&nbsp;<a href="'.$schemeless_danceurl.'">More Info</a>'."\n";
+            print '&nbsp;<a href="'.$schemeless_danceurl.'">More Info</a>'; 
 
             print "</p>\n";
             print $trailer;

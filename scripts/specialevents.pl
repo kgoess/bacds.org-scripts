@@ -63,7 +63,7 @@ foreach my $event (@events) {
 	print $day_lst{&day($st_mon,$st_day,$st_yr)}.", ".
               $mon_lst[$st_mon-1] . " " . $st_day;
 	if ($endday ne "") {
-		print "-";
+		print "&ndash;";
 	       
 			print $day_lst{&day($end_mon, $end_day, $end_yr)}.
 		        ", ".$mon_lst[$end_mon-1] . " " . $end_day . ', ' . $end_yr;
@@ -86,7 +86,7 @@ foreach my $event (@events) {
 		#print $loc_hall . ", " . $loc_ven_comment . ".  ";
 		print $loc_hall;
 		if ($loc_ven_comment ne "") { print ", " . $loc_ven_comment; }
-		print ".  ";
+		#print ".  ";
 	        print "<em>$comments</em>.\n";
 		if ($leader !~ /^$/) {
 		    print $leader;
@@ -106,7 +106,7 @@ foreach my $event (@events) {
                     print "Music by ", $band if ($band !~ /^$/);
 		}
 	}
-        if (defined($dburl) && $dburl =~ /[A-Za-z]/) {
+        if (defined($dburl) && $dburl =~ /[A-Za-z]/  && $dburl ne 'SUPPRESS') {
 	   print ' <a href="'.$dburl.'">More Info</a>'."\n";
 	}
 	print "</p>\n";
