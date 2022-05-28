@@ -192,7 +192,7 @@ sub generate_jsonld {
 
     # new fields eventAttendanceMode: could be Offline, Online or Mixed
     # new field eventStatus could be:
-    # 		EventCancelled   <<<=== setting everything to Cancelled for now
+    # 		EventCancelled
     # 		EventMovedOnline
     # 		EventPostponed
     # 		EventRescheduled
@@ -206,7 +206,7 @@ sub generate_jsonld {
         startDate   => $start,
         endDate     => $end,
         eventAttendanceMode => 'https://schema.org/OfflineEventAttendanceMode',
-        eventStatus => 'https://schema.org/EventCancelled', # FIX ME after plague
+        eventStatus => 'https://schema.org/EventScheduled',
         organizer => {
            '@context' => 'http://schema.org',
            '@type'    => 'Organization',
