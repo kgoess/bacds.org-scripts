@@ -44,6 +44,8 @@ if ($< == 0) {
     die "You don't need to run this as root, or under sudo. Just be yourself!\n(assuming you're a member of the 'apache' group)\n";
 }
 
+check_sequence_file();
+
 
 
 my $debug = 0;
@@ -452,4 +454,34 @@ sub setup_event_list {
         $event_list->labels(\%labels);
         $event_list->draw;
     }
+}
+
+use bacds::Model::Utils qw/csv_dir/;
+use bacds::Model::Utils qw/get_dbh/;
+sub check_sequence_file {
+
+    my $stmt = 'SELECT max(event_id) FROM schedule';
+    my $dbh = get_dbh();
+    my $sth = $dbh->prepare($stmt)
+        or die $dbh->errstr;
+    $sth->execute()
+        or die $sth->errstr;
+
+    my ($max_event_id) = $sth->fetchrow_array;
+
+    # tests and zero-state
+    return if ! $max_event_id;
+
+    my $db_dir = csv_dir();
+    my $lock_path = "$db_dir/schedule.lock";
+    open my $fh, "<", $lock_path
+        or die "can't read $lock_path $!";
+
+    my $sequence_value = <$fh>;
+    chomp $sequence_value;
+
+    if ($max_event_id > $sequence_value) {
+        die "ERROR: $lock_path says '$sequence_value', that doesn't look right.\nPlease fix it to match the max value in $db_dir/schedule\n";
+    }
+
 }
