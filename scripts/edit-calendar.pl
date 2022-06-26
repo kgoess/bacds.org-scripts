@@ -40,6 +40,10 @@ USAGE
     exit;
 }
 
+if ($< == 0) {
+    die "You don't need to run this as root, or under sudo. Just be yourself!\n(assuming you're a member of the 'apache' group)\n";
+}
+
 
 
 my $debug = 0;
