@@ -34,7 +34,7 @@ sub test_json {
     my $dance = $decoded->[0];
     my $expected = decode_json(q{
        { "id" : "1",
-          "url" : "http://www.bacds.org/series/english/berkeley_wed/",
+          "url" : "https://www.bacds.org/series/english/berkeley_wed/",
           "start" : "2018-09-26",
           "end" : "",
           "title" : "ENGLISH at Christ Church Berkeley (formerly Grace North Church) in Berkeley.  Led by Bruce Hamilton.  Music by Open band led by Audrey Knuth, Judy Linsenberg, Patti Cobb.",

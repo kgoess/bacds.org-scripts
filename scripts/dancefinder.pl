@@ -311,21 +311,21 @@ if (@events) {
 
         $styleurl = '';
         # Get style URL
-            #$styleurl = "http://www.bacds.org/series/community/"
+            #$styleurl = "https://www.bacds.org/series/community/"
             #    if ! $styleurl && $loc eq "FSJ";
-        $styleurl = "http://www.bacds.org/series/english/"
+        $styleurl = "https://www.bacds.org/series/english/"
             if ! $styleurl && $type =~ /^ENGLISH/;
-        $styleurl = "http://www.bacds.org/series/english/"
+        $styleurl = "https://www.bacds.org/series/english/"
             if ! $styleurl && $type =~ /ENGLISHWORKSHOP/;
-            $styleurl = "http://www.bacds.org/series/english/"
+            $styleurl = "https://www.bacds.org/series/english/"
                 if ! $styleurl && $type =~ /ECDWORKSHOP/;
-        $styleurl = "http://www.bacds.org/series/contra/"
+        $styleurl = "https://www.bacds.org/series/contra/"
             if ! $styleurl && $type =~ /CONTRA/;
-              $styleurl = "http://www.bacds.org/series/contra/"
+              $styleurl = "https://www.bacds.org/series/contra/"
             if ! $styleurl && $type =~ /WORKSHOP/;
-        $styleurl = "http://www.bacds.org/series/ceilidh/"
+        $styleurl = "https://www.bacds.org/series/ceilidh/"
             if ! $styleurl && $type =~ /CEILIDH/;
-        $styleurl = "http://www.bacds.org/series/woodshed/"
+        $styleurl = "https://www.bacds.org/series/woodshed/"
             if ! $styleurl && $type =~ /WOODSHED/;
 
         # If there's a $danceurl defined already for this special event, leave it
@@ -343,8 +343,8 @@ if (@events) {
         if (!$turl &&
             ($type =~ /SPECIAL/ || $type =~ /CAMP/)
         ) {
-            $styleurl = "http://www.bacds.org/events/";
-            $danceurl = "http://www.bacds.org/events/";
+            $styleurl = "https://www.bacds.org/events/";
+            $danceurl = "https://www.bacds.org/events/";
         }
 
 
@@ -361,7 +361,7 @@ if (@events) {
         }
 
             # If a URL was specified in the db, override all other URLS.
-        if (defined($dburl) && $dburl !~ /^$/) {
+        if ($dburl) {
             $styleurl = $dburl;
             $danceurl = $dburl;
         }
@@ -470,11 +470,9 @@ ENDJSON
                 print ", " . $st_yr;
             }
 
-            my $schemeless_danceurl = $danceurl ? $danceurl =~ s/^https?://r : '';
             print ": <strong>$type</strong> ";
             print " at ";
-            if (index($schemeless_danceurl, "baers.org") != 0) {$schemeless_danceurl = 'http://'.$schemeless_danceurl;} 
-            print "<a href=\"" .$schemeless_danceurl . "\">" if $danceurl;
+            print "<a href=\"" .$danceurl . "\">" if $danceurl;
             print $loc_hall;
             print " in " . $loc_city;
             print "</a>" if $danceurl;
@@ -495,7 +493,7 @@ ENDJSON
                                           $type =~ /WORKSHOP/ ||
                                           $type =~ /CAMP/);
             }
-            print '&nbsp;<a href="'.$schemeless_danceurl.'">More Info</a>'; 
+            print '&nbsp;<a href="'.$danceurl.'">More Info</a>';
 
             print "</p>\n";
             print $trailer;
