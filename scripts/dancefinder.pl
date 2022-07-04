@@ -473,6 +473,7 @@ ENDJSON
             my $schemeless_danceurl = $danceurl ? $danceurl =~ s/^https?://r : '';
             print ": <strong>$type</strong> ";
             print " at ";
+            if (index($schemeless_danceurl, "baers.org") != 0) {$schemeless_danceurl = 'http://'.$schemeless_danceurl;} 
             print "<a href=\"" .$schemeless_danceurl . "\">" if $danceurl;
             print $loc_hall;
             print " in " . $loc_city;
