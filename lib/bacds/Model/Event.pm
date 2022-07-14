@@ -184,16 +184,16 @@ sub load_all {
     }
 
     if (my $style = delete $args{style}) {
-        $style = $dbh->quote("%$style%");
-        push @where_clauses, "type LIKE $style";
+        $style = quotemeta($style);
+        push @where_clauses, "type LIKE '%$style%'";
     }
     if (my $slist = delete $args{style_in_list}) {
         push @where_clauses,
             '(' .
             join(' OR ',
                 map {
-                    my $style = $dbh->quote("%$_%");
-                    "type LIKE $style";
+                    my $style = quotemeta($_);
+                    "type LIKE '%$style%'";
                 }
                 @$slist
             ) .
@@ -210,8 +210,8 @@ sub load_all {
             '(' .
             join(' OR ',
                 map {
-                    my $venue = $dbh->quote("%$_%");
-                    "loc LIKE $venue";
+                    my $venue = quotemeta($_);
+                    "loc LIKE '%$venue%'";
                 }
                 @$vlist
             ) .
@@ -220,13 +220,13 @@ sub load_all {
     }
 
     if (my $band = delete $args{band}) {
-        $band = $dbh->quote("%$band%");
-        push @where_clauses, "band LIKE $band";
+        $band = quotemeta($band);
+        push @where_clauses, "band LIKE '%$band%'";
     }
 
     if (my $leader = delete $args{leader}) {
-        $leader = $dbh->quote("%$leader%");
-        push @where_clauses, "leader LIKE $leader";
+        $leader = quotemeta($leader);
+        push @where_clauses, "leader LIKE '%$leader%'";
     }
     if (delete $args{includes_leader}) {
         push @where_clauses, 'leader IS NOT NULL';
