@@ -85,8 +85,9 @@ my @load_args =
         venue_in_list => \@vlist,
     )
 ;
-my @events = bacds::Model::Event->load_all(@load_args);
 
+my @events = sort { $a->startday cmp $b->startday }
+             bacds::Model::Event->load_all(@load_args);
 ##
 ## Print out results
 ##
