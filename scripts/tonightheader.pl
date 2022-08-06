@@ -40,11 +40,12 @@ ENDHTML
 print "\n</h1>\n";
 
 if ($numrows) {
-    print "<h2>Today's Dance$plural!</h2>\n";
+    print "<h2>Today's Dance$plural:</h2>\n";
     # look for "div.tonight" style in /css/base.css for styling
     print '<div class="tonight">', "\n";
 } else {
-    print '<div>', "\n";
+    print '<div class="tonight">', "\n";
+    print "<h2>No dances tonight</h2>\n";
 }    
     
 print <<ENDHTML;
