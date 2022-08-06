@@ -344,23 +344,24 @@ sub save_event {
     my $event = $Current_Event || bacds::Model::Event->new;
 
     if (!$startdate_input->text) {
-        $cui->dialog("Missing startdate");
+        $cui->dialog("Missing startdate, not saving");
         return;
     }
     if (!$type_input->text) {
-        $cui->dialog("Missing type");
+        $cui->dialog("Missing type, not saving");
         return;
     }
     if (!$venue_label->text or $venue_label->text =~ /select from list/) {
-        $cui->dialog("Missing venue");
+        $cui->dialog("Missing venue, not saving");
         return;
     }
-    if (!$caller_input->text) {
-        $cui->dialog("Missing caller");
-        return;
-    }
+    # allow empty caller field
+    # if (!$caller_input->text) {
+    #     $cui->dialog("Missing caller");
+    #     return;
+    # }
     if (!$band_input->text) {
-        $cui->dialog("Missing band");
+        $cui->dialog("Missing band, not saving");
         return;
     }
         
