@@ -444,7 +444,7 @@ ENDJSON
                 $class = "woodshed" if ( $type =~ /WOODSHED/ );
                 $class = "camp"     if ( $type =~ /CAMP/ );
 
-                $header = qq(<br /><div class="$class">\n);
+                $header = qq(<!--br /--><div class="$class">\n);
                 $trailer = qq(</div>\n);
             } else {
                 $header = "\n";
@@ -478,7 +478,7 @@ ENDJSON
             print "</a>" if $danceurl;
             print ".  ";
             $band =~ s/\<q\>/"/g if ($band !~ /^$/);
-            if ($leader !~ /^$/) {
+            if ($leader !~ /^ *$/) {
                 print $leader;
                 print " with ", $band, "\n" if ($band !~ /^$/);
             } else {
@@ -614,7 +614,7 @@ sub get_event_url {
                 ($yr, $mon, $day) = ($date =~ /(\d+)-(\d+)-(\d+)/);
                 $wday = Day_of_Week($yr, $mon, $day);
                 $eventurl = "berkeley_wed/"
-                    if $wday == 3;
+                    if ($wday == 3 || $wday == 4);
                 $eventurl = "berkeley_sat/"
                     if $wday == 6;
             }
