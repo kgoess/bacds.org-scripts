@@ -477,8 +477,8 @@ ENDJSON
             print " in " . $loc_city;
             print "</a>" if $danceurl;
             print ".  ";
-            $band =~ s/\<q\>/"/g if ($band !~ /^$/);
-            if ($leader !~ /^ *$/) {
+            $band =~ s/\<q\>/"/g if ($band !~ /^ *$/);
+            if ($leader !~ /^\s*$/) {
                 print $leader;
                 print " with ", $band, "\n" if ($band !~ /^$/);
             } else {
@@ -533,7 +533,6 @@ sub get_event_url {
     my $eventurl = undef;
 
     ## The following data structure maps venues that host only one
-
     ## event to the sub-URL that they correspond to
 
     my %url_map = (
@@ -580,13 +579,17 @@ sub get_event_url {
             $eventurl = "san_jose" if $type =~ /ENGLISH/;
         }
 
-        if ($loc eq "SME") {
+        if ($loc eq "SME" || $loc eq "STM") {
             ## Get the day of week
             ($yr, $mon, $day) = ($date =~ /(\d+)-(\d+)-(\d+)/);
              $wday = Day_of_Week($yr, $mon, $day);
-             if ($wday == 5) {
+             if ($wday == 5  && int($day) > 7 && int($day) < 15) {
                  $eventurl = "palo_alto_reg";
-
+             } elsif ($wday == 5 && int($day) < 8) {
+                 $eventurl = "palo_alto";
+             }
+               elsif ($wday == 1) {
+                 $eventurl = "atherton";
              } else {
                  $eventurl = "peninsula";
              }
