@@ -27,7 +27,7 @@ $ENV{TEST_TODAY} = '2018-01-03';
 die "tonightheader.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
-like $stdout, qr{<h2>Today's Dance!</h2>},
+like $stdout, qr{<h2>Today's Dance:</h2>},
     "one dance on the third";
 
 
@@ -57,5 +57,5 @@ $ENV{TEST_TODAY} = '2018-01-27';
 die "tonightheader.pl died: $stderr" if !$exit;
 note $stderr if $stderr;
 
-like $stdout, qr{<h2>Today's Dances!</h2>},
+like $stdout, qr{<h2>Today's Dances:</h2>},
     "three dances on the 27th";
