@@ -16,7 +16,8 @@ use CGI;
 
 use bacds::Model::Event;
 
-my $meta_file = '/var/www/bacds.org/public_html/shared/meta-tags.html';
+my $meta_file = $ENV{META_FILE} || '/var/www/bacds.org/public_html/shared/meta-tags.html';
+
 
 my $numrows = bacds::Model::Event->get_count_for_today();
 

@@ -20,13 +20,12 @@ use CGI::Carp;
 use Date::Calc qw(Today Days_in_Month Day_of_Week Month_to_Text);
 use DBI;
 
-my $TableChoice;
 
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $TEST_TODAY = $ENV{TEST_TODAY};
+our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+our $TEST_TODAY = $ENV{TEST_TODAY};
 
 sub db_venue_lookup {
-	my ($syear, $smon, $eyear, $emon, $refloclst) = @_;
+	my ($syear, $smon, $eyear, $emon, $refloclst, $table_choice) = @_;
 
 	my $sched_qrystr;
 	my $venue_qrystr;
@@ -44,7 +43,7 @@ sub db_venue_lookup {
 	#
 	# First, figure out what venues we're using this month
 	#
-	$sched_qrystr = "SELECT loc FROM $TableChoice";
+	$sched_qrystr = "SELECT loc FROM $table_choice";
 	$sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
 	$sched_qrystr .= sprintf "%02d", $smon;
 	$sched_qrystr .= "%'";
@@ -72,7 +71,7 @@ sub db_venue_lookup {
 }
 
 sub print_venues {
-	my ($start_yr, $start_mon, $end_yr, $end_mon) = @_;
+	my ($start_yr, $start_mon, $end_yr, $end_mon, $table_choice) = @_;
 	my $venue;
 
 	print start_table();
@@ -82,7 +81,8 @@ sub print_venues {
 			$start_mon,
 			$end_yr,
 			$end_mon,
-			\@loc_list
+			\@loc_list,
+			$table_choice,
 		     );
 	print start_Tr;
 	print th({class => 'callisting'},'VENUE');
@@ -188,88 +188,6 @@ sub print_schedule {
 	print end_table();
 }
 
-sub print_selection_form {
-	my ($start_yr, $start_mon, $end_yr, $end_mon) = @_;
-
-	my $dflt_loc = "NON";
-	my $dflt_style = "NON";
-	my $dflt_leader = "Select a Caller";
-     	my $dflt_band = "Select a Band or Musician";
-	print start_form;
-	print start_table();
-	print start_Tr;
-	my %loc_hash;
-	my @loc_val_lst;
-	my %style_hash;
-	my @style_val_lst;
-	my @leader_lst;
-	my @band_lst;
-	db_loc_lookup(
-			$start_yr,
-			$start_mon,
-			$end_yr,
-			$end_mon,
-			\%loc_hash,
-			\@loc_val_lst
-		     );
-	print td(
-		popup_menu(
-			-name => 'Location',
-			-values => \@loc_val_lst,
-			-default => $dflt_loc,
-			-labels => \%loc_hash
-		)
-	);
-	db_style_lookup(
-			$start_yr,
-			$start_mon,
-			$end_yr,
-			$end_mon,
-			\%style_hash,
-			\@style_val_lst
-		       );
-	print td(
-		popup_menu(
-			-name => 'Style',
-			-values => \@style_val_lst,
-			-default => $dflt_style,
-			-labels => \%style_hash
-		)
-	);
-	print end_Tr;
-	print start_Tr;
-	db_leader_lookup(
-			$start_yr,
-			$start_mon,
-			$end_yr,
-			$end_mon,
-			\@leader_lst
-			);
-	print td(
-		popup_menu(
-			-name => 'Leaders',
-			-values => \@leader_lst,
-			-default => $dflt_leader
-		)
-	);
-	db_muso_lookup(
-			$start_yr,
-			$start_mon,
-			$start_yr,
-			$start_mon,
-			\@band_lst
-		      );
-	print td(
-		popup_menu(
-			-name => 'Bands_Musos',
-			-values => \@band_lst,
-			-default => $dflt_band
-		)
-	);
-	print end_Tr;
-	print end_table();
-	print end_form;
-}
 
 sub print_start_of_mon {
 	my ($mon, $yr) = @_;
@@ -439,243 +357,9 @@ sub print_end_of_wk {
 ##### Database routines -- Should modularize these
 ########
 
-sub db_loc_lookup {
-	my ($syear, $smon, $eyear, $emon, $reflochash, $refloclst) = @_;
-
-	my $sched_qrystr;
-	my $venue_qrystr;
-	my $sth;
-	my @loc_lst;
-	my $venue;
-	my $addr;
-	my $city;
-    
-	my $dbh = get_dbh();
-
-	#
-	# First, figure out what venues we're using this month
-	#
-	$sched_qrystr = "SELECT loc FROM $TableChoice";
-	$sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$sched_qrystr .= sprintf "%02d", $smon;
-	$sched_qrystr .= "%'";
-	$sched_qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$sched_qrystr .= sprintf "%02d", $emon;
-	$sched_qrystr .= "%'";
-	$sth = $dbh->prepare($sched_qrystr);
-	$sth->execute;
-	while (($venue) = $sth->fetchrow_array()) {
-		$reflochash->{$venue} = "" if ($venue ne "");
-	}
-	#
-	# Next, get the descriptions for them.
-	#
-	foreach $venue (keys %$reflochash) {
-		$venue_qrystr = "SELECT hall, city FROM venue";
-		$venue_qrystr .= " WHERE vkey = '" . $venue . "'";
-		$sth = $dbh->prepare($venue_qrystr);
-		$sth->execute;
-		while (($addr,$city) = $sth->fetchrow_array()) {
-			$reflochash->{$venue} = $addr . ', ' . $city if (($addr ne "") || ($city ne ""));
-		}
-	}
-	#
-	# and create a sorted option list
-	#
-	@$refloclst = "NON";
-	push @$refloclst, sort keys %$reflochash;
-	#
-	# and add a bogus value as a 'get venue' placeholder
-	#
-	$reflochash->{"NON"} = "Select a Venue";
-}
-
-sub db_style_lookup {
-	my ($syear, $smon, $eyear, $emon, $refstyhash, $refstylst) = @_;
-
-	my $sched_qrystr;
-	my $style_qrystr;
-	my $sth;
-	my @loc_lst;
-	my $style;
-	my $desc;
-
-	my $dbh = get_dbh();
-	#
-	# First, figure out what styles are being danced this month
-	#
-	$sched_qrystr = "SELECT type FROM $TableChoice";
-	$sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$sched_qrystr .= sprintf "%02d", $smon;
-	$sched_qrystr .= "%'";
-	$sched_qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$sched_qrystr .= sprintf "%02d", $emon;
-	$sched_qrystr .= "%'";
-	$sth = $dbh->prepare($sched_qrystr);
-	$sth->execute;
-	while (($style) = $sth->fetchrow_array()) {
-		$refstyhash->{$style} = "" if (($style !~ '/') && ($style !~ ' and ') && ($style ne ""));
-		if ($style =~ '/') {
-			my $item;
-			my @lst = split('/',$style);
-			foreach $item (@lst) {
-				$refstyhash->{$item} = "" if ($item ne "");
-			}
-		}
-		if ($style =~ ' and ') {
-			my $item;
-			my @lst = split(' and ',$style);
-			foreach $item (@lst) {
-				$refstyhash->{$item} = "" if ($item ne "");
-			}
-		}
-	}
-	#
-	# Next, get the descriptions for them.
-	#
-	foreach $style (keys %$refstyhash) {
-		$style_qrystr = "SELECT type FROM style";
-		$style_qrystr .= " WHERE skey = '" . $style . "'";
-		$sth = $dbh->prepare($style_qrystr);
-		$sth->execute;
-		while (($desc) = $sth->fetchrow_array()) {
-			$refstyhash->{$style} = $desc if ($desc ne "");
-		}
-	}
-	#
-	# and create a sorted option list
-	#
-	@$refstylst = "NON";
-	push @$refstylst, sort keys %$refstyhash;
-	#
-	# and add a bogus value as a 'get style' placeholder
-	#
-	$refstyhash->{"NON"} = "Select a Dance Style";
-}
-
-sub db_leader_lookup {
-	my ($syear, $smon, $eyear, $emon, $ldrref) = @_;
-
-	my $qrystr;
-	my $sth;
-	my $ldr;
-	my %ldr_hash;
-
-	my $dbh = get_dbh();
-	#
-	# First, figure out what styles are being danced this month
-	#
-	$qrystr = "SELECT leader FROM $TableChoice";
-	$qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$qrystr .= sprintf "%02d", $smon;
-	$qrystr .= "%'";
-	$qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$qrystr .= sprintf "%02d", $emon;
-	$qrystr .= "%'";
-	$sth = $dbh->prepare($qrystr);
-	$sth->execute;
-	while (($ldr) = $sth->fetchrow_array()) {
-		if ($ldr =~ ', ') {
-			my $item;
-			foreach $item (split(', ',$ldr)) {
-				if ($item =~ ' \[') {
-					($item) = split(' \[',$item);
-				}
-				$ldr_hash{$item} = "" if (($item ne "") && ($item !~ /[Ff]riend/) && ($item !~ /[Ff]riends$/));
-			}
-		} else {
-			if ($ldr =~ ' \[') {
-				($ldr) = split(' \[',$ldr);
-			}
-			$ldr_hash{$ldr} = "" if (($ldr ne "") && ($ldr !~ /[Ff]riends$/) && ($ldr !~ /[Ff]riend$/));
-		}
-	}
-	# insert an option holder
-	push @$ldrref, "Select a Caller";
-	push @$ldrref, sort keys %ldr_hash;
-}
-
-sub db_muso_lookup {
-	my ($syear, $smon, $eyear, $emon, $musoref) = @_;
-
-	my $qrystr;
-	my $sth;
-	my $band;
-	my %ldr_hash;
-	my %bandhash;
-	my %musohash;
-	my @mlst;
-
-	my $dbh = get_dbh();
-	#
-	# First, figure out what styles are being danced this month
-	#
-	$qrystr = "SELECT band FROM $TableChoice";
-	$qrystr .= " WHERE startday LIKE '" . $syear . "-";
-	$qrystr .= sprintf "%02d", $smon;
-	$qrystr .= "%'";
-	$qrystr .= " OR endday LIKE '" . $eyear . "-";
-	$qrystr .= sprintf "%02d", $emon;
-	$qrystr .= "%'";
-	$sth = $dbh->prepare($qrystr);
-	$sth->execute;
-	while (($band) = $sth->fetchrow_array()) {
-		my $guest = "";
-		my $mstr = "";
-		my $bandname = "";
-		$_ = $band;
-		s/ \[[^\]]+\]//g;			# Remove location
-		s/ with /, /g;				# ' with ' same as ', ' 
-		s/ and [Ff]riend[s]*//g;		# remove 'and Friend[s]'
-		s/, [Ff]riend[s]*//g;			# remove 'and Friend[s]'
-		s/[Oo]pen [Bb]and led by //;		# remove "Open Band"
-		s/, and /, /;				# ' and ' same as ', '
-		s/ and /, /;				# ' and ' same as ', '
-		s/TBA//;				# remove "TBA"
-		$band = $_;
-		#
-		# We've removed and cleaned up the cruft.  Now let's try to 
-		#  parse out the goodies.
-		#
-		# At this point, we have one of:
-		#
-		#	muso, muso, muso, ...
-		#	band (muso ...)
-		#	band (muso ...), guest
-		$mstr = $_;
-		($bandname,$mstr,$guest) = /(.+) \((.+)\), (.+)/ if /\),/;
-		($bandname,$mstr) = /(.+) \((.+)\)/ if /\)$/;
-		$mstr = $_ if ! /\)/;
-#	print "Parsed line:  ";
-#	print "bandname=$bandname	" if $bandname;
-#	print "mstr=$mstr	" if $mstr;
-#	print "guest=$guest	" if $guest;
-#	print "\n";
-		#
-		# We should be parsed now.  Now build our lists.
-		#
-		@mlst = split(/, /,$mstr);
-		my $i;
-		foreach $i (@mlst) {
-			$musohash{$i} = $i if ! $musohash{$i};
-		}
-		$bandhash{$bandname} = $bandname if $bandname;
-		$musohash{$guest} = $guest if ($guest && ! $musohash{$guest});
-	}
-	#
-	# Manually insert open band
-	#
-	$bandhash{"Open Band"} = "Open Band";
-	# insert an option holder
-	push @$musoref, "Select a Band or Musician";
-	# and load up the array
-	push @$musoref, sort keys %bandhash;
-	push @$musoref, "";
-	push @$musoref, sort keys %musohash;
-}
 
 sub db_sched_lookup {
-	my ($syear, $smon, $eyear, $emon, $schedref) = @_;
+	my ($syear, $smon, $eyear, $emon, $schedref, $table_choice) = @_;
 
 	my $qrystr;
 	my $sth;
@@ -686,7 +370,7 @@ sub db_sched_lookup {
 	#
 	# First, figure out what dances are being danced this month
 	$qrystr = "SELECT ".
-     "startday, endday, type, loc, leader, band, comments FROM $TableChoice";
+     "startday, endday, type, loc, leader, band, comments FROM $table_choice";
 	$qrystr .= " WHERE startday LIKE '" . $syear . "-";
 	$qrystr .= sprintf "%02d", $smon;
 	$qrystr .= "%'";
@@ -716,7 +400,7 @@ sub main {
 	my ($cur_start_year, $cur_start_mon) = my_today();
 	my ($cur_end_year, $cur_end_mon) = my_today();
 
-	$TableChoice = 'schedule';
+	my $table_choice = 'schedule';
 
 	if ($base_url =~ /\/calendars\//) {
 			my @url_parts = split(/\//,$base_url);
@@ -733,7 +417,7 @@ sub main {
 					($cur_end_year, $cur_end_mon) = my_today();
 				} else {
 						if ($url_yr < $cur_start_year) {
-						  $TableChoice = 'schedule'.$url_yr;
+						  $table_choice = 'schedule'.$url_yr;
 					}
 						
 					$cur_start_year = $url_yr;
@@ -773,7 +457,8 @@ sub main {
 			$cur_start_mon,
 			$cur_end_year,
 			$cur_end_mon,
-			\@sched
+			\@sched,
+			$table_choice,
 		);
 
 		print_tab_calendar(
@@ -781,7 +466,7 @@ sub main {
 					$cur_start_mon,
 					$cur_end_year,
 					$cur_end_mon,
-					\@sched
+					\@sched,
 				  );
 		print h1("Schedule of Events");
 		print_schedule(
@@ -789,21 +474,16 @@ sub main {
 					$cur_start_mon,
 					$cur_end_year,
 					$cur_end_mon,
-					\@sched
+					\@sched,
 				  );
 		print h1("Dance Venues");
 		print_venues(
 					$cur_start_year,
 					$cur_start_mon,
 					$cur_end_year,
-					$cur_end_mon
+					$cur_end_mon,
+					$table_choice,
 				  );
-		#print_selection_form(
-		#			$cur_start_year,
-		#			$cur_start_mon,
-		#			$cur_end_year,
-		#			$cur_end_mon
-		#		    );
 		print end_html();
 
 }

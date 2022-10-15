@@ -24,7 +24,7 @@ sub test_json {
     $ENV{QUERY_STRING} = 'json=TRUE&start=1538005600&end=1540005600';
 
     my ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -52,7 +52,7 @@ sub test_html {
     $ENV{QUERY_STRING} = 'json=FALSE&start=1538005600&end=1540005600&venue=CCB';
 
     my ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -81,7 +81,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&start=1538005600&end=1538092000';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -100,7 +100,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&numdays=1';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -119,7 +119,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&numdays=4';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -140,7 +140,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&start=1538005600&end=1538351200';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -162,7 +162,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&numdays=4&venue=CCB';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -181,7 +181,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&numdays=4&caller=Bruce Hamilton';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -198,7 +198,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&numdays=4&style=CONTRA';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;
@@ -215,7 +215,7 @@ sub test_args {
     #
     $ENV{QUERY_STRING} = 'json=TRUE&numdays=4&muso=Open band';
     ($stdout, $stderr, $exit) = capture {
-        do 'scripts/dancefinder.pl';
+        do './scripts/dancefinder.pl';
     };
     die "dancefinder.pl died: $@ $stderr" if !$exit;
     note $stderr if $stderr;

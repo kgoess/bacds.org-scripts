@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl -w
 ##
 ## Find out what dances are happening in the next week.
 ##
@@ -22,8 +22,8 @@ use CGI;
 use bacds::Model::Venue;
 use bacds::Model::Event;
 
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $TEST_TODAY = $ENV{TEST_TODAY};
+our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+our $TEST_TODAY = $ENV{TEST_TODAY};
 
 my ($st_day, $st_mon, $st_yr, $end_day, $end_mon, $end_yr);
 my ($last_year,$last_mon,$last_day,$last, $last_sec);
@@ -57,9 +57,7 @@ my %day_lst = (
 );
 
 my ($loc_hall, $loc_city, $loc_ven_comment);
-my $menu_file = '/var/www/bacds.org/public_html/shared/menu.html';
-my $meta_file = '/var/www/bacds.org/public_html/shared/meta-tags.html';
-my $footer_file = '/var/www/bacds.org/public_html/shared/copyright.html';
+my $meta_file = $ENV{META_FILE} || '/var/www/bacds.org/public_html/shared/meta-tags.html';
 my $numrows;
 my $q = new CGI;
 

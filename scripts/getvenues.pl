@@ -11,8 +11,8 @@ use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
 use bacds::Model::Event;
 use bacds::Model::Venue;
 
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $TEST_TODAY = $ENV{TEST_TODAY};
+our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
+our $TEST_TODAY = $ENV{TEST_TODAY};
 
 my ($style, $venue, $numdays);
 my (%venuehash);
