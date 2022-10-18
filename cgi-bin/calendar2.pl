@@ -107,6 +107,46 @@ sub print_venues {
     print end_table();
 }
 
+sub parse_url_params {
+    my ($base_url) = @_;
+
+    my ($start_year, $start_mon) = my_today();
+    my ($end_year, $end_mon) = my_today();
+
+    my $table_choice = 'schedule';
+
+    if ($base_url =~ /\/calendars\//) {
+        my @url_parts = split(/\//,$base_url);
+        if ($url_parts[1] eq "calendars") {
+            my $url_yr = $url_parts[2];
+            my $url_mon = $url_parts[3];
+            if ($url_mon =~ /^0/) {
+                $_ = $url_mon;
+                s/^0//;
+                $url_mon = $_;
+            }
+            if ($url_yr eq "current") {
+                ($start_year, $start_mon) = my_today();
+                ($end_year, $end_mon) = my_today();
+            } else {
+                if ($url_yr < $start_year) {
+                    $table_choice = 'schedule'.$url_yr;
+                }
+
+                $start_year = $url_yr;
+                $end_year = $url_yr;
+                $start_mon = $url_mon;
+                $end_mon = $url_mon;
+                
+            }
+        } else {
+            ($start_year, $start_mon) = my_today();
+            ($end_year, $end_mon) = my_today();
+        }
+    }
+    return $start_year, $start_mon, $end_year, $end_mon, $table_choice;
+}
+
 sub print_schedule {
     my ($start_yr, $start_mon, $end_yr, $end_mon, $schedref) = @_;
     my $event;
@@ -360,7 +400,9 @@ sub print_end_of_wk {
 
 
 sub db_sched_lookup {
-    my ($syear, $smon, $eyear, $emon, $schedref, $table_choice) = @_;
+    my ($syear, $smon, $eyear, $emon, $table_choice) = @_;
+
+    my @schedule;
 
     my $qrystr;
     my $sth;
@@ -383,55 +425,24 @@ sub db_sched_lookup {
     while (($stday,$endday,$typ,$loc,$ldr,$band,$cmts) = $sth->fetchrow_array()) {
         if ($cmts) {
             $cmts =~ s/<q>/"/g;
-            push @$schedref, join('|',$stday,$endday,$typ,$loc,$ldr,$band,$cmts);
+            push @schedule, join('|',$stday,$endday,$typ,$loc,$ldr,$band,$cmts);
         } else {
-            push @$schedref, join('|',$stday,$endday,$typ,$loc,$ldr,$band);
+            push @schedule, join('|',$stday,$endday,$typ,$loc,$ldr,$band);
         }
     }
+
+    return \@schedule;
 }
 
 sub main {
 
-    my $base_url = url(-absolute => 1);
-
-    my @sched;
-
     print header();
 
-    my ($cur_start_year, $cur_start_mon) = my_today();
-    my ($cur_end_year, $cur_end_mon) = my_today();
+    my $base_url = url(-absolute => 1);
 
-    my $table_choice = 'schedule';
+    my ($start_year, $start_mon, $end_year, $end_mon, $table_choice)
+        = parse_url_params($base_url);
 
-    if ($base_url =~ /\/calendars\//) {
-        my @url_parts = split(/\//,$base_url);
-        if ($url_parts[1] eq "calendars") {
-            my $url_yr = $url_parts[2];
-            my $url_mon = $url_parts[3];
-            if ($url_mon =~ /^0/) {
-                $_ = $url_mon;
-                s/^0//;
-                $url_mon = $_;
-            }
-            if ($url_yr eq "current") {
-                ($cur_start_year, $cur_start_mon) = my_today();
-                ($cur_end_year, $cur_end_mon) = my_today();
-            } else {
-                    if ($url_yr < $cur_start_year) {
-                      $table_choice = 'schedule'.$url_yr;
-                }
-                    
-                $cur_start_year = $url_yr;
-                $cur_end_year = $url_yr;
-                $cur_start_mon = $url_mon;
-                $cur_end_mon = $url_mon;
-                
-            }
-               } else {
-            ($cur_start_year, $cur_start_mon) = my_today();
-            ($cur_end_year, $cur_end_mon) = my_today();
-        }
-    }
 
     print start_html(
         -title => 'BACDS Calendar generator',
@@ -441,36 +452,35 @@ sub main {
     );
     print h1("BACDS Events Calendar");
 
-    db_sched_lookup(
-        $cur_start_year,
-        $cur_start_mon,
-        $cur_end_year,
-        $cur_end_mon,
-        \@sched,
+    my $schedule = db_sched_lookup(
+        $start_year,
+        $start_mon,
+        $end_year,
+        $end_mon,
         $table_choice,
     );
 
     print_tab_calendar(
-        $cur_start_year,
-        $cur_start_mon,
-        $cur_end_year,
-        $cur_end_mon,
-        \@sched,
+        $start_year,
+        $start_mon,
+        $end_year,
+        $end_mon,
+        $schedule,
     );
     print h1("Schedule of Events");
     print_schedule(
-        $cur_start_year,
-        $cur_start_mon,
-        $cur_end_year,
-        $cur_end_mon,
-        \@sched,
+        $start_year,
+        $start_mon,
+        $end_year,
+        $end_mon,
+        $schedule,
     );
     print h1("Dance Venues");
     print_venues(
-        $cur_start_year,
-        $cur_start_mon,
-        $cur_end_year,
-        $cur_end_mon,
+        $start_year,
+        $start_mon,
+        $end_year,
+        $end_mon,
         $table_choice,
     );
     print end_html();
