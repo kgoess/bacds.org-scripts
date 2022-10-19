@@ -145,11 +145,10 @@ sub parse_url_params {
 
 sub print_schedule {
     my ($start_yr, $start_mon, $schedref) = @_;
-    my $event;
-    my %taghash;
-    my $div_start;
 
-    $div_start = 0;
+    my %taghash;
+
+    my $div_start = 0;
 
 
     my ($tyear, $tmon, $tday) = my_today();
@@ -162,25 +161,19 @@ sub print_schedule {
     print th({class => 'caltitle'},'CALLER(S)<br>TEACHER(S)');
     print th({class => 'caltitle', -align=>'center'},'MUSICIANS');
     print end_Tr;
-    foreach $event (@$schedref) {
-        my $start;
-        ($start) = split('\|',$event);
+    foreach my $event (@$schedref) {
+        my ($start) = split('\|',$event);
         $taghash{$start} = 0;
     }
-    foreach $event (@$schedref) {
-        my ($stday,$endday,$typ,$loc,$ldr,$band,$cmts);
-        my ($tsyr, $tsmon, $tsday);
-        my ($teyr, $temon, $teday);
-        my ($ttemon, $ttsmon);
-        my $txtdate;
-        ($stday,$endday,$typ,$loc,$ldr,$band,$cmts) = split('\|',$event);
-        ($tsyr,$tsmon,$tsday) = split('-',$stday);
-        $ttsmon = Month_to_Text($tsmon);
-        $txtdate = $ttsmon . '&nbsp;' . $tsday;
+    foreach my $event (@$schedref) {
+        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts) = split('\|', $event);
+        my ($tsyr, $tsmon, $tsday) = split('-',$stday);
+        my $ttsmon = Month_to_Text($tsmon);
+        my $txtdate = $ttsmon . '&nbsp;' . $tsday;
         $tsday =~ s/^0//;
         if ($endday ne '') {
-            ($teyr,$temon,$teday) = split('-',$endday);
-            $ttemon = Month_to_Text($temon);
+            my ($teyr, $temon, $teday) = split('-',$endday);
+            my $ttemon = Month_to_Text($temon);
             $txtdate .= '&nbsp;to&nbsp;' . $ttemon . '&nbsp;' . $teday;
         }
         if ($tsyr == $tyear && $tsmon == $tmon && $tsday == $tday) {
@@ -255,7 +248,6 @@ sub print_end_of_mon {
 
 sub print_date {
     my ($dow, $cyr, $cmon, $cdom, $datelnk) = @_;
-    my $dstr;
 
     my ($tyear, $tmon, $tday) = my_today();
 
@@ -275,19 +267,11 @@ sub print_date {
 sub print_tab_calendar {
     my ($cur_start_year, $cur_start_mon, $schedref) = @_;
 
-    my $cur_days_in_mon;
-    my $cur_day_of_mon;
-    my $cur_day_of_wk;
     my $days_in_wk = 7;
-    my $dow;
-    my $datelnk;
-    my $datestr;
     my %taghash;
-    my $event;
 
-    foreach $event (@$schedref) {
-        my $start;
-        ($start) = split('\|',$event);
+    foreach my $event (@$schedref) {
+        my ($start) = split('\|', $event);
         $taghash{$start} = 'YES';
     }
 
@@ -295,11 +279,11 @@ sub print_tab_calendar {
     ## get important values for the given month
     ##
     # Days in current month
-    $cur_days_in_mon = Days_in_Month($cur_start_year, $cur_start_mon);
+    my $cur_days_in_mon = Days_in_Month($cur_start_year, $cur_start_mon);
     # We're basing everything on the first day of the month
-    $cur_day_of_mon = 1;
+    my $cur_day_of_mon = 1;
     # and the first day of the week
-    $cur_day_of_wk = Day_of_Week(
+    my $cur_day_of_wk = Day_of_Week(
         $cur_start_year,
         $cur_start_mon,
         $cur_day_of_mon
@@ -311,7 +295,7 @@ sub print_tab_calendar {
     ## If the current isn't Sunday, print a partial week;
     ## otherwise, fall through and loop through full weeks.
     if (($cur_day_of_wk % $days_in_wk) != 0) {
-        $dow = 0;
+        my $dow = 0;
         while ($dow != $cur_day_of_wk) {
             print_empty($dow);
             $dow++;
@@ -319,7 +303,7 @@ sub print_tab_calendar {
         while ($dow < $days_in_wk) {
             my $datekey;
                 my $datekey2;  # make resilience against days <10
-            $datelnk = '';
+            my $datelnk = '';
             $datekey =  $cur_start_year . '-';
             $datekey .= '0' if ($cur_start_mon < 10);
             $datekey .= $cur_start_mon . '-';
@@ -346,11 +330,11 @@ sub print_tab_calendar {
     ## and print rest of the month
     ##
     while ($cur_day_of_mon <= $cur_days_in_mon) {
-        $dow = 0;
+        my $dow = 0;
         while ($dow < $days_in_wk) {
             if ($cur_day_of_mon <= $cur_days_in_mon) {
                 my $datekey;
-                $datelnk = '';
+                my $datelnk = '';
                 $datekey =  $cur_start_year . '-';
                 $datekey .= '0' if ($cur_start_mon < 10);
                 $datekey .= $cur_start_mon . '-';
