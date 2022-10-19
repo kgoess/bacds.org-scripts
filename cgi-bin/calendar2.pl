@@ -112,12 +112,25 @@ sub parse_url_params {
             if ($url_yr eq "current") {
                 ($start_year, $start_mon) = my_today();
             } else {
+                # sanitize and limit the request data
+                $url_yr =~ s/[^0-9]//g;
+                $url_yr =~ s/^([0-9]{4}).*/$1/;
+                $url_mon =~ s/[^0-9]//g;
+                $url_mon =~ s/^([0-9]{2}).*/$1/;
+
+                # if we've sanitized them all away, replace them
+                # with something useful/safe
+                if (!($url_yr && $url_mon)) {
+                    ($url_yr, $url_mon) = my_today();
+                }
                 if ($url_yr < $start_year) {
                     $table_choice = 'schedule'.$url_yr;
                 }
 
                 $start_year = $url_yr;
                 $start_mon = $url_mon;
+
+
                 
             }
         } else {

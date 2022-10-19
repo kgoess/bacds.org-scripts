@@ -6,7 +6,7 @@ use warnings;
 
 use Capture::Tiny qw/capture/;
 use File::Basename qw/basename/;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Differences qw/eq_or_diff/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
@@ -42,4 +42,8 @@ eq_or_diff \@res, [2018, 9, 'schedule'];
 
 # sql injection demonstration
 @res = parse_url_params(q{/calendars/"; drop table 'schedule';/index.pl});
-is $res[0], q{"; drop table 'schedule';};
+is $res[0], '2018';
+
+# silly long param sanitization
+@res = parse_url_params('/calendars/2017777777777/07777777777/index.pl');
+eq_or_diff \@res, [2017, 7, 'schedule2017'];
