@@ -23,25 +23,19 @@ our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 our $TEST_TODAY = $ENV{TEST_TODAY};
 
 sub db_venue_lookup {
-    my ($syear, $smon, $refloclst, $table_choice) = @_;
+    my ($syear, $smon, $table_choice) = @_;
 
-    my $sched_qrystr;
-    my $venue_qrystr;
     my $sth;
-    my @loc_lst;
-    my $venue;
-    my $hall;
-    my $addr;
-    my $city;
-    my $comment;
     my %lochash;
 
     my $dbh = get_dbh();
+
+    my @venue_list;
     
     #
     # First, figure out what venues we're using this month
     #
-    $sched_qrystr = "SELECT loc FROM $table_choice";
+    my $sched_qrystr = "SELECT loc FROM $table_choice";
     $sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
     $sched_qrystr .= sprintf "%02d", $smon;
     $sched_qrystr .= "%'";
@@ -50,22 +44,22 @@ sub db_venue_lookup {
     $sched_qrystr .= "%'";
     $sth = $dbh->prepare($sched_qrystr);
     $sth->execute;
-    while (($venue) = $sth->fetchrow_array()) {
+    while (my ($venue) = $sth->fetchrow_array()) {
         $lochash{$venue} = "" if ($venue ne "");
     }
     #
     # Next, get the descriptions for them.
     #
-    foreach $venue (keys %lochash) {
-        $venue_qrystr = "SELECT hall, address, city, comment FROM venue";
+    foreach my $venue (keys %lochash) {
+        my $venue_qrystr = "SELECT hall, address, city, comment FROM venue";
         $venue_qrystr .= " WHERE vkey = '" . $venue . "'";
         $sth = $dbh->prepare($venue_qrystr);
         $sth->execute;
-        while (($hall,$addr,$city,$comment) = $sth->fetchrow_array()) {
-            push @$refloclst, join('|',$venue,$hall,$addr,$city,$comment);
+        while (my ($hall, $addr, $city, $comment) = $sth->fetchrow_array()) {
+            push @venue_list, join('|', $venue, $hall, $addr, $city, $comment);
         }
     }
-    sort @$refloclst;
+    sort @venue_list
 }
 
 sub print_venues {
@@ -73,11 +67,9 @@ sub print_venues {
     my $venue;
 
     print start_table();
-    my @loc_list;
-    db_venue_lookup(
+    my @loc_list = db_venue_lookup(
         $start_yr,
         $start_mon,
-        \@loc_list,
         $table_choice,
     );
     print start_Tr;
