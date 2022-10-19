@@ -25,22 +25,22 @@ note $stderr if $stderr;
 my @res;
 
 @res = parse_url_params('/calendars/2022/12/index.pl');
-eq_or_diff \@res, [2022, 12, 2022, 12, 'schedule'];
+eq_or_diff \@res, [2022, 12, 'schedule'];
 
 @res = parse_url_params('/calendars/2017/07/index.pl');
-eq_or_diff \@res, [2017, 7, 2017, 7, 'schedule2017'];
+eq_or_diff \@res, [2017, 7, 'schedule2017'];
 
 # "current" fetches the params from TEST_TODAY
 @res = parse_url_params('/calendars/current/index.pl');
 # note the spurious leading "0" in the month, will fix
-eq_or_diff \@res, [2018, '09', 2018, '09', 'schedule'];
+eq_or_diff \@res, [2018, '09', 'schedule'];
 
 
 # missing "/calendars/" just fetches today
 @res = parse_url_params('/argleblargle/current/index.pl');
-eq_or_diff \@res, [2018, '09', 2018, '09', 'schedule'];
+eq_or_diff \@res, [2018, '09', 'schedule'];
 # note the spurious leading "0" in the month, will fix
-eq_or_diff \@res, [2018, '09', 2018, '09', 'schedule'];
+eq_or_diff \@res, [2018, '09', 'schedule'];
 
 
 # sql injection demonstration

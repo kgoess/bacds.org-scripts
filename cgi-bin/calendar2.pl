@@ -23,7 +23,7 @@ our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 our $TEST_TODAY = $ENV{TEST_TODAY};
 
 sub db_venue_lookup {
-    my ($syear, $smon, $eyear, $emon, $refloclst, $table_choice) = @_;
+    my ($syear, $smon, $refloclst, $table_choice) = @_;
 
     my $sched_qrystr;
     my $venue_qrystr;
@@ -45,8 +45,8 @@ sub db_venue_lookup {
     $sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
     $sched_qrystr .= sprintf "%02d", $smon;
     $sched_qrystr .= "%'";
-    $sched_qrystr .= " OR endday LIKE '" . $eyear . "-";
-    $sched_qrystr .= sprintf "%02d", $emon;
+    $sched_qrystr .= " OR endday LIKE '" . $syear . "-";
+    $sched_qrystr .= sprintf "%02d", $smon;
     $sched_qrystr .= "%'";
     $sth = $dbh->prepare($sched_qrystr);
     $sth->execute;
@@ -69,7 +69,7 @@ sub db_venue_lookup {
 }
 
 sub print_venues {
-    my ($start_yr, $start_mon, $end_yr, $end_mon, $table_choice) = @_;
+    my ($start_yr, $start_mon, $table_choice) = @_;
     my $venue;
 
     print start_table();
@@ -77,8 +77,6 @@ sub print_venues {
     db_venue_lookup(
         $start_yr,
         $start_mon,
-        $end_yr,
-        $end_mon,
         \@loc_list,
         $table_choice,
     );
@@ -111,7 +109,6 @@ sub parse_url_params {
     my ($base_url) = @_;
 
     my ($start_year, $start_mon) = my_today();
-    my ($end_year, $end_mon) = my_today();
 
     my $table_choice = 'schedule';
 
@@ -127,28 +124,24 @@ sub parse_url_params {
             }
             if ($url_yr eq "current") {
                 ($start_year, $start_mon) = my_today();
-                ($end_year, $end_mon) = my_today();
             } else {
                 if ($url_yr < $start_year) {
                     $table_choice = 'schedule'.$url_yr;
                 }
 
                 $start_year = $url_yr;
-                $end_year = $url_yr;
                 $start_mon = $url_mon;
-                $end_mon = $url_mon;
                 
             }
         } else {
             ($start_year, $start_mon) = my_today();
-            ($end_year, $end_mon) = my_today();
         }
     }
-    return $start_year, $start_mon, $end_year, $end_mon, $table_choice;
+    return $start_year, $start_mon, $table_choice;
 }
 
 sub print_schedule {
-    my ($start_yr, $start_mon, $end_yr, $end_mon, $schedref) = @_;
+    my ($start_yr, $start_mon, $schedref) = @_;
     my $event;
     my %taghash;
     my $div_start;
@@ -277,8 +270,7 @@ sub print_date {
 }
 
 sub print_tab_calendar {
-    my ($cur_start_year, $cur_start_mon,
-        $cur_end_year, $cur_end_mon, $schedref) = @_;
+    my ($cur_start_year, $cur_start_mon, $schedref) = @_;
 
     my $cur_days_in_mon;
     my $cur_day_of_mon;
@@ -400,7 +392,7 @@ sub print_end_of_wk {
 
 
 sub db_sched_lookup {
-    my ($syear, $smon, $eyear, $emon, $table_choice) = @_;
+    my ($syear, $smon, $table_choice) = @_;
 
     my @schedule;
 
@@ -417,8 +409,8 @@ sub db_sched_lookup {
     $qrystr .= " WHERE startday LIKE '" . $syear . "-";
     $qrystr .= sprintf "%02d", $smon;
     $qrystr .= "%'";
-    $qrystr .= " OR endday LIKE '" . $eyear . "-";
-    $qrystr .= sprintf "%02d", $emon;
+    $qrystr .= " OR endday LIKE '" . $syear . "-";
+    $qrystr .= sprintf "%02d", $smon;
     $qrystr .= "%'";
     $sth = $dbh->prepare($qrystr);
     $sth->execute;
@@ -455,32 +447,24 @@ sub main {
     my $schedule = db_sched_lookup(
         $start_year,
         $start_mon,
-        $end_year,
-        $end_mon,
         $table_choice,
     );
 
     print_tab_calendar(
         $start_year,
         $start_mon,
-        $end_year,
-        $end_mon,
         $schedule,
     );
     print h1("Schedule of Events");
     print_schedule(
         $start_year,
         $start_mon,
-        $end_year,
-        $end_mon,
         $schedule,
     );
     print h1("Dance Venues");
     print_venues(
         $start_year,
         $start_mon,
-        $end_year,
-        $end_mon,
         $table_choice,
     );
     print end_html();
