@@ -117,11 +117,6 @@ sub parse_url_params {
         if ($url_parts[1] eq "calendars") {
             my $url_yr = $url_parts[2];
             my $url_mon = $url_parts[3];
-            if ($url_mon =~ /^0/) {
-                $_ = $url_mon;
-                s/^0//;
-                $url_mon = $_;
-            }
             if ($url_yr eq "current") {
                 ($start_year, $start_mon) = my_today();
             } else {
@@ -137,6 +132,9 @@ sub parse_url_params {
             ($start_year, $start_mon) = my_today();
         }
     }
+
+    $start_mon =~ s/^0//; # remove any leading zero
+
     return $start_year, $start_mon, $table_choice;
 }
 

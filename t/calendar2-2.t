@@ -6,7 +6,7 @@ use warnings;
 
 use Capture::Tiny qw/capture/;
 use File::Basename qw/basename/;
-use Test::More tests => 6;
+use Test::More tests => 5;
 use Test::Differences qw/eq_or_diff/;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
@@ -32,15 +32,12 @@ eq_or_diff \@res, [2017, 7, 'schedule2017'];
 
 # "current" fetches the params from TEST_TODAY
 @res = parse_url_params('/calendars/current/index.pl');
-# note the spurious leading "0" in the month, will fix
-eq_or_diff \@res, [2018, '09', 'schedule'];
+eq_or_diff \@res, [2018, 9, 'schedule'];
 
 
 # missing "/calendars/" just fetches today
 @res = parse_url_params('/argleblargle/current/index.pl');
-eq_or_diff \@res, [2018, '09', 'schedule'];
-# note the spurious leading "0" in the month, will fix
-eq_or_diff \@res, [2018, '09', 'schedule'];
+eq_or_diff \@res, [2018, 9, 'schedule'];
 
 
 # sql injection demonstration
