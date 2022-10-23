@@ -53,14 +53,13 @@ sub MY::postamble {
     return <<'MAKE_FRAG';
 
 diff-with-prod:
-	for f in scripts/*.pl ; do \
-		diff -u $$f /var/www/bacds.org/public_html/scripts/$$(basename $$f); \
+	for f in scripts/*.pl scripts/*.sh ; do \
+		diff -u /var/www/bacds.org/public_html/scripts/$$(basename $$f) $$f ; \
+		/usr/bin/true; \
 	done
-	for f in scripts/*.sh ; do \
-		diff -u $$f /var/www/bacds.org/public_html/scripts/$$(basename $$f); \
-	done
-	for f in cgi-bin/*.cgi ; do \
-		diff -u $$f /var/www/bacds.org/cgi-bin/$$(basename $$f); \
+	for f in cgi-bin/*.cgi cgi-bin/*.pl ; do \
+		diff -u /var/www/bacds.org/cgi-bin/$$(basename $$f) $$f ; \
+		/usr/bin/true; \
 	done
 
 MAKE_FRAG
