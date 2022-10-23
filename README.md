@@ -7,10 +7,10 @@ INSTALLATION
 
 To install this module and all the scripts type the following:
 
-   perl Makefile.PL
-   make
-   make test
-   sudo make install
+    perl Makefile.PL
+    make
+    make test
+    sudo make install
 
 (You can also do "make diff-with-prod" before "make install" to see what the
 changes will be.)
