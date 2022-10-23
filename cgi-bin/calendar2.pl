@@ -419,9 +419,7 @@ sub main {
 
     my $base_url = url(-absolute => 1);
 
-    my ($start_year, $start_mon, $end_year, $end_mon, $table_choice)
-        = parse_url_params($base_url);
-
+    my ($start_year, $start_mon, $table_choice) = parse_url_params($base_url);
 
     print start_html(
         -title => 'BACDS Calendar generator',
