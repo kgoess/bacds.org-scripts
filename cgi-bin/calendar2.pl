@@ -8,7 +8,7 @@
 ## This file is being tracked in git. DON'T MAKE IN-PLACE EDITS AND
 ## EXPECT THEM TO SURVIVE.
 ## To clone the repo, add yourself to the "git" group
-#  "sudo usermod -a -G git <username>" 
+#  "sudo usermod -a -G git <username>"
 ## and then do "git clone /var/lib/git/bacds.org-scripts/"
 
 use strict;
@@ -25,25 +25,34 @@ our $TEST_TODAY = $ENV{TEST_TODAY};
 sub db_venue_lookup {
     my ($syear, $smon, $table_choice) = @_;
 
-    my $sth;
+    $table_choice =~ s/[^a-z0-9-]//g;
+
     my %lochash;
 
     my $dbh = get_dbh();
 
     my @venue_list;
-    
+
     #
     # First, figure out what venues we're using this month
     #
-    my $sched_qrystr = "SELECT loc FROM $table_choice";
-    $sched_qrystr .= " WHERE startday LIKE '" . $syear . "-";
-    $sched_qrystr .= sprintf "%02d", $smon;
-    $sched_qrystr .= "%'";
-    $sched_qrystr .= " OR endday LIKE '" . $syear . "-";
-    $sched_qrystr .= sprintf "%02d", $smon;
-    $sched_qrystr .= "%'";
+    my $sched_qrystr = <<EOL;
+        SELECT
+            loc
+        FROM $table_choice
+        WHERE startday LIKE ?
+           OR endday LIKE ?
+EOL
+    # not sure endday is doing anything here any more since startdate and
+    # endday are both the same?
+
+    my $date_param = sprintf "%04d-%02d%%", $syear, $smon;
+    my $sth = $dbh->prepare($sched_qrystr)
+        or die "can't prepare $sched_qrystr: ".$dbh->errstr;
+    $sth->execute($date_param, $date_param);
+
     $sth = $dbh->prepare($sched_qrystr);
-    $sth->execute;
+    $sth->execute($date_param, $date_param);
     while (my ($venue) = $sth->fetchrow_array()) {
         $lochash{$venue} = "" if ($venue ne "");
     }
@@ -52,9 +61,9 @@ sub db_venue_lookup {
     #
     foreach my $venue (keys %lochash) {
         my $venue_qrystr = "SELECT hall, address, city, comment FROM venue";
-        $venue_qrystr .= " WHERE vkey = '" . $venue . "'";
+        $venue_qrystr .= " WHERE vkey = ?";
         $sth = $dbh->prepare($venue_qrystr);
-        $sth->execute;
+        $sth->execute($venue);
         while (my ($hall, $addr, $city, $comment) = $sth->fetchrow_array()) {
             push @venue_list, join('|', $venue, $hall, $addr, $city, $comment);
         }
@@ -129,9 +138,6 @@ sub parse_url_params {
 
                 $start_year = $url_yr;
                 $start_mon = $url_mon;
-
-
-                
             }
         } else {
             ($start_year, $start_mon) = my_today();
@@ -381,32 +387,33 @@ sub print_end_of_wk {
 sub db_sched_lookup {
     my ($syear, $smon, $table_choice) = @_;
 
-    my @schedule;
+    $table_choice =~ s/[^a-z0-9-]//g;
 
-    my $qrystr;
-    my $sth;
-    my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts);
-    my @mlst;
+    my @schedule;
 
     my $dbh = get_dbh();
     #
     # First, figure out what dances are being danced this month
-    $qrystr = "SELECT ".
-     "startday, endday, type, loc, leader, band, comments FROM $table_choice";
-    $qrystr .= " WHERE startday LIKE '" . $syear . "-";
-    $qrystr .= sprintf "%02d", $smon;
-    $qrystr .= "%'";
-    $qrystr .= " OR endday LIKE '" . $syear . "-";
-    $qrystr .= sprintf "%02d", $smon;
-    $qrystr .= "%'";
-    $sth = $dbh->prepare($qrystr);
-    $sth->execute;
-    while (($stday,$endday,$typ,$loc,$ldr,$band,$cmts) = $sth->fetchrow_array()) {
+    my $qrystr = <<EOL;
+        SELECT
+            startday, endday, type, loc, leader, band, comments
+        FROM $table_choice
+        WHERE startday LIKE ?
+           OR endday LIKE ?
+EOL
+    # not sure endday is doing anything here any more since startdate and
+    # endday are both the same?
+
+    my $date_param = sprintf "%04d-%02d%%", $syear, $smon;
+    my $sth = $dbh->prepare($qrystr)
+        or die "can't prepare $qrystr: ".$dbh->errstr;
+    $sth->execute($date_param, $date_param);
+    while (my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts) = $sth->fetchrow_array()) {
         if ($cmts) {
             $cmts =~ s/<q>/"/g;
-            push @schedule, join('|',$stday,$endday,$typ,$loc,$ldr,$band,$cmts);
+            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, $cmts);
         } else {
-            push @schedule, join('|',$stday,$endday,$typ,$loc,$ldr,$band);
+            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band);
         }
     }
 
