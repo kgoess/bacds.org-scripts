@@ -15,13 +15,21 @@ use strict;
 use warnings;
 use CGI qw/:standard :html3 :html4 *table *Tr *td *div/;
 use CGI::Carp;
+use Data::Dump qw/dump/;
 use Date::Calc qw(Today Days_in_Month Day_of_Week Month_to_Text);
+use DateTime;
 use DBI;
+
+use bacds::Model::Event;
+use bacds::Model::Venue;
 
 
 our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 our $TEST_TODAY = $ENV{TEST_TODAY};
 
+# Note this only works for the schema starting in early 2022
+# but I think that's ok, the venue list isn't as important
+# when doing historical digging.
 sub db_venue_lookup {
     my ($syear, $smon, $table_choice) = @_;
 
@@ -31,42 +39,35 @@ sub db_venue_lookup {
 
     my $dbh = get_dbh();
 
-    my @venue_list;
+    my $start_date = sprintf("%4d-%02d-01", $syear, $smon);
+    my $end_date = DateTime->new(
+        year       => $syear,
+        month      => $smon,
+        day        => 1,
+    )->add(months => 1)->ymd;
 
     #
     # First, figure out what venues we're using this month
     #
-    my $sched_qrystr = <<EOL;
-        SELECT
-            loc
-        FROM $table_choice
-        WHERE startday LIKE ?
-           OR endday LIKE ?
-EOL
-    # not sure endday is doing anything here any more since startdate and
-    # endday are both the same?
+    my @events = bacds::Model::Event->load_all(
+        after => $start_date,
+        before => $end_date,
+    );
 
-    my $date_param = sprintf "%04d-%02d%%", $syear, $smon;
-    my $sth = $dbh->prepare($sched_qrystr)
-        or die "can't prepare $sched_qrystr: ".$dbh->errstr;
-    $sth->execute($date_param, $date_param);
+    my (@venue_list, %seen);
 
-    $sth = $dbh->prepare($sched_qrystr);
-    $sth->execute($date_param, $date_param);
-    while (my ($venue) = $sth->fetchrow_array()) {
-        $lochash{$venue} = "" if ($venue ne "");
-    }
-    #
-    # Next, get the descriptions for them.
-    #
-    foreach my $venue (keys %lochash) {
-        my $venue_qrystr = "SELECT hall, address, city, comment FROM venue";
-        $venue_qrystr .= " WHERE vkey = ?";
-        $sth = $dbh->prepare($venue_qrystr);
-        $sth->execute($venue);
-        while (my ($hall, $addr, $city, $comment) = $sth->fetchrow_array()) {
-            push @venue_list, join('|', $venue, $hall, $addr, $city, $comment);
-        }
+    foreach my $event (@events) {
+        my $vkey = $event->loc;
+        next if $seen{$vkey}++;
+        my $venue = bacds::Model::Venue->load(vkey => $vkey);
+        push @venue_list, join '|',
+            map { $venue->$_ } qw/
+                vkey
+                hall
+                address
+                city
+                comment
+            /;
     }
     sort @venue_list
 }
@@ -378,10 +379,6 @@ sub print_end_of_wk {
 }
 
 #
-
-########
-##### Database routines -- Should modularize these
-########
 
 
 sub db_sched_lookup {
