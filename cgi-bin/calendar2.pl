@@ -10,6 +10,13 @@
 ## To clone the repo, add yourself to the "git" group
 #  "sudo usermod -a -G git <username>"
 ## and then do "git clone /var/lib/git/bacds.org-scripts/"
+#
+# The calendars page is set up so that every entry in recent years (eg
+# /calendars/2022/01 ) has an index.pl which is a symlink:
+#
+#      index.pl -> ../../../../cgi-bin/calendar2.pl
+#
+# The access logs won't show any direct hits to cgi-bin/calendar2.pl.
 
 use strict;
 use warnings;
