@@ -1,3 +1,4 @@
+cgi-bin/calendar2.pl
 cgi-bin/dancefinder.cgi
 Changes
 lib/bacds.pm
@@ -23,6 +24,7 @@ scripts/make-tonight-file.sh
 scripts/serieslists.pl
 scripts/specialevents.pl
 scripts/tonightheader.pl
+t/calendar2.t
 t/dancefinder.t
 t/data/schedule
 t/data/schedule.old

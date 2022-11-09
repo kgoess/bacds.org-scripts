@@ -11,10 +11,6 @@
 ## The dancefinder.pl script is used to create the 10day.html and 18day.html
 ## include files.
 ## It's called from make-frontpage-files.sh once per minute by cron.
-##
-## It's also used by the interactive calendar at
-## https://bacds.org/livecalendar.html which runs https://fullcalendar.io/ and
-## sends json requests to dancefinder.pl
 #
 use strict;
 use Time::Local qw/timelocal/;
