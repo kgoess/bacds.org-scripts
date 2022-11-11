@@ -27,6 +27,7 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="style">
     <option value="">ALL STYLES</option>
+    <option value="CAMP">CAMP</option>
     <option value="CONTRA">CONTRA</option>
     <option value="ENGLISH">ENGLISH</option>
     <option value="ENGLISH/REGENCY">ENGLISH/REGENCY</option>

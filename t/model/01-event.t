@@ -6,7 +6,8 @@ use warnings;
 use Data::Dump qw/dump/;
 use File::Path qw/rmtree/;
 use File::Temp qw/tempdir/;
-use Test::More tests => 24;
+use List::MoreUtils qw/any/;
+use Test::More tests => 37;
 
 use bacds::Model::Event;
 
@@ -22,6 +23,7 @@ eval {
     test_load_all_style_in_list();
     test_load_all_venue_in_list();
     test_load_all_on_date();
+    test_load_events_for_month();
 
     rmtree $datadir;
 
@@ -214,4 +216,41 @@ sub test_load_all_on_date {
     is @got, 2, 'two for VENUE1 and VENUE2 on jan 1' or dump \@got;
 
     $_->delete for bacds::Model::Event->load_all;
+}
+
+sub test_load_events_for_month {
+
+    # using the dame data as t/calendar2-2.t
+    local $ENV{TEST_CSV_DIR} = 't/data';
+
+    my @got;
+
+    # make sure the results are the same as t/calendar2-2.t
+    @got = bacds::Model::Event->load_events_for_month('2018', '02');
+    is @got, 22;
+    is $got[0]->type, 'ENGLISH';
+    is $got[0]->loc, 'MT';
+    is $got[0]->leader, 'Alisa Dodson (2018 Playford Ball Ogre)';
+    is $got[21]->type, 'ENGLISH';
+    is $got[21]->loc, 'CCB';
+    is $got[21]->leader, 'Kalia Kliban';
+
+    #
+    # august has a bunch of camps, but none of them cross the month boundary
+    #
+    @got = bacds::Model::Event->load_events_for_month('2018', '08');
+    is @got, 26;
+
+    #
+    # we made a test camp that cross the November/December boundary, should
+    # show up in each
+    #
+    @got = bacds::Model::Event->load_events_for_month('2018', '11');
+    ok any {$_->comments eq 'Test Camp That Crosses Month Boundary' } @got;
+    is $got[0]->startday, '2018-11-02';
+
+    @got = bacds::Model::Event->load_events_for_month('2018', '12');
+    ok any {$_->comments eq 'Test Camp That Crosses Month Boundary' } @got;
+    is $got[0]->startday, '2018-11-30';
+    is $got[1]->startday, '2018-12-01';
 }

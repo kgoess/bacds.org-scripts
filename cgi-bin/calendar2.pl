@@ -393,6 +393,38 @@ sub db_sched_lookup {
 
     $table_choice =~ s/[^a-z0-9-]//g;
 
+    if ($table_choice =~ /^(?: schedule | schedule2022 )$/x) {
+        return _db_sched_lookup_new($syear, $smon, $table_choice);
+    } else {
+        return _db_sched_lookup_old($syear, $smon, $table_choice);
+    }
+}
+
+sub _db_sched_lookup_new {
+    my ($syear, $smon, $table_choice) = @_;
+
+    my @schedule;
+
+    my @events = bacds::Model::Event->load_events_for_month($syear, $smon);
+
+    foreach my $event (@events) {
+        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts) =
+             map { $event->$_ } qw/startday endday type loc leader band comments/;
+        if ($cmts) {
+            $cmts =~ s/<q>/"/g;
+            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, $cmts);
+        } else {
+            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band);
+        }
+    }
+
+    return \@schedule;
+}
+
+# would take some work to match the older CSV schemas,
+# so let's just wait until after the full migration to mysql
+sub _db_sched_lookup_old {
+    my ($syear, $smon, $table_choice) = @_;
     my @schedule;
 
     my $dbh = get_dbh();

@@ -72,13 +72,13 @@ sub save {
     $self->created_ts(now_iso8601());
     $self->modified_ts(now_iso8601());
 
-    my $stmt = 
+    my $stmt =
         'INSERT INTO schedule ('.
         join(', ', @Columns)
         .') values ('.
         join(',', ('?')x@Columns)
         .')';
-    
+
     my $dbh = get_dbh;
 
     my $sth = $dbh->prepare($stmt);
@@ -154,9 +154,9 @@ sub load_all {
         " FROM $table";
 
     my (@where_clauses, @where_params);
-    
+
     my $dbh = get_dbh();
-    
+
     if (my $on_date = delete $args{on_date}) {
         croak "invalid value for 'on_date': $on_date"
             unless $on_date =~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
@@ -234,7 +234,7 @@ sub load_all {
 
     if (delete $args{camps_and_specials}) {
         my $today = $ENV{TEST_TODAY} || today_ymd();
-        push @where_clauses, join ' AND ', 
+        push @where_clauses, join ' AND ',
             q{ ( ( endday >= ? OR startday >= ?) },
             q{   (type LIKE '%CAMP%' OR type LIKE '%SPECIAL%' ) ) }
         ;
@@ -341,6 +341,46 @@ sub load_all_from_really_old_schema {
     my $sth = $dbh->prepare($stmt)
         or die $dbh->errstr;
     $sth->execute()
+        or die $sth->errstr;
+
+    my @found;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @found, $class->new($row);
+    }
+    return @found;
+}
+
+=head2 load_events_for_month
+
+Functionality needed by cgi-bin/calendar2.pl
+
+=cut
+
+sub load_events_for_month {
+    my ($class, $start_year, $start_mon) = @_;
+
+    #my $table = lc(delete $args{table} || 'schedule');
+    my $table = 'schedule'; # would this work with old schemas?
+
+    $start_year =~ s/[^0-9]//g;
+    $start_mon =~ s/[^0-9]//g;
+
+    my $date_param = sprintf "%04d-%02d%%", $start_year, $start_mon;
+
+    my $stmt =
+        'SELECT '.
+        join(', ', @Columns).
+        " FROM $table".
+        " WHERE startday LIKE ?".
+        "    OR endday LIKE ?";
+
+    my $dbh = get_dbh();
+
+    say STDERR "$stmt\nparams:\n".join("\n", $date_param, $date_param) if $ENV{DEBUG};
+
+    my $sth = $dbh->prepare($stmt)
+        or die "prepare failed for '$stmt' ".$dbh->errstr;
+    $sth->execute($date_param, $date_param)
         or die $sth->errstr;
 
     my @found;
