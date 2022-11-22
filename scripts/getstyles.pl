@@ -10,7 +10,6 @@ use bacds::Model::Event;
 use bacds::Utils qw/today_ymd/;
 
 my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $TEST_TODAY = $ENV{TEST_TODAY};
 
 ##
 ## Grab arguments
@@ -27,8 +26,8 @@ foreach my $i (@vals) {
 ##
 ## First, get the current date.
 ##
-my ($today_day, $today_mon, $today_year) = my_localtime();
-my $today = "$today_year-$today_mon-$today_day";
+my $today = today_ymd();
+my ($today_year, $today_mon, $today_day) = split '-', $today;
 
 my $last;
 if ($numdays) {
@@ -74,9 +73,4 @@ foreach my $i (sort keys %stylehash) {
 }
 print "</select>\n";
 
-
-sub my_localtime {
-    my ($year, $mon, $day) = split '-', today_ymd();
-    return $day, $mon, $year;
-}
 

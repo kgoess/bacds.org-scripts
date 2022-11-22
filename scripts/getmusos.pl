@@ -17,20 +17,14 @@ use bacds::Model::Event;
 use bacds::Utils qw/today_ymd/;
 
 my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-my $TEST_TODAY = $ENV{TEST_TODAY};
 
-
-##
-## First, get the current date.
-##
-my ($today_day, $today_mon, $today_year) = my_localtime();
-my $today = "$today_year-$today_mon-$today_day";
 
 my @events = bacds::Model::Event->load_all(
-    after => $today,
+    after => today_ymd(),
     without_end_date => 1,
     includes_leader => 1,
 );
+
 ##
 ##
 ## Pull out band and muso names
@@ -99,9 +93,4 @@ foreach my $i (sort keys %musohash) {
 }
 print "</select>\n";
 
-
-sub my_localtime {
-    my ($year, $mon, $day) = split '-', today_ymd();
-    return $day, $mon, $year;
-}
 

@@ -10,9 +10,9 @@ use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
 
 use bacds::Model::Event;
 use bacds::Model::Venue;
+use bacds::Utils qw/today_ymd/;
 
 our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
-our $TEST_TODAY = $ENV{TEST_TODAY};
 
 my ($style, $venue, $numdays);
 my (%venuehash);
@@ -31,27 +31,18 @@ foreach my $i (@vals) {
 ##
 ## First, get the current date.
 ##
-my ($today_day, $today_mon, $today_year) = my_localtime();
-my $today_sec = timelocal(0,0,0,$today_day,$today_mon,$today_year);
-$today_mon++;
-$today_mon = sprintf "%02d", $today_mon;
-$today_day = sprintf "%02d", $today_day;
-$today_year += 1900;
-my $today = "$today_year-$today_mon-$today_day";
+my $today = today_ymd();
+my ($today_year, $today_mon, $today_day) = split '-', $today;
 
 my $last;
 if ($numdays) {
 	##
 	## Now figure out what the date will be in a week.
 	##
-	my $last_sec = $today_sec + (86400 * 8);
-	my ($last_day, $last_mon, $last_year) = (localtime($last_sec))[3,4,5];
-	$last_mon++;
-	$last_mon = sprintf "%02d", $last_mon;
-	$last_day = sprintf "%02d", $last_day;
-	$last_year += 1900;
-	$last = "$last_year-$last_mon-$last_day";
-
+	$last = DateTime
+        ->new(year => $today_year, month => $today_mon, day => $today_day)
+        ->add(days => 8)
+        ->ymd;
 }
 
 
@@ -86,17 +77,3 @@ sub get_hall_name_city {
     return();
 }
 
-sub my_localtime {
-    if ($TEST_TODAY) {
-        my ($year, $mon, $day) = split '-', $TEST_TODAY;
-        $mon--;
-        if ($mon < 0) {
-            $mon = 11;
-        }
-        $year -= 1900;
-        return $day, $mon, $year;
-    } else {
-        my ($today_day, $today_mon, $today_year) = (localtime)[3,4,5];
-        return $today_day, $today_mon, $today_year;
-    }
-}
