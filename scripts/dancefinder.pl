@@ -12,6 +12,9 @@
 ## include files.
 ## It's called from make-frontpage-files.sh once per minute by cron.
 #
+## Set TEST_CSV_DIR in your environment to use something else
+## besides '/var/www/bacds.org/public_html/data'.
+
 use strict;
 use Time::Local qw/timelocal/;
 use Date::Format qw/time2str strftime/;
@@ -22,7 +25,6 @@ use CGI;
 use bacds::Model::Venue;
 use bacds::Model::Event;
 
-our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 our $TEST_TODAY = $ENV{TEST_TODAY};
 
 my ($st_day, $st_mon, $st_yr, $end_day, $end_mon, $end_yr);
