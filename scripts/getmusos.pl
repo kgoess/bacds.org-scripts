@@ -10,13 +10,14 @@
 ##    <option value="Dance 2:30">Dance 2:30</option>
 ##
 ## 'musos" should be a separate table, many-to-one
+#
+## Set TEST_CSV_DIR in your environment to use something else
+## besides '/var/www/bacds.org/public_html/data'.
 
 use strict;
 
 use bacds::Model::Event;
 use bacds::Utils qw/today_ymd/;
-
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 
 
 my @events = bacds::Model::Event->load_all(

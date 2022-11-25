@@ -3,13 +3,16 @@
 ## public_html/dancefinder/content.html:<!--#include virtual="/scripts/getstyles.pl" -->
 ##
 ## This includes camps (where endday IS NOT null)
+#
+## Set TEST_CSV_DIR in your environment to use something else
+## besides '/var/www/bacds.org/public_html/data'.
+
 use strict;
 use DateTime;
 
 use bacds::Model::Event;
 use bacds::Utils qw/today_ymd/;
 
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 
 ##
 ## Grab arguments

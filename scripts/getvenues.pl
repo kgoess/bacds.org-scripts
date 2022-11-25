@@ -4,6 +4,9 @@
 ##
 ## dancefinder/content.html <!--#include virtual="/scripts/getvenues.pl" -->
 #
+## Set TEST_CSV_DIR in your environment to use something else
+## besides '/var/www/bacds.org/public_html/data'.
+
 use strict;
 use Time::Local;
 use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
@@ -11,8 +14,6 @@ use Date::Calc qw(Day_of_Week Week_Number Day_of_Year);
 use bacds::Model::Event;
 use bacds::Model::Venue;
 use bacds::Utils qw/today_ymd/;
-
-our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 
 my ($style, $venue, $numdays);
 my (%venuehash);

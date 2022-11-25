@@ -3,13 +3,14 @@
 ## public_html/dancefinder/content.html:<!--#include virtual="/scripts/getleaders.pl" -->
 ##
 ## note that this script doesn't look at QUERY_STRING
+#
+## Set TEST_CSV_DIR in your environment to use something else
+## besides '/var/www/bacds.org/public_html/data'.
 
 use strict;
 
 use bacds::Model::Event;
 use bacds::Utils qw/today_ymd/;
-
-my $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
 
 my @events = bacds::Model::Event->load_all(
     after => today_ymd(),
