@@ -4,8 +4,6 @@ use warnings;
 
 use Capture::Tiny qw/capture/;
 use File::Basename qw/basename/;
-use File::Temp qw/tempfile/;
-use JSON qw/decode_json/;
 use Test::Differences qw/eq_or_diff/;
 use Test::More tests => 1;
 

@@ -9,7 +9,6 @@
 
 use strict;
 
-use CGI::Cookie;
 use Template;
 
 use bacds::Model::Event;
@@ -63,7 +62,7 @@ sub get_leaders_dbix {
     my $dbh = get_dbh();
 
     my $rs = $dbh->resultset('Event')->search({
-            start_date => { '>=' => today_ymd },
+        start_date => { '>=' => today_ymd },
     });
 
     my %leaderhash;
@@ -98,9 +97,9 @@ sub print_results {
     [%- END %]
 </select>
 EOL
+
     $tt->process(\$template, { callers => $leader_names } )
         || die $tt->error(), "\n";
-
 }
 
 

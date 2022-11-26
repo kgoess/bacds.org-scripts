@@ -9,7 +9,6 @@
 
 use strict;
 
-use CGI::Cookie;
 use Template;
 use Time::Local;
 

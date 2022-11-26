@@ -4,6 +4,7 @@ package bacds::Utils;
 use warnings;
 use 5.16.0;
 
+use CGI::Cookie;
 use DateTime;
 
 use parent qw( Exporter );
