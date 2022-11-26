@@ -9,11 +9,11 @@
 
 use strict;
 
-use Template;
 use CGI::Cookie;
+use Template;
 
 use bacds::Model::Event;
-use bacds::Utils qw/today_ymd/;
+use bacds::Utils qw/today_ymd get_dbix_test_cookie/;
 
 use bacds::Scheduler;
 use bacds::Scheduler::Schema;
@@ -32,21 +32,6 @@ sub main {
     }
 
     print_results($caller_names, $needs_html_escaping);
-}
-
-sub get_dbix_test_cookie {
-    my %cookies;
-
-    if ($ENV{COOKIE}) { # unit tests
-        %cookies = CGI::Cookie->parse($ENV{COOKIE});
-    } else {
-        %cookies = CGI::Cookie->fetch;
-    }
-
-    if (my $test_cookie = $cookies{DBIX_TEST}) {
-        return $test_cookie->value;
-    }
-    return;
 }
 
 
