@@ -28,18 +28,18 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="venue">
     <option value="">ALL LOCATIONS</option>
-    <option value="ASE">Palo Alto -- All Saints Episcopal Church</option>
-    <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
-    <option value="FSJ">San Jose -- First Unitarian Church of San Jose</option>
-    <option value="FUM">Palo Alto -- First United Methodist Church of Palo Alto</option>
-    <option value="HC">Berkeley -- Hillside Club</option>
-    <option value="HPP">Atherton -- Carriage House at Holbrook-Palmer Park</option>
-    <option value="HVC">Hayward -- Hill and Valley Club - 1808 B Street (at Linden)</option>
-    <option value="MT">Palo Alto -- Palo Alto Masonic Temple</option>
-    <option value="ONLINE">the cloud -- wherever</option>
-    <option value="SF">San Francisco -- St. Paul's Presbyterian Church</option>
-    <option value="SJP">San Francisco -- St. John's Presbyterian Church</option>
-    <option value="SME">Palo Alto -- St. Mark's Episcopal Church</option>
+        <option value="ASE">Palo Alto -- All Saints Episcopal Church</option>
+        <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
+        <option value="FSJ">San Jose -- First Unitarian Church of San Jose</option>
+        <option value="FUM">Palo Alto -- First United Methodist Church of Palo Alto</option>
+        <option value="HC">Berkeley -- Hillside Club</option>
+        <option value="HPP">Atherton -- Carriage House at Holbrook-Palmer Park</option>
+        <option value="HVC">Hayward -- Hill and Valley Club - 1808 B Street (at Linden)</option>
+        <option value="MT">Palo Alto -- Palo Alto Masonic Temple</option>
+        <option value="ONLINE">the cloud -- wherever</option>
+        <option value="SF">San Francisco -- St. Paul's Presbyterian Church</option>
+        <option value="SJP">San Francisco -- St. John's Presbyterian Church</option>
+        <option value="SME">Palo Alto -- St. Mark's Episcopal Church</option>
 </select>
 EOL
 
@@ -58,14 +58,14 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="venue">
     <option value="">ALL LOCATIONS</option>
-    <option value="ASE">Palo Alto -- All Saints Episcopal Church</option>
-    <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
-    <option value="FSJ">San Jose -- First Unitarian Church of San Jose</option>
-    <option value="HC">Berkeley -- Hillside Club</option>
-    <option value="MT">Palo Alto -- Palo Alto Masonic Temple</option>
-    <option value="ONLINE">the cloud -- wherever</option>
-    <option value="SJP">San Francisco -- St. John's Presbyterian Church</option>
-    <option value="SME">Palo Alto -- St. Mark's Episcopal Church</option>
+        <option value="ASE">Palo Alto -- All Saints Episcopal Church</option>
+        <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
+        <option value="FSJ">San Jose -- First Unitarian Church of San Jose</option>
+        <option value="HC">Berkeley -- Hillside Club</option>
+        <option value="MT">Palo Alto -- Palo Alto Masonic Temple</option>
+        <option value="ONLINE">the cloud -- wherever</option>
+        <option value="SJP">San Francisco -- St. John's Presbyterian Church</option>
+        <option value="SME">Palo Alto -- St. Mark's Episcopal Church</option>
 </select>
 EOL
 
@@ -85,12 +85,12 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="venue">
     <option value="">ALL LOCATIONS</option>
-    <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
-    <option value="FSJ">San Jose -- First Unitarian Church of San Jose</option>
-    <option value="FUM">Palo Alto -- First United Methodist Church of Palo Alto</option>
-    <option value="HPP">Atherton -- Carriage House at Holbrook-Palmer Park</option>
-    <option value="MT">Palo Alto -- Palo Alto Masonic Temple</option>
-    <option value="SJP">San Francisco -- St. John's Presbyterian Church</option>
+        <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
+        <option value="FSJ">San Jose -- First Unitarian Church of San Jose</option>
+        <option value="FUM">Palo Alto -- First United Methodist Church of Palo Alto</option>
+        <option value="HPP">Atherton -- Carriage House at Holbrook-Palmer Park</option>
+        <option value="MT">Palo Alto -- Palo Alto Masonic Temple</option>
+        <option value="SJP">San Francisco -- St. John's Presbyterian Church</option>
 </select>
 EOL
 
@@ -110,9 +110,8 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="venue">
     <option value="">ALL LOCATIONS</option>
-    <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
+        <option value="CCB">Berkeley -- Christ Church Berkeley (formerly Grace North Church)</option>
 </select>
 EOL
 
-eq_or_diff $stdout, $expected, "with no args";
-
+eq_or_diff $stdout, $expected, "venue=CCB";
