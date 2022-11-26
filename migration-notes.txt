@@ -1,0 +1,7 @@
+getleaders.pl as a callerlist, comma-separated:
+     my @clst = split(/, /, $leader);
+        foreach my $i (@clst) {
+            $leaderhash{$i} = $i if ! $leaderhash{$i};
+        }
+screen for that manually afterwards
+
