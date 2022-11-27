@@ -3,7 +3,6 @@ use 5.16.0;
 use warnings;
 
 use Capture::Tiny qw/capture/;
-use Data::Dump qw/dump/;
 use Test::Differences qw/eq_or_diff/;
 use Test::More tests => 4;
 
@@ -25,7 +24,6 @@ my ($stdout, $stderr, $exit);
 setup_test_db;
 
 my $dbh = get_dbh;
-
 
 my $venue_alb = $dbh->resultset('Venue')->new({
     vkey => 'ALB',
@@ -54,7 +52,18 @@ my $style_contra = $dbh->resultset('Style')->new({
     name => 'CONTRA',
 });
 $style_contra->insert;
-
+my $style_regency = $dbh->resultset('Style')->new({
+    name => 'REGENCY',
+});
+$style_regency->insert;
+my $style_special = $dbh->resultset('Style')->new({
+    name => 'SPECIAL',
+});
+$style_special->insert;
+my $style_waltz = $dbh->resultset('Style')->new({
+    name => 'WALTZ',
+});
+$style_waltz->insert;
 
 my $Event1 = $dbh->resultset('Event')->new({
     name => 'test event 1',
@@ -76,7 +85,7 @@ $Event2->insert;
 $Event2->add_to_venues($venue_kdt, {ordering => 1});
 $Event2->add_to_styles($style_contra, {ordering => 1});
 
-# this Event3 is a month later
+# this Event3 is a month later and has two styles
 my $Event3 = $dbh->resultset('Event')->new({
     name => 'test event 3',
     synthetic_name => 'test event 3 synthname',
@@ -86,43 +95,43 @@ my $Event3 = $dbh->resultset('Event')->new({
 $Event3->insert;
 $Event3->add_to_venues($venue_ccb, {ordering => 1});
 $Event3->add_to_styles($style_english, {ordering => 1});
-$Event3->add_to_styles($style_contra, {ordering => 2});
+$Event3->add_to_styles($style_regency, {ordering => 2});
 
 #
 # with no args
 #
 ($stdout, $stderr, $exit) = capture {
-    do 'scripts/getvenues.pl';
+    do 'scripts/getstyles.pl';
 };
-die "getvenues.pl died: $@ $stderr" if !$exit;
+die "getstyles.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 $expected = <<EOL;
-<select name="venue">
-    <option value="">ALL LOCATIONS</option>
-        <option value="ALB">Albany -- Albany Veteran's Memorial Building</option>
-        <option value="CCB">Berkeley -- Christ Church Berkeley &lt;formerly Grace North Church&gt;</option>
-        <option value="KDT">Oakland -- Kids \xe2\x80\x99N Dance \xe2\x80\x99N Theater</option>
+<select name="style">
+    <option value="">ALL STYLES</option>
+        <option value="CONTRA">CONTRA</option>
+        <option value="ENGLISH">ENGLISH</option>
+        <option value="REGENCY">REGENCY</option>
 </select>
 EOL
 
 eq_or_diff $stdout, $expected, "with no args";
+
 
 #
 # style=ENGLISH
 #
 $ENV{QUERY_STRING} = 'style=ENGLISH';
 ($stdout, $stderr, $exit) = capture {
-    do 'scripts/getvenues.pl';
+    do 'scripts/getstyles.pl';
 };
-die "getvenues.pl died: $@ $stderr" if !$exit;
+die "getstyles.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 $expected = <<EOL;
-<select name="venue">
-    <option value="">ALL LOCATIONS</option>
-        <option value="ALB">Albany -- Albany Veteran's Memorial Building</option>
-        <option value="CCB">Berkeley -- Christ Church Berkeley &lt;formerly Grace North Church&gt;</option>
+<select name="style">
+    <option value="">ALL STYLES</option>
+        <option value="ENGLISH">ENGLISH</option>
 </select>
 EOL
 
@@ -134,16 +143,16 @@ eq_or_diff $stdout, $expected, "style=ENGLISH";
 #
 $ENV{QUERY_STRING} = 'numdays=1';
 ($stdout, $stderr, $exit) = capture {
-    do 'scripts/getvenues.pl';
+    do 'scripts/getstyles.pl';
 };
-die "getvenues.pl died: $@ $stderr" if !$exit;
+die "getstyles.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 $expected = <<EOL;
-<select name="venue">
-    <option value="">ALL LOCATIONS</option>
-        <option value="ALB">Albany -- Albany Veteran's Memorial Building</option>
-        <option value="KDT">Oakland -- Kids \xe2\x80\x99N Dance \xe2\x80\x99N Theater</option>
+<select name="style">
+    <option value="">ALL STYLES</option>
+        <option value="CONTRA">CONTRA</option>
+        <option value="ENGLISH">ENGLISH</option>
 </select>
 EOL
 
@@ -155,17 +164,21 @@ eq_or_diff $stdout, $expected, "numdays=1";
 #
 $ENV{QUERY_STRING} = 'venue=CCB';
 ($stdout, $stderr, $exit) = capture {
-    do 'scripts/getvenues.pl';
+    do 'scripts/getstyles.pl';
 };
-die "getvenues.pl died: $@ $stderr" if !$exit;
+die "getstyles.pl died: $@ $stderr" if !$exit;
 note $stderr if $stderr;
 
 $expected = <<EOL;
-<select name="venue">
-    <option value="">ALL LOCATIONS</option>
-        <option value="CCB">Berkeley -- Christ Church Berkeley &lt;formerly Grace North Church&gt;</option>
+<select name="style">
+    <option value="">ALL STYLES</option>
+        <option value="ENGLISH">ENGLISH</option>
+        <option value="REGENCY">REGENCY</option>
 </select>
 EOL
 
-eq_or_diff $stdout, $expected, "venue=CCB";
+eq_or_diff $stdout, $expected, "with no args";
 
+# skipping the "include a camp" test case from t/getstyles.t
+# which might have been testing some of the
+# bacds::Model::Event->load_all args?

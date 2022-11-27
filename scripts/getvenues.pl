@@ -9,8 +9,8 @@
 
 use strict;
 
+use DateTime;
 use Template;
-use Time::Local;
 
 use bacds::Model::Event;
 use bacds::Model::Venue;
@@ -73,7 +73,7 @@ sub get_venues_dbix {
 
     my $dbh = get_dbh();
 
-    my (%venuehash);
+    my %venuehash;
 
     my $today = today_ymd();
 
@@ -103,7 +103,7 @@ sub get_venues_dbix {
         },
         {
             join => \@related_tables,
-            #prefetch => \@related_tables,
+            prefetch => \@related_tables,
         },
     );
 

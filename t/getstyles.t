@@ -27,15 +27,15 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="style">
     <option value="">ALL STYLES</option>
-    <option value="CAMP">CAMP</option>
-    <option value="CONTRA">CONTRA</option>
-    <option value="ENGLISH">ENGLISH</option>
-    <option value="ENGLISH/REGENCY">ENGLISH/REGENCY</option>
-    <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
-    <option value="ONLINE ENGLISH DANCE">ONLINE ENGLISH DANCE</option>
-    <option value="SPECIAL">SPECIAL</option>
-    <option value="WALTZ">WALTZ</option>
-    <option value="WOODSHED">WOODSHED</option>
+        <option value="CAMP">CAMP</option>
+        <option value="CONTRA">CONTRA</option>
+        <option value="ENGLISH">ENGLISH</option>
+        <option value="ENGLISH/REGENCY">ENGLISH/REGENCY</option>
+        <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
+        <option value="ONLINE ENGLISH DANCE">ONLINE ENGLISH DANCE</option>
+        <option value="SPECIAL">SPECIAL</option>
+        <option value="WALTZ">WALTZ</option>
+        <option value="WOODSHED">WOODSHED</option>
 </select>
 EOL
 
@@ -55,17 +55,15 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="style">
     <option value="">ALL STYLES</option>
-    <option value="ENGLISH">ENGLISH</option>
-    <option value="ENGLISH/REGENCY">ENGLISH/REGENCY</option>
-    <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
-    <option value="ONLINE ENGLISH DANCE">ONLINE ENGLISH DANCE</option>
-    <option value="SPECIAL">SPECIAL</option>
+        <option value="ENGLISH">ENGLISH</option>
+        <option value="ENGLISH/REGENCY">ENGLISH/REGENCY</option>
+        <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
+        <option value="ONLINE ENGLISH DANCE">ONLINE ENGLISH DANCE</option>
+        <option value="SPECIAL">SPECIAL</option>
 </select>
 EOL
 
 eq_or_diff $stdout, $expected, "style=ENGLISH";
-
-
 
 
 #
@@ -81,14 +79,14 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="style">
     <option value="">ALL STYLES</option>
-    <option value="CONTRA">CONTRA</option>
-    <option value="ENGLISH">ENGLISH</option>
-    <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
-    <option value="WOODSHED">WOODSHED</option>
+        <option value="CONTRA">CONTRA</option>
+        <option value="ENGLISH">ENGLISH</option>
+        <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
+        <option value="WOODSHED">WOODSHED</option>
 </select>
 EOL
 
-eq_or_diff $stdout, $expected, "style=ENGLISH";
+eq_or_diff $stdout, $expected, "numdays=1";
 
 
 #
@@ -104,14 +102,14 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="style">
     <option value="">ALL STYLES</option>
-    <option value="CONTRA">CONTRA</option>
-    <option value="ENGLISH">ENGLISH</option>
-    <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
-    <option value="WALTZ">WALTZ</option>
+        <option value="CONTRA">CONTRA</option>
+        <option value="ENGLISH">ENGLISH</option>
+        <option value="ENGLISH/WORKSHOP">ENGLISH/WORKSHOP</option>
+        <option value="WALTZ">WALTZ</option>
 </select>
 EOL
 
-eq_or_diff $stdout, $expected, "with no args";
+eq_or_diff $stdout, $expected, "venue=CCB";
 
 
 
@@ -129,13 +127,13 @@ note $stderr if $stderr;
 $expected = <<EOL;
 <select name="style">
     <option value="">ALL STYLES</option>
-    <option value="CAMP">CAMP</option>
-    <option value="CONTRA">CONTRA</option>
-    <option value="ENG/REG">ENG/REG</option>
-    <option value="ENGLISH">ENGLISH</option>
-    <option value="SPECIAL">SPECIAL</option>
-    <option value="WOODSHED">WOODSHED</option>
+        <option value="CAMP">CAMP</option>
+        <option value="CONTRA">CONTRA</option>
+        <option value="ENG/REG">ENG/REG</option>
+        <option value="ENGLISH">ENGLISH</option>
+        <option value="SPECIAL">SPECIAL</option>
+        <option value="WOODSHED">WOODSHED</option>
 </select>
 EOL
 
-eq_or_diff $stdout, $expected, "with no args";
+eq_or_diff $stdout, $expected, "include a camp";

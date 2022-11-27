@@ -5,3 +5,8 @@ getleaders.pl as a callerlist, comma-separated:
         }
 screen for that manually afterwards
 
+crazy comma-splitting in getmusos.pl isn't reflected in migration--do manually?
+
+band list in migrate-bands.pl are out of date ?
+event_talent_map is empty
+no "SPECIAL" styles were migrated, wtf?
