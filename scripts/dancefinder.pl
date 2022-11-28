@@ -2,7 +2,7 @@
 ##
 ## Find out what dances are happening in the next week.
 ##
-## This file is being tracked in git. Do a 'git clone /var/lib/git/bacds.org-scripts/'
+## This file is being tracked in git. Do a 'git clone git@github.com:kgoess/bacds.org-scripts.git'
 ## to check out the repository, do your edits there, and copy the file into place
 ## at /var/www/bacds.org/public_html/scripts/dancefinder.pl, or type "make install".
 #

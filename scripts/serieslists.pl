@@ -13,8 +13,8 @@
 ## so we also add the json-ld
 ##
 ##
-## This file is being tracked in git.  To clone the repo, add yourself to the
-## "git" group I created and then do "git clone /var/lib/git/bacds.org-scripts/".
+## This file is being tracked in git. Do a 'git clone git@github.com:kgoess/bacds.org-scripts.git'
+## to check out the repository, do your edits there, and copy the file into place
 use strict;
 use Date::Calc qw(Day_of_Week Day_of_Week_to_Text);
 use JSON qw/to_json/;
