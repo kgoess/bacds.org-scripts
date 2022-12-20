@@ -29,6 +29,7 @@ use DBI;
 
 use bacds::Model::Event;
 use bacds::Model::Venue;
+use bacds::Scheduler::Model::Calendar;
 
 
 our $CSV_DIR = $ENV{TEST_CSV_DIR} || '/var/www/bacds.org/public_html/data';
@@ -84,11 +85,16 @@ sub print_venues {
     my $venue;
 
     print start_table();
-    my @loc_list = db_venue_lookup(
-        $start_yr,
-        $start_mon,
-        $table_choice,
-    );
+    my @loc_list;
+    if (cookie('DBIX_TEST')) {
+        @loc_list = bacds::Scheduler::Model::Calendar->load_venue_list_for_month($start_yr, $start_mon);
+    } else {
+        @loc_list = db_venue_lookup(
+            $start_yr,
+            $start_mon,
+            $table_choice,
+        );
+    }
     print start_Tr;
     print th({class => 'callisting'},'VENUE');
     print th({class => 'callisting'},'NAME');
@@ -96,8 +102,8 @@ sub print_venues {
     print th({class => 'callisting'},'CITY');
     print end_Tr;
     foreach $venue (sort @loc_list) {
-        my ($key,$name,$addr,$city,$cmts);
-        ($key,$name,$addr,$city,$cmts) = split('\|',$venue);
+        my ($key,$name,$addr,$city,$cmts) = split('\|',$venue);
+        $cmts //= '';
         print start_Tr;
         print td({-class => 'callisting'},$key);
         print td({-class => 'callisting'},$name);
@@ -405,7 +411,12 @@ sub _db_sched_lookup_new {
 
     my @schedule;
 
-    my @events = bacds::Model::Event->load_events_for_month($syear, $smon);
+    my @events;
+    if (cookie('DBIX_TEST')) {
+        @events = bacds::Scheduler::Model::Calendar->load_events_for_month($syear, $smon);
+    } else {
+        @events = bacds::Model::Event->load_events_for_month($syear, $smon);
+    }
 
     foreach my $event (@events) {
         my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts) =
