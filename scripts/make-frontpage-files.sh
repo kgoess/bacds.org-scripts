@@ -46,4 +46,4 @@ eval $(perl -Mlocal::lib=/var/lib/dance-scheduler)
 REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight-dbix.html
 dancefinder.pl --days 0 >> tonight-dbix.html
 dancefinder.pl --days 18 > 18day-dbix.html
-dancefinder.pl --style CAMP --style SPECIAL >> specialevents-dbix.html
+dancefinder.pl --style CAMP --style SPECIAL > specialevents-dbix.html
