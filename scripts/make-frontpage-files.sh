@@ -36,3 +36,14 @@ perl scripts/specialevents.pl > specialevents.html
 #
 # edb 24jul20 touch home page to update timestamp to show it's fresh data
 touch index.html
+
+#
+# new dbix output files
+#
+eval $(perl -Mlocal::lib=/var/lib/dance-scheduler)
+# this dancefinder.pl is in /var/lib/dance-scheduler/bin/
+# TODO: convert tonightheader.pl
+REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight-dbix.html
+dancefinder.pl --days 0 >> tonight-dbix.html
+dancefinder.pl --days 18 > 18day-dbix.html
+dancefinder.pl --style CAMP --style SPECIAL >> specialevents-dbix.html
