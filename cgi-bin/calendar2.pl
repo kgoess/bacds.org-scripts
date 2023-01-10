@@ -477,9 +477,10 @@ sub main {
 
     print start_html(
         -title => 'BACDS Calendar generator',
-        -style => {
-            -src => '/css/calendar.css'
-        }
+        -style => [
+            { -src => '/css/calendar.css' },
+            cookie('DBIX_TEST') ? { -src => '/css/beta-test-dbix.css' } : (),
+        ],
     );
     print h1("BACDS Events Calendar");
 
