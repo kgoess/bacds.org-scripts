@@ -400,6 +400,7 @@ if (@events) {
             $titlestring =~ s/&Eacute;/E/g;
             $titlestring =~ s/&eacute;/e/g;
             $titlestring =~ s/&amp;/&/g;
+            $titlestring =~ s/\n/ /g;
 
             if ($type =~ /SPECIAL/  || $type =~/CAMP/ || $type =~ /WORKSHOP/) {
                 $bgcolor = 'plum';
