@@ -44,6 +44,7 @@ eval $(perl -Mlocal::lib=/var/lib/dance-scheduler)
 # this dancefinder.pl is in /var/lib/dance-scheduler/bin/
 # TODO: convert tonightheader.pl
 REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight-dbix.html
-dancefinder.pl --days 0 >> tonight-dbix.html
-dancefinder.pl --days 18 > 18day-dbix.html
-dancefinder.pl --style CAMP --style SPECIAL > specialevents-dbix.html
+dancefinder.pl --days 0 > dancefinder-temp.html && cat dancefinder-temp.html >> tonight-dbix.html
+dancefinder.pl --days 18 > dancefinder-temp.html && cat dancefinder-temp.html > 18day-dbix.html
+dancefinder.pl --style CAMP --style SPECIAL > dancefinder-temp.html && cat dancefinder-temp.html > specialevents-dbix.html
+rm dancefinder-temp.html
