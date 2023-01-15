@@ -381,7 +381,7 @@ sub save_event {
 
     $event->save;
 
-    $cui->dialog("Save complete");
+    $cui->dialog("Save complete\nPlease make the same change at https://bacds.org/dance-scheduler/");
 }
 
 sub switch_to_first_window {
