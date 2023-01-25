@@ -40,7 +40,7 @@ my %day_lst = ('MON' => 'Monday',
 ## Print out results
 ##
 my @events = bacds::Model::Event->load_all(camps_and_specials => 1);
-foreach my $event (@events) {
+foreach my $event (sort { $b->startday cmp $a->startday } @events) {
     my $startday = $event->startday;
     my $endday   = $event->endday;
     my $type     = $event->type;
