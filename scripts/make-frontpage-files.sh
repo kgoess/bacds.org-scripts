@@ -21,20 +21,14 @@ cd $basedir
 # kmg 02Feb20 remove both zoomevents per discussion with edb and apw, see
 #             thread "Zoomevents2.pl script, content.html page, messed with
 #             schedule database"
-REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight.html
-#
-# append today's dances to the header piece
-# edb 8dec08  set environment vars to eliminate error msgs
-REQUEST_METHOD="" QUERY_STRING="numdays=1&outputtype=INLINE" perl scripts/dancefinder.pl  >> tonight.html
-#
-# new file for 10day listing.
-# edb 8dec08  set environment vars to eliminate error msgs
-REQUEST_METHOD="" QUERY_STRING="numdays=10&outputtype=INLINE" perl scripts/dancefinder.pl  > 10day.html
-REQUEST_METHOD="" QUERY_STRING="numdays=18&outputtype=INLINE" perl scripts/dancefinder.pl  > 18day.html
-# new file for special event listings
-perl scripts/specialevents.pl > specialevents.html
-#
-# edb 24jul20 touch home page to update timestamp to show it's fresh data
+# these are the old csv-database scripts
+#REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight.html
+#REQUEST_METHOD="" QUERY_STRING="numdays=1&outputtype=INLINE" perl scripts/dancefinder.pl  >> tonight.html
+#REQUEST_METHOD="" QUERY_STRING="numdays=10&outputtype=INLINE" perl scripts/dancefinder.pl  > 10day.html
+#REQUEST_METHOD="" QUERY_STRING="numdays=18&outputtype=INLINE" perl scripts/dancefinder.pl  > 18day.html
+#perl scripts/specialevents.pl > specialevents.html
+
+# touch home page to update timestamp to show it's fresh data
 touch index.html
 
 #
@@ -42,9 +36,15 @@ touch index.html
 #
 eval $(perl -Mlocal::lib=/var/lib/dance-scheduler)
 # this dancefinder.pl is in /var/lib/dance-scheduler/bin/
-# TODO: convert tonightheader.pl
+# using a tempfile-two-step otherwise during the time it takes the script to
+# run the users are looking at an empty file with no content
 REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight-dbix.html
 dancefinder.pl --days 0 > dancefinder-temp.html && cat dancefinder-temp.html >> tonight-dbix.html
 dancefinder.pl --days 18 > dancefinder-temp.html && cat dancefinder-temp.html > 18day-dbix.html
-dancefinder.pl --style CAMP --style SPECIAL > dancefinder-temp.html && cat dancefinder-temp.html > specialevents-dbix.html
+dancefinder.pl \
+    --style CAMP \
+    --style SPECIAL \
+    --no-highlight-specials \
+    > dancefinder-temp.html \
+    && cat dancefinder-temp.html > specialevents-dbix.html
 rm dancefinder-temp.html
