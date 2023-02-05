@@ -86,15 +86,15 @@ sub print_venues {
 
     print start_table();
     my @loc_list;
-    if (cookie('DBIX_TEST')) {
+    #if (cookie('DBIX_TEST')) {
         @loc_list = bacds::Scheduler::Model::Calendar->load_venue_list_for_month($start_yr, $start_mon);
-    } else {
-        @loc_list = db_venue_lookup(
-            $start_yr,
-            $start_mon,
-            $table_choice,
-        );
-    }
+    #} else {
+    #    @loc_list = db_venue_lookup(
+    #        $start_yr,
+    #        $start_mon,
+    #        $table_choice,
+    #    );
+    #}
     print start_Tr;
     print th({class => 'callisting'},'VENUE');
     print th({class => 'callisting'},'NAME');
@@ -185,8 +185,11 @@ sub print_schedule {
         my ($start) = split('\|',$event);
         $taghash{$start} = 0;
     }
+
+
     foreach my $event (@$schedref) {
-        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts) = split('\|', $event);
+        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled)
+            = split('\|', $event);
         my ($tsyr, $tsmon, $tsday) = split('-',$stday);
         my $ttsmon = Month_to_Text($tsmon);
         my $txtdate = $ttsmon . '&nbsp;' . $tsday;
@@ -207,28 +210,30 @@ sub print_schedule {
                 $div_start = 0;
             }
         }
+        my $listing_class = 'callisting' . ($is_canceled ? ' calcanceled' : '');
+        my $comment_class = 'calcomment' . ($is_canceled ? ' calcanceled' : '');
         print start_Tr;
-        print start_td({-class => 'callisting'});
+        print start_td({-class => $listing_class});
         print a({-name => $stday},'')
             if ($taghash{$stday}++ == 0);
         print $txtdate;
         print end_td;
-        print td({-class => 'callisting'},$typ);
-        print td({-class => 'callisting'},$loc);
+        print td({-class => $listing_class},$typ);
+        print td({-class => $listing_class},$loc);
         # edb 30may2010: tighten up comments in listing
         if (0 && $cmts) {
-            print td({-class => 'callisting', -rowspan=>2},$ldr);
-            print td({-class => 'callisting', -rowspan=>2},$band);
+            print td({-class => $listing_class, -rowspan=>2},$ldr);
+            print td({-class => $listing_class, -rowspan=>2},$band);
         } else {
-            print td({-class => 'callisting'},$ldr);
-            print td({-class => 'callisting'},$band);
+            print td({-class => $listing_class},$ldr);
+            print td({-class => $listing_class},$band);
         }
         print end_Tr;
         # edb 18jun2020: indent comments to tie to listing
         if ($cmts) {
-            print start_Tr( {-class=>'calcomment'} );
-            print td({-class => 'calcomment'});
-            print td({-class => 'calcomment', -colspan => 4},em($cmts));
+            print start_Tr( {-class=> $comment_class} );
+            print td({-class => $comment_class});
+            print td({-class => $comment_class, -colspan => 4},em($cmts));
             print end_Tr;
         }
     }
@@ -412,20 +417,20 @@ sub _db_sched_lookup_new {
     my @schedule;
 
     my @events;
-    if (cookie('DBIX_TEST')) {
+    #if (cookie('DBIX_TEST')) {
         @events = bacds::Scheduler::Model::Calendar->load_events_for_month($syear, $smon);
-    } else {
-        @events = bacds::Model::Event->load_events_for_month($syear, $smon);
-    }
+    #} else {
+    #    @events = bacds::Model::Event->load_events_for_month($syear, $smon);
+    #}
 
     foreach my $event (@events) {
-        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts) =
-             map { $event->$_ } qw/startday endday type loc leader band comments/;
+        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled) =
+             map { $event->$_ } qw/startday endday type loc leader band comments is_canceled/;
         if ($cmts) {
             $cmts =~ s/<q>/"/g;
-            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, $cmts);
+            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled);
         } else {
-            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band);
+            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, '', , $is_canceled);
         }
     }
 
@@ -479,7 +484,7 @@ sub main {
         -title => 'BACDS Calendar generator',
         -style => [
             { -src => '/css/calendar.css' },
-            cookie('DBIX_TEST') ? { -src => '/css/beta-test-dbix.css' } : (),
+            #cookie('DBIX_TEST') ? { -src => '/css/beta-test-dbix.css' } : (),
         ],
     );
     print h1("BACDS Events Calendar");
