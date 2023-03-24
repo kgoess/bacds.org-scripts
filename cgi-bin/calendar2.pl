@@ -182,15 +182,17 @@ sub print_schedule {
     print th({class => 'caltitle'},'CALLER(S)<br>TEACHER(S)');
     print th({class => 'caltitle', -align=>'center'},'MUSICIANS');
     print end_Tr;
+
+    # $event is an OldEvent defined in bacds::Scheduler::Model::Calendar
     foreach my $event (@$schedref) {
-        my ($start) = split('\|',$event);
+        my $start = $event->startday;
         $taghash{$start} = 0;
     }
 
 
     foreach my $event (@$schedref) {
-        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled)
-            = split('\|', $event);
+        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled, $musos)
+            = map { $event->$_ } qw/startday endday type loc leader band comments is_canceled musos/;
         my ($tsyr, $tsmon, $tsday) = split('-',$stday);
         my $ttsmon = Month_to_Text($tsmon);
         my $txtdate = $ttsmon . '&nbsp;' . $tsday;
@@ -226,8 +228,14 @@ sub print_schedule {
             print td({-class => $listing_class, -rowspan=>2},$ldr);
             print td({-class => $listing_class, -rowspan=>2},$band);
         } else {
+            my $talent = '';
+            $talent = $band;
+            if ($band && $musos) {
+                $talent .= ', ';
+            }
+            $talent .= $musos;
             print td({-class => $listing_class},$ldr);
-            print td({-class => $listing_class},$band);
+            print td({-class => $listing_class},$talent);
         }
         print end_Tr;
         # edb 18jun2020: indent comments to tie to listing
@@ -297,7 +305,8 @@ sub print_tab_calendar {
     my %taghash;
 
     foreach my $event (@$schedref) {
-        my ($start) = split('\|', $event);
+        # $event is an OldEvent defined in bacds::Scheduler::Model::Calendar
+        my $start = $event->startday;
         $taghash{$start} = 'YES';
     }
 
@@ -412,30 +421,16 @@ sub db_sched_lookup {
     }
 }
 
+# this returns a list of OldEvent objects, an internal class in
+# bacds::Scheduler::Model::Calendar that's just some accessors
 sub _db_sched_lookup_new {
     my ($syear, $smon, $table_choice) = @_;
 
     my @schedule;
 
-    my @events;
-    #if (cookie('DBIX_TEST')) {
-        @events = bacds::Scheduler::Model::Calendar->load_events_for_month($syear, $smon);
-    #} else {
-    #    @events = bacds::Model::Event->load_events_for_month($syear, $smon);
-    #}
+    my @events = bacds::Scheduler::Model::Calendar->load_events_for_month($syear, $smon);
 
-    foreach my $event (@events) {
-        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled) =
-             map { $event->$_ } qw/startday endday type loc leader band comments is_canceled/;
-        if ($cmts) {
-            $cmts =~ s/<q>/"/g;
-            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled);
-        } else {
-            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, '', , $is_canceled);
-        }
-    }
-
-    return \@schedule;
+    return \@events;
 }
 
 # would take some work to match the older CSV schemas,
@@ -462,12 +457,21 @@ EOL
         or die "can't prepare $qrystr: ".$dbh->errstr;
     $sth->execute($date_param, $date_param);
     while (my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts) = $sth->fetchrow_array()) {
-        if ($cmts) {
-            $cmts =~ s/<q>/"/g;
-            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band, $cmts);
-        } else {
-            push @schedule, join('|', $stday, $endday, $typ, $loc, $ldr, $band);
-        }
+        $cmts //= '';
+        $cmts =~ s/<q>/"/g;
+
+        # OldEvent is defined in bacds::Scheduler::Model::Calendar
+        my $event = OldEvent->new(
+            startday => $stday,
+            endday   => $endday,
+            type     => $typ,
+            loc      => $loc,
+            leader   => $ldr,
+            band     => $band,
+            comments => $cmts,
+            #musos => , # no musos in the old schema
+        );
+        push @schedule, $event;
     }
 
     return \@schedule;

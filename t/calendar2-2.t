@@ -7,9 +7,13 @@ use warnings;
 use Capture::Tiny qw/capture capture_stdout/;
 use Data::Dump qw/dump/;
 use File::Basename qw/basename/;
+use FindBin qw/$Bin/;
 use List::MoreUtils qw/any/;
-use Test::More tests => 18;
+use Test::More tests => 28;
 use Test::Differences qw/eq_or_diff/;
+
+# use the git checkout, not the installed version
+use lib "$Bin/../../dance-scheduler/lib";
 
 $ENV{TEST_CSV_DIR} = 't/data/';
 $ENV{TEST_TODAY} = '2018-09-06';
@@ -66,8 +70,18 @@ sub test_db_sched_lookup {
     $res = db_sched_lookup('2018', '02', 'schedule2018');
 
     is @$res, 22;
-    is $res->[0], '2018-02-02||ENGLISH|MT|Alisa Dodson (2018 Playford Ball Ogre)|Nonesuch Country Dance Band (Daniel Soussan, Mark Daly, Mary Tabor) with Robin Lockner, Paul Kostka, William Allen';
-    is $res->[21], '2018-02-28||ENGLISH|CCB|Kalia Kliban|Sister Haggis (Eileen Nicholson Kolfass, Jane Knoeck) [both NY]&mdash;<b><i>NOT an open band</i></b>';
+    is $res->[0]->startday, '2018-02-02';
+    is $res->[0]->endday, '';
+    is $res->[0]->type, 'ENGLISH';
+    is $res->[0]->loc, 'MT';
+    is $res->[0]->leader, 'Alisa Dodson (2018 Playford Ball Ogre)';
+    is $res->[0]->band, 'Nonesuch Country Dance Band (Daniel Soussan, Mark Daly, Mary Tabor) with Robin Lockner, Paul Kostka, William Allen';
+    is $res->[21]->startday, '2018-02-28';
+    is $res->[21]->endday, '';
+    is $res->[21]->type, 'ENGLISH';
+    is $res->[21]->loc, 'CCB';
+    is $res->[21]->leader, 'Kalia Kliban';
+    is $res->[21]->band, 'Sister Haggis (Eileen Nicholson Kolfass, Jane Knoeck) [both NY]&mdash;<b><i>NOT an open band</i></b>';
 
     #
     # august has a bunch of camps, but none of them cross the month boundary
@@ -80,7 +94,7 @@ sub test_db_sched_lookup {
     # show up in each
     #
     $res = db_sched_lookup('2018', '11', 'schedule2018');
-    ok any { /Test Camp That Crosses Month Boundary/ } @$res;
+    ok any { $_->comments eq q{Test Camp That Crosses Month Boundary} } @$res;
     $stdout = capture_stdout { print_schedule('2018', '11', $res) };
     $stdout =~ s/<td/\n<td/g; # easier to read failures
     $stdout =~ s/&nbsp;/ /g;
@@ -89,7 +103,7 @@ sub test_db_sched_lookup {
     like $stdout,  qr/Test Camp That Crosses Month Boundary/;
 
     $res = db_sched_lookup('2018', '12', 'schedule2018');
-    ok any { /Test Camp That Crosses Month Boundary/ } @$res;
+    ok any { $_->comments eq q{Test Camp That Crosses Month Boundary} } @$res;
     $stdout = capture_stdout { print_schedule('2018', '12', $res) };
     $stdout =~ s/<td/\n<td/g; # easier to read failures
     $stdout =~ s/&nbsp;/ /g;
