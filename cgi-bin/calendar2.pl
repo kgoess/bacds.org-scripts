@@ -191,8 +191,8 @@ sub print_schedule {
 
 
     foreach my $event (@$schedref) {
-        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled, $musos)
-            = map { $event->$_ } qw/startday endday type loc leader band comments is_canceled musos/;
+        my ($stday, $endday, $typ, $loc, $ldr, $band, $cmts, $is_canceled, $musos, $name)
+            = map { $event->$_ } qw/startday endday type loc leader band comments is_canceled musos name/;
         my ($tsyr, $tsmon, $tsday) = split('-',$stday);
         my $ttsmon = Month_to_Text($tsmon);
         my $txtdate = $ttsmon . '&nbsp;' . $tsday;
@@ -221,7 +221,14 @@ sub print_schedule {
             if ($taghash{$stday}++ == 0);
         print $txtdate;
         print end_td;
-        print td({-class => $listing_class},$typ);
+        my $display_name;
+        if ($name) {
+            $name = uc $name;
+            $display_name = "<strong>$name</strong> ($typ)";
+        } else {
+            $display_name = $typ;
+        }
+        print td({-class => $listing_class},$display_name);
         print td({-class => $listing_class},$loc);
         # edb 30may2010: tighten up comments in listing
         if (0 && $cmts) {
@@ -233,7 +240,7 @@ sub print_schedule {
             if ($band && $musos) {
                 $talent .= ', ';
             }
-            $talent .= $musos;
+            $talent .= ($musos//'');
             print td({-class => $listing_class},$ldr);
             print td({-class => $listing_class},$talent);
         }
@@ -469,6 +476,7 @@ EOL
             leader   => $ldr,
             band     => $band,
             comments => $cmts,
+            # name     => '', # no separate 'name' in the old schema
             #musos => , # no musos in the old schema
         );
         push @schedule, $event;
