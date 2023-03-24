@@ -14,6 +14,8 @@ $ENV{TEST_TODAY} = '2018-09-06';
 
 $ENV{REQUEST_URI} = '/calendars/2018/09/index.pl';
 
+$ENV{TEST_TABLE_CHOICE} = 'schedule2018';
+
 
 my ($stdout, $stderr, $exit) = capture {
 	do 'cgi-bin/calendar2.pl';

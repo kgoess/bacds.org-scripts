@@ -11,6 +11,7 @@ use Test::More tests => 1;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
 $ENV{TEST_TODAY} = '2018-09-06';
+$ENV{TEST_TABLE_CHOICE} = 'schedule2018';
 
 my $expected;
 my ($stdout, $stderr, $exit);

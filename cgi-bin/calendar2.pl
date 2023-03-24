@@ -125,7 +125,8 @@ sub parse_url_params {
 
     my ($start_year, $start_mon) = my_today();
 
-    my $table_choice = 'schedule';
+    # allow unit tests to override
+    my $table_choice = $ENV{TEST_TABLE_CHOICE} || 'schedule';
 
     if ($base_url =~ /\/calendars\//) {
         my @url_parts = split(/\//,$base_url);

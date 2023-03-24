@@ -4,8 +4,12 @@ use warnings;
 
 use Capture::Tiny qw/capture/;
 use Data::Dump qw/dump/;
+use FindBin qw/$Bin/;
 use Test::Differences qw/eq_or_diff/;
 use Test::More tests => 4;
+
+# use the git checkout, not the installed version
+use lib "$Bin/../../dance-scheduler/lib";
 
 use bacds::Scheduler::Util::Test qw/setup_test_db/;
 use bacds::Scheduler::Util::Time qw/get_now/;

@@ -63,7 +63,7 @@ sub test_db_sched_lookup {
     #
     # try a regular month, no camps
     #
-    $res = db_sched_lookup('2018', '02', 'schedule');
+    $res = db_sched_lookup('2018', '02', 'schedule2018');
 
     is @$res, 22;
     is $res->[0], '2018-02-02||ENGLISH|MT|Alisa Dodson (2018 Playford Ball Ogre)|Nonesuch Country Dance Band (Daniel Soussan, Mark Daly, Mary Tabor) with Robin Lockner, Paul Kostka, William Allen';
@@ -72,14 +72,14 @@ sub test_db_sched_lookup {
     #
     # august has a bunch of camps, but none of them cross the month boundary
     #
-    $res = db_sched_lookup('2018', '08', 'schedule');
+    $res = db_sched_lookup('2018', '08', 'schedule2018');
     is @$res, 26;
 
     #
     # we made a test camp that cross the November/December boundary, should
     # show up in each
     #
-    $res = db_sched_lookup('2018', '11', 'schedule');
+    $res = db_sched_lookup('2018', '11', 'schedule2018');
     ok any { /Test Camp That Crosses Month Boundary/ } @$res;
     $stdout = capture_stdout { print_schedule('2018', '11', $res) };
     $stdout =~ s/<td/\n<td/g; # easier to read failures
@@ -88,7 +88,7 @@ sub test_db_sched_lookup {
     like $stdout, qr/November 30 to December 01/;
     like $stdout,  qr/Test Camp That Crosses Month Boundary/;
 
-    $res = db_sched_lookup('2018', '12', 'schedule');
+    $res = db_sched_lookup('2018', '12', 'schedule2018');
     ok any { /Test Camp That Crosses Month Boundary/ } @$res;
     $stdout = capture_stdout { print_schedule('2018', '12', $res) };
     $stdout =~ s/<td/\n<td/g; # easier to read failures

@@ -12,6 +12,7 @@ use Test::More tests => 25;
 
 $ENV{TEST_CSV_DIR} = 't/data/';
 $ENV{TEST_TODAY} = '2018-09-06';
+$ENV{TEST_TABLE_CHOICE} = 'schedule2018';
 
 
 test_json();

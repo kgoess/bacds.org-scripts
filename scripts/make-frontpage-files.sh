@@ -38,7 +38,8 @@ eval $(perl -Mlocal::lib=/var/lib/dance-scheduler)
 # this dancefinder.pl is in /var/lib/dance-scheduler/bin/
 # using a tempfile-two-step otherwise during the time it takes the script to
 # run the users are looking at an empty file with no content
-REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight-dbix.html
+#REQUEST_METHOD="" QUERY_STRING="" perl scripts/tonightheader.pl > tonight-dbix.html
+tonightheader.pl > dancefinder-temp.html && cat dancefinder-temp.html > tonight-dbix.html
 dancefinder.pl --days 0 > dancefinder-temp.html && cat dancefinder-temp.html >> tonight-dbix.html
 dancefinder.pl --days 18 > dancefinder-temp.html && cat dancefinder-temp.html > 18day-dbix.html
 dancefinder.pl \

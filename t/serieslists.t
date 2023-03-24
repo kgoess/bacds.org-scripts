@@ -6,16 +6,21 @@ use warnings;
 
 use Capture::Tiny qw/capture/;
 use Data::Dump qw/dump/;
+use FindBin qw/$Bin/;
 use JSON qw/from_json/;
 use Test::Differences qw/eq_or_diff/;
 use Test::More tests => 26;
 use Test::Output qw/stdout_like stdout_is/;
+
+# use the git checkout, not the installed version
+use lib "$Bin/../../dance-scheduler/lib";
 
 $ENV{TEST_CSV_DIR} = 't/data/';
 $ENV{TEST_TODAY} = '2018-09-06';
 $ENV{HTTP_HOST} = 'www.bacds.org';
 $ENV{DOCUMENT_URI} = '/offer-url';
 $ENV{PERL5LIB} = join ':', @INC; # so that system "..." works
+$ENV{TEST_TABLE_CHOICE} = 'schedule2018';
 
 my ($stdout, $stderr, $exit);
 

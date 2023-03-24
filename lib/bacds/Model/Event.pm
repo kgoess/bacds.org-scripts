@@ -146,7 +146,7 @@ as a list..
 sub load_all {
     my ($class, %args) = @_;
 
-    my $table = lc(delete $args{table} || 'schedule');
+    my $table = lc(delete $args{table} || $ENV{TEST_TABLE_CHOICE} || 'schedule');
 
     my $stmt =
         'SELECT '.
@@ -390,29 +390,6 @@ sub load_events_for_month {
     return @found;
 }
 
-=head2 get_count_for_today
-
-Returns number of dances for today, so tonightheader can do singular vs.
-plural.
-
-=cut
-
-sub get_count_for_today {
-
-    my $today = today_ymd();
-
-    my $stmt = "SELECT COUNT(*) FROM schedule WHERE startday = ?";
-
-    my $dbh = get_dbh();
-
-    my $sth = $dbh->prepare($stmt)
-        or die $dbh->errstr;
-
-    $sth->execute($today)
-        or die $sth->errstr;
-
-    return $sth->fetchrow_arrayref->[0];
-}
 
 =head2 update
 

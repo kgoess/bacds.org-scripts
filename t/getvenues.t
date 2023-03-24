@@ -6,12 +6,17 @@ use Capture::Tiny qw/capture/;
 use Data::Dump qw/dump/;
 use File::Basename qw/basename/;
 use File::Temp qw/tempfile/;
+use FindBin qw/$Bin/;
 use JSON qw/decode_json/;
 use Test::Differences qw/eq_or_diff/;
 use Test::More tests => 4;
 
+# use the git checkout, not the installed version
+use lib "$Bin/../../dance-scheduler/lib";
+
 $ENV{TEST_CSV_DIR} = 't/data/';
 $ENV{TEST_TODAY} = '2018-09-06';
+$ENV{TEST_TABLE_CHOICE} = 'schedule2018';
 
 my $expected;
 my ($stdout, $stderr, $exit);

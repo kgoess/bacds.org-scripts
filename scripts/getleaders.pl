@@ -9,7 +9,11 @@
 
 use strict;
 
+use FindBin qw/$Bin/;
 use Template;
+
+# use the git checkout, not the installed version
+use lib "$Bin/../../dance-scheduler/lib";
 
 use bacds::Model::Event;
 use bacds::Utils qw/today_ymd get_dbix_test_cookie/;
