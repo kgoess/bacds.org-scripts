@@ -433,7 +433,9 @@ sub db_sched_lookup {
             schedule2017 |
             schedule2016 |
             schedule2015 |
-            schedule2014
+            schedule2014 |
+            schedule2013 |
+            schedule2012
      )$/x) {
         return _db_sched_lookup_new($syear, $smon, $table_choice);
     } else {
