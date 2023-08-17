@@ -26,6 +26,7 @@ use Data::Dump qw/dump/;
 use Date::Calc qw(Today Days_in_Month Day_of_Week Month_to_Text);
 use DateTime;
 use DBI;
+use Encode qw/is_utf8/;
 
 use bacds::Model::Event;
 use bacds::Model::Venue;
@@ -249,6 +250,7 @@ sub print_schedule {
         if ($cmts) {
             print start_Tr( {-class=> $comment_class} );
             print td({-class => $comment_class});
+            utf8::encode($cmts) if is_utf8($cmts);
             print td({-class => $comment_class, -colspan => 4},em($cmts));
             print end_Tr;
         }
@@ -421,7 +423,18 @@ sub db_sched_lookup {
 
     $table_choice =~ s/[^a-z0-9-]//g;
 
-    if ($table_choice =~ /^(?: schedule | schedule2022 )$/x) {
+    if ($table_choice =~ /^(?:
+            schedule     |
+            schedule2022 |
+            schedule2021 |
+            schedule2020 |
+            schedule2019 |
+            schedule2018 |
+            schedule2017 |
+            schedule2016 |
+            schedule2015 |
+            schedule2014
+     )$/x) {
         return _db_sched_lookup_new($syear, $smon, $table_choice);
     } else {
         return _db_sched_lookup_old($syear, $smon, $table_choice);
