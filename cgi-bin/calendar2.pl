@@ -243,6 +243,7 @@ sub print_schedule {
             }
             $talent .= ($musos//'');
             print td({-class => $listing_class},$ldr);
+            utf8::encode($talent) if is_utf8($talent);
             print td({-class => $listing_class},$talent);
         }
         print end_Tr;
@@ -346,15 +347,15 @@ sub print_tab_calendar {
         }
         while ($dow < $days_in_wk) {
             my $datekey;
-                my $datekey2;  # make resilience against days <10
+            my $datekey2;  # make resilience against days <10
             my $datelnk = '';
             $datekey =  $cur_start_year . '-';
             $datekey .= '0' if ($cur_start_mon < 10);
             $datekey .= $cur_start_mon . '-';
-                $datekey2 = $datekey;
+            $datekey2 = $datekey;
             $datekey .= '0' if ($cur_day_of_mon < 10);
             $datekey .= $cur_day_of_mon;
-                $datekey2 .= $cur_day_of_mon;
+            $datekey2 .= $cur_day_of_mon;
             $datelnk =  '#' . $datekey if ($taghash{$datekey}||'' eq 'YES');
             $datelnk =  '#' . $datekey2 if ($taghash{$datekey2}||'' eq 'YES');
             print_date(
@@ -425,18 +426,6 @@ sub db_sched_lookup {
 
     if ($table_choice =~ /^(?:
             schedule     |
-            schedule2022 |
-            schedule2021 |
-            schedule2020 |
-            schedule2019 |
-            schedule2018 |
-            schedule2017 |
-            schedule2016 |
-            schedule2015 |
-            schedule2014 |
-            schedule2013 |
-            schedule2012 |
-            schedule2011
      )$/x) {
         return _db_sched_lookup_new($syear, $smon, $table_choice);
     } else {
@@ -503,19 +492,28 @@ EOL
 
 sub main {
 
-    print header();
+    print header(-charset=>'utf-8');
 
     my $base_url = url(-absolute => 1);
 
     my ($start_year, $start_mon, $table_choice) = parse_url_params($base_url);
 
-    print start_html(
-        -title => 'BACDS Calendar generator',
-        -style => [
-            { -src => '/css/calendar.css' },
-            #cookie('DBIX_TEST') ? { -src => '/css/beta-test-dbix.css' } : (),
-        ],
-    );
+#    print start_html(
+#        -title => 'BACDS Calendar generator',
+#        -style => [
+#            { -src => '/css/calendar.css' },
+#            #cookie('DBIX_TEST') ? { -src => '/css/beta-test-dbix.css' } : (),
+#        ],
+#    );
+print <<EOL;
+<html>
+<head>
+<title>BACDS Calendar generator</title>
+<link rel="stylesheet" type="text/css" href="/css/calendar.css" />
+</head>
+<body>
+EOL
+
     print h1("BACDS Events Calendar");
 
     my $schedule = db_sched_lookup(
