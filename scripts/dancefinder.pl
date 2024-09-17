@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 ##
 ## Find out what dances are happening in the next week.
 ##
