@@ -29,7 +29,7 @@ cd $basedir
 #perl scripts/specialevents.pl > specialevents.html
 
 # touch home page to update timestamp to show it's fresh data
-touch index.html
+#touch index.html
 
 #
 # new dbix output files
@@ -49,3 +49,13 @@ dancefinder.pl \
     > dancefinder-temp.html \
     && cat dancefinder-temp.html > specialevents-dbix.html
 rm dancefinder-temp.html
+
+
+# this loads the dancer2 app's output onto the filesystem
+URL=https://bacds.org/dance-scheduler/unearth
+response_code=$(curl -s -o index.html.tmp -w "%{http_code}" "$URL")
+if [ "$response_code" -eq 200 ]; then
+    cp index.html.tmp index.html
+else
+    echo "Requesting $URL gave a $response_code, expected a 200, leaving index.html untouched"
+fi
