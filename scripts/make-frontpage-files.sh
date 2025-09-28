@@ -53,7 +53,7 @@ rm dancefinder-temp.html
 
 # this loads the dancer2 app's output onto the filesystem
 URL=https://bacds.org/dance-scheduler/unearth
-response_code=$(curl -s -o index.html.tmp -w "%{http_code}" "$URL")
+response_code=$(curl -k -s -o index.html.tmp -w "%{http_code}" "$URL")
 if [ "$response_code" -eq 200 ]; then
     cp index.html.tmp index.html
 else
